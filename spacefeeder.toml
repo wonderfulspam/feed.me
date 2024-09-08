@@ -1,4 +1,5 @@
 max_articles = 50
+description_max_words = 150
 output_path = './content/data/feedData.json'
 
 [feeds]

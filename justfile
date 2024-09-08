@@ -8,7 +8,7 @@ add_feed slug url author tier="new": (_check_binary_exists "dasel")
   dasel put -f {{spacefeeder_config_path}} -r toml -t string -v '{{tier}}' 'feeds.{{slug}}.tier'
 
 pull_feed_info: build_spacefeeder
-  spacefeeder
+  spacefeeder fetch
 
 build_spacefeeder:
   echo "Building spacefeeder"
