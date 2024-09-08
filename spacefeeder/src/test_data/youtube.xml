@@ -1,0 +1,823 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns:yt="http://www.youtube.com/xml/schemas/2015" xmlns:media="http://search.yahoo.com/mrss/" xmlns="http://www.w3.org/2005/Atom">
+ <link rel="self" href="http://www.youtube.com/feeds/videos.xml?channel_id=UCUMwY9iS8oMyWDYIe6_RmoA"/>
+ <id>yt:channel:UMwY9iS8oMyWDYIe6_RmoA</id>
+ <yt:channelId>UMwY9iS8oMyWDYIe6_RmoA</yt:channelId>
+ <title>No Boilerplate</title>
+ <link rel="alternate" href="https://www.youtube.com/channel/UCUMwY9iS8oMyWDYIe6_RmoA"/>
+ <author>
+  <name>No Boilerplate</name>
+  <uri>https://www.youtube.com/channel/UCUMwY9iS8oMyWDYIe6_RmoA</uri>
+ </author>
+ <published>2017-12-28T17:43:34+00:00</published>
+ <entry>
+  <id>yt:video:kul0z3OTmVM</id>
+  <yt:videoId>kul0z3OTmVM</yt:videoId>
+  <yt:channelId>UCUMwY9iS8oMyWDYIe6_RmoA</yt:channelId>
+  <title>The &quot;Brainmade&quot; Mark</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=kul0z3OTmVM"/>
+  <author>
+   <name>No Boilerplate</name>
+   <uri>https://www.youtube.com/channel/UCUMwY9iS8oMyWDYIe6_RmoA</uri>
+  </author>
+  <published>2024-07-27T07:59:25+00:00</published>
+  <updated>2024-08-27T18:23:18+00:00</updated>
+  <media:group>
+   <media:title>The &quot;Brainmade&quot; Mark</media:title>
+   <media:content url="https://www.youtube.com/v/kul0z3OTmVM?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i4.ytimg.com/vi/kul0z3OTmVM/hqdefault.jpg" width="480" height="360"/>
+   <media:description>Today I'd like to introduce you to a small project I've recently published. The &quot;Brainmade&quot; Mark is something I will be attaching to any works of mine that were mostly made by me or my friends, not by generative AI tools like GPT.
+I've built a small website at http://brainmade.org with high-resolution black or white versions of the logo available for download and attaching to your own projects if you'd like to.
+
+I want to be clear about my reasoning for building this: 
+I don't hate AIs, I love humans!
+
+❤️ If you would like to support what I do, I have set up a patreon here: https://www.patreon.com/noboilerplate - Thank you!
+
+📄 All my videos are built in compile-checked markdown, transcript sourcecode available here https://github.com/0atman/noboilerplate this is also where you'll find links to everything mentioned. 
+
+🖊️ Corrections are in the pinned ERRATA comment.
+
+🦀 Start your Rust journey here: https://www.youtube.com/watch?v=2hXNd6x9sZs
+
+👕 Bad shirts available here https://www.teepublic.com/user/no-boilerplate
+
+🙏🏻 CREDITS &amp; PROMO
+My name is Tris Oaten and I produce fast, technical videos. 
+Follow me here https://tech.lgbt/deck/@noboilerplate
+Website for the show: https://noboilerplate.org
+Come chat to me on my discord server: https://discord.gg/mCY2bBmDKZ
+
+If you like sci-fi, I also produce a hopepunk podcast narrated by a little AI, videos written in Rust! https://www.lostterminal.com
+If urban fantasy is more your thing, I also produce a podcast of wonderful modern folktales https://www.modemprometheus.com
+
+👏🏻 Special thanks to my patreon sponsors:
+- Jaycee,
+- Gregory Taylor,
+- Ything LLC
+- Taylor Dolezal
+And to all my patrons!</media:description>
+   <media:community>
+    <media:starRating count="966" average="5.00" min="1" max="5"/>
+    <media:statistics views="15329"/>
+   </media:community>
+  </media:group>
+ </entry>
+ <entry>
+  <id>yt:video:Kdpfhj3VM04</id>
+  <yt:videoId>Kdpfhj3VM04</yt:videoId>
+  <yt:channelId>UCUMwY9iS8oMyWDYIe6_RmoA</yt:channelId>
+  <title>Compiler-Driven Development in Rust</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=Kdpfhj3VM04"/>
+  <author>
+   <name>No Boilerplate</name>
+   <uri>https://www.youtube.com/channel/UCUMwY9iS8oMyWDYIe6_RmoA</uri>
+  </author>
+  <published>2024-06-16T13:43:23+00:00</published>
+  <updated>2024-08-23T11:06:00+00:00</updated>
+  <media:group>
+   <media:title>Compiler-Driven Development in Rust</media:title>
+   <media:content url="https://www.youtube.com/v/Kdpfhj3VM04?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i4.ytimg.com/vi/Kdpfhj3VM04/hqdefault.jpg" width="480" height="360"/>
+   <media:description>Compiler-Driven Development in Rust, including TDD, CDD, and the Typestate Pattern.
+
+Today's sponsor: Quadratic, check them out at https://quadratichq.com/?utm_campaign=noboilerplate
+
+When I write a new Rust program, I don't start with functions or methods or any runtime code. I start with the model of my application, expressed with Rust's rich type system.
+Interacting with the real-world, on disk or through the network is too slow for me, at first, I need to iterate faster than that, to sketch out my ideas, unconstrained by the outside world.
+
+This compile-checked whiteboarding I call Compiler-Driven Development.
+
+❤️ If you would like to support what I do, I have set up a patreon here: https://www.patreon.com/noboilerplate - Thank you!
+
+📄 All my videos are built in compile-checked markdown, transcript sourcecode available here https://github.com/0atman/noboilerplate this is also where you'll find links to everything mentioned. 
+
+🖊️ Corrections are in the pinned ERRATA comment.
+
+🦀 Start your Rust journey here: https://www.youtube.com/watch?v=2hXNd6x9sZs
+
+👕 Bad shirts available here https://www.teepublic.com/user/no-boilerplate
+
+🙏🏻 CREDITS &amp; PROMO
+My name is Tris Oaten and I produce fast, technical videos. 
+Follow me here https://tech.lgbt/deck/@noboilerplate
+Website for the show: https://noboilerplate.org
+Come chat to me on my discord server: https://discord.gg/mCY2bBmDKZ
+
+If you like sci-fi, I also produce a hopepunk podcast narrated by a little AI, videos written in Rust! https://www.lostterminal.com
+If urban fantasy is more your thing, I also produce a podcast of wonderful modern folktales https://www.modemprometheus.com
+
+👏🏻 Special thanks to my patreon sponsors:
+- Jaycee,
+- Gregory Taylor,
+- Ything LLC
+And to all my patrons!</media:description>
+   <media:community>
+    <media:starRating count="3097" average="5.00" min="1" max="5"/>
+    <media:statistics views="52477"/>
+   </media:community>
+  </media:group>
+ </entry>
+ <entry>
+  <id>yt:video:DhY3fu-YgHU</id>
+  <yt:videoId>DhY3fu-YgHU</yt:videoId>
+  <yt:channelId>UCUMwY9iS8oMyWDYIe6_RmoA</yt:channelId>
+  <title>The Autism Constellation</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=DhY3fu-YgHU"/>
+  <author>
+   <name>No Boilerplate</name>
+   <uri>https://www.youtube.com/channel/UCUMwY9iS8oMyWDYIe6_RmoA</uri>
+  </author>
+  <published>2024-03-19T15:12:39+00:00</published>
+  <updated>2024-08-19T03:52:31+00:00</updated>
+  <media:group>
+   <media:title>The Autism Constellation</media:title>
+   <media:content url="https://www.youtube.com/v/DhY3fu-YgHU?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i1.ytimg.com/vi/DhY3fu-YgHU/hqdefault.jpg" width="480" height="360"/>
+   <media:description>What do you think of the subtle per-chapter background images I've tested in this video? Tell me in the comments!
+I have grown from an autistic child who needed weekly lessons from a childhood psychiatrist in order to learn how to make eye contact, into an autistic adult who is flying high in an aeroplane made out of comprehensive coping mechanisms.
+The way I have made sense of my life, is to find repeated patterns and groupings of traits, the same as we do for the night sky. There does appear to be a unifying autistic core trait, however, which surprised me: 
+Detail-oriented thinking.
+
+📓 What I Mean when I Say I'm Autistic by Annie Kotowicz
+Available at: https://neurobeautiful.com/book/
+📑 Unmasking Autism by Dr. Devon Price
+Available at: https://www.penguinrandomhouse.com/books/688819/unmasking-autism-by-devon-price-phd/
+
+Special thanks to my friend Carin S. Calder-La Croix for her advice on this video. https://www.instagram.com/link_carin/
+
+❤️ If you would like to support what I do, I have set up a Patreon here: https://www.patreon.com/noboilerplate - Thank you!
+
+📄 All my videos are built in compile-checked markdown, transcript source code available here https://github.com/0atman/noboilerplate this is also where you'll find links to everything mentioned. 
+
+🖊️ Corrections are in the pinned ERRATA comment.
+
+🦀 Start your Rust journey here: https://www.youtube.com/watch?v=2hXNd6x9sZs
+
+👕 Bad shirts available here https://www.teepublic.com/user/no-boilerplate
+
+🖼️ The Phosphene Catalogue is here: https://www.youtube.com/watch?v=y3wVvDbJHrU
+
+🛰️ Lost Terminal is here: https://www.youtube.com/watch?v=p3bDE9kszMc
+
+🌕 Modem Prometheus is here: https://www.youtube.com/watch?v=_SDnUVHAC44
+
+🎵 My published albums are on spotify, itunes, etc, but I have a lot more unpublished work over at https://soundcloud.com/namtao
+
+🙏🏻 CREDITS &amp; PROMO
+My name is Tris Oaten and I produce fast, technical videos. 
+Follow me here https://tech.lgbt/deck/@noboilerplate
+Website for the show: https://noboilerplate.org
+Come chat to me on my discord server: https://discord.gg/mCY2bBmDKZ
+
+I've written a new fiction Podcast called The Phosphene Catalogue, if you like mysteries and art, check it out!
+https://phosphenecatalogue.com/
+If urban fantasy is more your thing, I also produce a podcast of wonderful modern folktales 
+https://www.modemprometheus.com
+If you like sci-fi, I also produce a hopepunk podcast narrated by a little AI, videos written in Rust! 
+https://www.lostterminal.com
+
+👏🏻 Special thanks to my Patreon sponsors:
+David Senk
+Gregory Taylor
+Thomas Picard
+Taylor Dolezal
+Jaycee
+
+And to all my patrons!</media:description>
+   <media:community>
+    <media:starRating count="7329" average="5.00" min="1" max="5"/>
+    <media:statistics views="96344"/>
+   </media:community>
+  </media:group>
+ </entry>
+ <entry>
+  <id>yt:video:CwfKlX3rA6E</id>
+  <yt:videoId>CwfKlX3rA6E</yt:videoId>
+  <yt:channelId>UCUMwY9iS8oMyWDYIe6_RmoA</yt:channelId>
+  <title>NixOS: Everything Everywhere All At Once</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=CwfKlX3rA6E"/>
+  <author>
+   <name>No Boilerplate</name>
+   <uri>https://www.youtube.com/channel/UCUMwY9iS8oMyWDYIe6_RmoA</uri>
+  </author>
+  <published>2024-02-25T15:47:18+00:00</published>
+  <updated>2024-08-19T22:32:38+00:00</updated>
+  <media:group>
+   <media:title>NixOS: Everything Everywhere All At Once</media:title>
+   <media:content url="https://www.youtube.com/v/CwfKlX3rA6E?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i4.ytimg.com/vi/CwfKlX3rA6E/hqdefault.jpg" width="480" height="360"/>
+   <media:description>Alternate Title: NixOS: Stability on the Bleeding-Edge
+One day, as happens now and then with a bleeding-edge rolling release distro, a systemd update reversed my mouse buttons.
+The great thing about rolling-release and cutting-edge distributions like Arch Linux, is that you get to be a beta tester, whether you like it or not!
+I thought this was the way it had to be on Linux: Stability or cutting-edge features, not both.
+But that wasn't right at all, with NixOS you can have everything, everywhere all at once!
+
+❤️ If you would like to support what I do, I have set up a Patreon here: https://www.patreon.com/noboilerplate - Thank you!
+
+📄 All my videos are built in compile-checked markdown, transcript source code available here https://github.com/0atman/noboilerplate this is also where you'll find links to everything mentioned. 
+
+🖊️ Corrections are in the pinned ERRATA comment.
+
+🦀 Start your Rust journey here: https://www.youtube.com/watch?v=2hXNd6x9sZs
+
+👕 Bad shirts available here https://www.teepublic.com/user/no-boilerplate
+
+🖼️ The Phosphene Catalogue is here: https://www.youtube.com/watch?v=y3wVvDbJHrU
+
+🛰️ Lost Terminal is here: https://www.youtube.com/watch?v=p3bDE9kszMc
+
+🌕 Modem Prometheus is here: https://www.youtube.com/watch?v=_SDnUVHAC44
+
+🎵 My published albums are on spotify, itunes, etc, but I have a lot more unpublished work over at https://soundcloud.com/namtao
+
+🙏🏻 CREDITS &amp; PROMO
+My name is Tris Oaten and I produce fast, technical videos. 
+Follow me here https://tech.lgbt/deck/@noboilerplate
+Website for the show: https://noboilerplate.org
+Come chat to me on my discord server: https://discord.gg/mCY2bBmDKZ
+
+If you like sci-fi, I also produce a hopepunk podcast narrated by a little AI, videos written in Rust! https://www.lostterminal.com
+If urban fantasy is more your thing, I also produce a podcast of wonderful modern folktales https://www.modemprometheus.com
+I've got a new fiction Podcast out called The Phosphene Catalogue, if you like mysteries and art, check it out!
+
+👏🏻 Special thanks to my patreon sponsors:
+- JC Andrever-Wright
+- Miah Beach
+- Taylor Dolezal
+- Thomas Picard
+- David Senk
+And to all my patrons!</media:description>
+   <media:community>
+    <media:starRating count="15008" average="5.00" min="1" max="5"/>
+    <media:statistics views="306732"/>
+   </media:community>
+  </media:group>
+ </entry>
+ <entry>
+  <id>yt:video:voRBS0r4EyI</id>
+  <yt:videoId>voRBS0r4EyI</yt:videoId>
+  <yt:channelId>UCUMwY9iS8oMyWDYIe6_RmoA</yt:channelId>
+  <title>In Search of Code Purity</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=voRBS0r4EyI"/>
+  <author>
+   <name>No Boilerplate</name>
+   <uri>https://www.youtube.com/channel/UCUMwY9iS8oMyWDYIe6_RmoA</uri>
+  </author>
+  <published>2024-01-19T15:00:11+00:00</published>
+  <updated>2024-08-22T09:57:19+00:00</updated>
+  <media:group>
+   <media:title>In Search of Code Purity</media:title>
+   <media:content url="https://www.youtube.com/v/voRBS0r4EyI?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i3.ytimg.com/vi/voRBS0r4EyI/hqdefault.jpg" width="480" height="360"/>
+   <media:description>Alternate title: Rust's Hidden Purity System
+I was taught formal methods at university but these ultra-safe development techniques are expensive, require using unusual external verification languages, and most damning for web and application developers, they slow down iteration.
+After graduating and getting a webdev job, I despaired that the safety and guarantees of the formal systems that I had been introduced to weren't available to me as a web developer.
+I was going to have to act if I wanted to live in a different world.
+
+❤️ If you would like to support what I do, I have set up a Patreon here: https://www.patreon.com/noboilerplate - Thank you!
+
+📄 All my videos are built in compile-checked markdown, transcript source code available here https://github.com/0atman/noboilerplate this is also where you'll find links to everything mentioned. 
+
+🖊️ Corrections are in the pinned ERRATA comment.
+
+🦀 Start your Rust journey here: https://www.youtube.com/watch?v=2hXNd6x9sZs
+
+👕 Bad shirts available here https://www.teepublic.com/user/no-boilerplate
+
+🛰️ Lost Terminal is here: https://www.youtube.com/watch?v=p3bDE9kszMc
+
+🌕 Modem Prometheus is here: https://www.youtube.com/watch?v=_SDnUVHAC44
+
+📓 The Phosphene Catalogue is here: https://www.youtube.com/watch?v=y3wVvDbJHrU
+
+🎵 My published albums are on spotify, itunes, etc, but I have a lot more unpublished work over at https://soundcloud.com/namtao
+
+🙏🏻 CREDITS &amp; PROMO
+My name is Tris Oaten and I produce fast, technical videos. 
+Follow me here https://tech.lgbt/deck/@noboilerplate
+Website for the show: https://noboilerplate.org
+Come chat to me on my discord server: https://discord.gg/mCY2bBmDKZ
+
+If you like sci-fi, I also produce a hopepunk podcast narrated by a little AI, videos written in Rust! https://www.lostterminal.com
+If urban fantasy is more your thing, I also produce a podcast of wonderful modern folktales https://www.modemprometheus.com
+
+👏🏻 Special thanks to my patreon sponsors:
+- JC Andrever-Wright
+- Miah Beach
+- Taylor Dolezal
+- Thomas Picard
+- David Senk
+And to all my patrons!
+
+Alternate title options:
+1. In Search of Code Purity
+2. Rust's Secret Purity System
+3. My Journey from Haskell to Go to Rust
+4. const fn: Pure Functions in Rust</media:description>
+   <media:community>
+    <media:starRating count="5151" average="5.00" min="1" max="5"/>
+    <media:statistics views="97161"/>
+   </media:community>
+  </media:group>
+ </entry>
+ <entry>
+  <id>yt:video:bq9O99TgFv4</id>
+  <yt:videoId>bq9O99TgFv4</yt:videoId>
+  <yt:channelId>UCUMwY9iS8oMyWDYIe6_RmoA</yt:channelId>
+  <title>The Unreasonable Effectiveness of Linux Workstations</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=bq9O99TgFv4"/>
+  <author>
+   <name>No Boilerplate</name>
+   <uri>https://www.youtube.com/channel/UCUMwY9iS8oMyWDYIe6_RmoA</uri>
+  </author>
+  <published>2023-12-23T17:44:46+00:00</published>
+  <updated>2024-08-02T18:00:54+00:00</updated>
+  <media:group>
+   <media:title>The Unreasonable Effectiveness of Linux Workstations</media:title>
+   <media:content url="https://www.youtube.com/v/bq9O99TgFv4?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i3.ytimg.com/vi/bq9O99TgFv4/hqdefault.jpg" width="480" height="360"/>
+   <media:description>Alternate title: Developers Have A Laptop Problem
+Hi folks! A topic I hinted at in my &quot;Plain Text&quot; video after saying, &quot;But even if you're storing large files, storage is cheap if you're smart.&quot;
+
+We live in an incredible age, computers have never been so fast, nor storage so cheap, but it doesn't feel like it, right?
+It's not you, computing has been getting worse. And the problem is LAPTOPS.
+---
+
+❤️ If you would like to support what I do, I have set up a Patreon here: https://www.patreon.com/noboilerplate - Thank you!
+
+📄 All my videos are built in compile-checked markdown, transcript source code available here https://github.com/0atman/noboilerplate this is also where you'll find links to everything mentioned. 
+
+🖊️ Corrections are in the pinned ERRATA comment.
+
+🦀 Start your Rust journey here: https://www.youtube.com/watch?v=2hXNd6x9sZs
+
+👕 Bad shirts available here https://www.teepublic.com/user/no-boilerplate
+
+🛰️ Lost Terminal is here: https://www.youtube.com/watch?v=p3bDE9kszMc
+
+🌕 Modem Prometheus is here: https://www.youtube.com/watch?v=_SDnUVHAC44
+
+🎵 My published albums are on spotify, itunes, etc, but I have a lot more unpublished work over at https://soundcloud.com/namtao
+
+🙏🏻 CREDITS &amp; PROMO
+My name is Tris Oaten and I produce fast, technical videos. 
+Follow me here https://tech.lgbt/deck/@noboilerplate
+Website for the show: https://noboilerplate.org
+Come chat to me on my discord server: https://discord.gg/mCY2bBmDKZ
+
+If you like sci-fi, I also produce a hopepunk podcast narrated by a little AI, videos written in Rust! https://www.lostterminal.com
+If urban fantasy is more your thing, I also produce a podcast of wonderful modern folktales https://www.modemprometheus.com
+
+👏🏻 Special thanks to my patreon sponsors:
+- JC Andrever-Wright
+- Miah Beach
+- Taylor Dolezal
+- Aaron Verones
+- David Senk
+And to all my patrons!</media:description>
+   <media:community>
+    <media:starRating count="33161" average="5.00" min="1" max="5"/>
+    <media:statistics views="608796"/>
+   </media:community>
+  </media:group>
+ </entry>
+ <entry>
+  <id>yt:video:aHL4QZJbSoI</id>
+  <yt:videoId>aHL4QZJbSoI</yt:videoId>
+  <yt:channelId>UCUMwY9iS8oMyWDYIe6_RmoA</yt:channelId>
+  <title>My New Podcast: The Phosphene Catalogue</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=aHL4QZJbSoI"/>
+  <author>
+   <name>No Boilerplate</name>
+   <uri>https://www.youtube.com/channel/UCUMwY9iS8oMyWDYIe6_RmoA</uri>
+  </author>
+  <published>2023-12-09T17:20:14+00:00</published>
+  <updated>2024-08-18T11:53:25+00:00</updated>
+  <media:group>
+   <media:title>My New Podcast: The Phosphene Catalogue</media:title>
+   <media:content url="https://www.youtube.com/v/aHL4QZJbSoI?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i2.ytimg.com/vi/aHL4QZJbSoI/hqdefault.jpg" width="480" height="360"/>
+   <media:description>Presenting The Phosphene Catalogue, a new serial fiction podcast by me, Tris.
+New episodes every two weeks from January to March. Subscribe now on Spotify, iTunes or via RSS on your favourite podcatcher:
+https://phosphenecatalogue.com
+
+Writing, music, and production by Tris Oaten. The show is performed by Wolfie Thorns.
+
+The Phosphene Catalogue is a Namtao Production. https://namtao.com</media:description>
+   <media:community>
+    <media:starRating count="304" average="5.00" min="1" max="5"/>
+    <media:statistics views="7757"/>
+   </media:community>
+  </media:group>
+ </entry>
+ <entry>
+  <id>yt:video:Ck9FMtIGVxQ</id>
+  <yt:videoId>Ck9FMtIGVxQ</yt:videoId>
+  <yt:channelId>UCUMwY9iS8oMyWDYIe6_RmoA</yt:channelId>
+  <title>ADHD: A Left-handed Brain</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=Ck9FMtIGVxQ"/>
+  <author>
+   <name>No Boilerplate</name>
+   <uri>https://www.youtube.com/channel/UCUMwY9iS8oMyWDYIe6_RmoA</uri>
+  </author>
+  <published>2023-11-17T19:54:07+00:00</published>
+  <updated>2024-08-22T21:04:29+00:00</updated>
+  <media:group>
+   <media:title>ADHD: A Left-handed Brain</media:title>
+   <media:content url="https://www.youtube.com/v/Ck9FMtIGVxQ?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i4.ytimg.com/vi/Ck9FMtIGVxQ/hqdefault.jpg" width="480" height="360"/>
+   <media:description>Thank you so much to Rebecca Champ, check her Patreon here: https://www.patreon.com/rebeccachampuk
+
+Hi folks, this video is about ADHD, and is my follow-up from my &quot;Hacking Your Brain With Elaborate Coping Mechanisms&quot; video[1].
+
+Despite not being left-handed, I do have a great deal of empathy for our left-handed cousins because of my ADHD: Some tools, like scissors, you can get a left-handed version of, of course. You can fill your house with physical coping mechanisms that help you function.
+
+But when you walk out into the world, you will find that nearly everything isn't designed for you.
+
+[1] https://www.youtube.com/watch?v=XUZ9VATeF_4
+
+---
+
+❤️ If you would like to support what I do, I have set up a Patreon here: https://www.patreon.com/noboilerplate - Thank you!
+
+📄 All my videos are built in compile-checked markdown, transcript source code available here https://github.com/0atman/noboilerplate this is also where you'll find links to everything mentioned. 
+
+🖊️ Corrections are in the pinned ERRATA comment.
+
+🦀 Start your Rust journey here: https://www.youtube.com/watch?v=2hXNd6x9sZs
+
+👕 Bad shirts available here https://www.teepublic.com/user/no-boilerplate
+
+🛰️ Lost Terminal is here: https://www.youtube.com/watch?v=p3bDE9kszMc
+
+🌕 Modem Prometheus is here: https://www.youtube.com/watch?v=_SDnUVHAC44
+
+🙏🏻 CREDITS &amp; PROMO
+My name is Tris Oaten and I produce fast, technical videos. 
+Follow me here https://tech.lgbt/deck/@noboilerplate
+Website for the show: https://noboilerplate.org
+Come chat to me on my discord server: https://discord.gg/mCY2bBmDKZ
+
+If you like sci-fi, I also produce a hopepunk podcast narrated by a little AI, videos written in Rust! https://www.lostterminal.com
+If urban fantasy is more your thing, I also produce a podcast of wonderful modern folktales https://www.modemprometheus.com
+
+👏🏻 Special thanks to my patreon sponsors:
+- JC Andrever-Wright
+- Miah Beach
+- Taylor Dolezal
+- Robert Roskam
+And to all my patrons!</media:description>
+   <media:community>
+    <media:starRating count="8423" average="5.00" min="1" max="5"/>
+    <media:statistics views="114744"/>
+   </media:community>
+  </media:group>
+ </entry>
+ <entry>
+  <id>yt:video:7pcbRQ4L4vc</id>
+  <yt:videoId>7pcbRQ4L4vc</yt:videoId>
+  <yt:channelId>UCUMwY9iS8oMyWDYIe6_RmoA</yt:channelId>
+  <title>🎃 Monsters, Ghosts, and Project Managers (a Modem Prometheus Story)</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=7pcbRQ4L4vc"/>
+  <author>
+   <name>No Boilerplate</name>
+   <uri>https://www.youtube.com/channel/UCUMwY9iS8oMyWDYIe6_RmoA</uri>
+  </author>
+  <published>2023-10-31T18:14:28+00:00</published>
+  <updated>2024-08-20T05:04:46+00:00</updated>
+  <media:group>
+   <media:title>🎃 Monsters, Ghosts, and Project Managers (a Modem Prometheus Story)</media:title>
+   <media:content url="https://www.youtube.com/v/7pcbRQ4L4vc?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i4.ytimg.com/vi/7pcbRQ4L4vc/hqdefault.jpg" width="480" height="360"/>
+   <media:description>Hi friends, if you like my fast, technical videos, I think you might like my podcast, Modem Prometheus too!
+
+Though the stories include monsters, ghosts, and magic, they also include radio static, summoning APIs, and, most terrifying of all:
+Project managers.
+
+Crossposted into the main NB feed is your typical Halloween story of meddling managers, unrealistic requirements, and, of course, the horrors of debugging.</media:description>
+   <media:community>
+    <media:starRating count="367" average="5.00" min="1" max="5"/>
+    <media:statistics views="14035"/>
+   </media:community>
+  </media:group>
+ </entry>
+ <entry>
+  <id>yt:video:WgV6M1LyfNY</id>
+  <yt:videoId>WgV6M1LyfNY</yt:videoId>
+  <yt:channelId>UCUMwY9iS8oMyWDYIe6_RmoA</yt:channelId>
+  <title>The Unreasonable Effectiveness Of Plain Text</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=WgV6M1LyfNY"/>
+  <author>
+   <name>No Boilerplate</name>
+   <uri>https://www.youtube.com/channel/UCUMwY9iS8oMyWDYIe6_RmoA</uri>
+  </author>
+  <published>2023-10-13T16:04:38+00:00</published>
+  <updated>2024-08-19T23:16:36+00:00</updated>
+  <media:group>
+   <media:title>The Unreasonable Effectiveness Of Plain Text</media:title>
+   <media:content url="https://www.youtube.com/v/WgV6M1LyfNY?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i4.ytimg.com/vi/WgV6M1LyfNY/hqdefault.jpg" width="480" height="360"/>
+   <media:description>All good teams are alike; each bad team is bad in its own way. (to paraphrase Tolstoy)
+
+Software is an incredible thing.
+Combined with the internet, a small team of friends can change the world overnight.
+Every company, no matter what their industry, must now run a tech team, even if only to maintain their website.
+
+So why are they all so bad at it?
+
+❤️ If you would like to support what I do, I have set up a Patreon here: https://www.patreon.com/noboilerplate - Thank you!
+
+📄 All my videos are built in compile-checked markdown, transcript source code available here https://github.com/0atman/noboilerplate this is also where you'll find links to everything mentioned. 
+
+🖊️ Corrections are in the pinned ERRATA comment.
+
+🦀 Start your Rust journey here: https://www.youtube.com/watch?v=2hXNd6x9sZs
+
+👕 Bad shirts available here https://www.teepublic.com/user/no-boilerplate
+
+🛰️ Lost Terminal is here: https://www.youtube.com/watch?v=p3bDE9kszMc
+
+🌕 Modem Prometheus is here: https://www.youtube.com/watch?v=_SDnUVHAC44
+
+🙏🏻 CREDITS &amp; PROMO
+My name is Tris Oaten and I produce fast, technical videos. 
+Follow me here https://tech.lgbt/deck/@noboilerplate
+Website for the show: https://noboilerplate.org
+Come chat to me on my discord server: https://discord.gg/mCY2bBmDKZ
+
+If you like sci-fi, I also produce a hopepunk podcast narrated by a little AI, videos written in Rust! https://www.lostterminal.com
+If urban fantasy is more your thing, I also produce a podcast of wonderful modern folktales https://www.modemprometheus.com
+
+👏🏻 Special thanks to my patreon sponsors:
+- JC Andrever-Wright
+- Miah Beach
+- Taylor Dolezal
+- Robert Roskam
+And to all my patrons!
+
+(original title: The Plain-Text Team)</media:description>
+   <media:community>
+    <media:starRating count="26806" average="5.00" min="1" max="5"/>
+    <media:statistics views="600535"/>
+   </media:community>
+  </media:group>
+ </entry>
+ <entry>
+  <id>yt:video:bJQj1uKtnus</id>
+  <yt:videoId>bJQj1uKtnus</yt:videoId>
+  <yt:channelId>UCUMwY9iS8oMyWDYIe6_RmoA</yt:channelId>
+  <title>The Cult of Done: How To Get *Started*</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=bJQj1uKtnus"/>
+  <author>
+   <name>No Boilerplate</name>
+   <uri>https://www.youtube.com/channel/UCUMwY9iS8oMyWDYIe6_RmoA</uri>
+  </author>
+  <published>2023-09-15T09:27:37+00:00</published>
+  <updated>2024-08-29T09:18:26+00:00</updated>
+  <media:group>
+   <media:title>The Cult of Done: How To Get *Started*</media:title>
+   <media:content url="https://www.youtube.com/v/bJQj1uKtnus?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i3.ytimg.com/vi/bJQj1uKtnus/hqdefault.jpg" width="480" height="360"/>
+   <media:description>The Cult of Done manifesto was written in 2009. I read it that same year, as the ideas swept through the maker community.
+https://medium.com/@bre/the-cult-of-done-manifesto-724ca1c2ff13
+
+I think of many of the 13 principles every single day, as I write these videos, produce my audio fiction podcasts, and write music or code for any of my projects.
+
+This framework has changed my life for the better, and now I'd like to share it with you.
+
+Jame's great poster is here https://www.flickr.com/photos/jprovost/3327377382/
+
+❤️ If you would like to support what I do, I have set up a Patreon here: https://www.patreon.com/noboilerplate - Thank you!
+
+📄 All my videos are built in compile-checked markdown, transcript source code available here https://github.com/0atman/noboilerplate this is also where you'll find links to everything mentioned. 
+
+🖊️ Corrections are in the pinned ERRATA comment.
+
+🦀 Start your Rust journey here: https://www.youtube.com/watch?v=2hXNd6x9sZs
+
+👕 Bad shirts available here https://www.teepublic.com/user/no-boilerplate
+
+🛰️ Lost Terminal is here: https://www.youtube.com/watch?v=p3bDE9kszMc
+
+🌕 Modem Prometheus is here: https://www.youtube.com/watch?v=_SDnUVHAC44
+
+🙏🏻 CREDITS &amp; PROMO
+My name is Tris Oaten and I produce fast, technical videos. 
+Follow me here https://tech.lgbt/deck/@noboilerplate
+Website for the show: https://noboilerplate.org
+Come chat to me on my discord server: https://discord.gg/mCY2bBmDKZ
+
+If you like sci-fi, I also produce a hopepunk podcast narrated by a little AI, videos written in Rust! https://www.lostterminal.com
+If urban fantasy is more your thing, I also produce a podcast of wonderful modern folktales https://www.modemprometheus.com
+
+👏🏻 Special thanks to my patreon sponsors:
+- JC Andrever-Wright
+- Miah Beach
+- Taylor Dolezal
+- Robert Roskam
+And to all my patrons!</media:description>
+   <media:community>
+    <media:starRating count="41507" average="5.00" min="1" max="5"/>
+    <media:statistics views="599184"/>
+   </media:community>
+  </media:group>
+ </entry>
+ <entry>
+  <id>yt:video:v6RxJsk8otY</id>
+  <yt:videoId>v6RxJsk8otY</yt:videoId>
+  <yt:channelId>UCUMwY9iS8oMyWDYIe6_RmoA</yt:channelId>
+  <title>What Makes Rust Different?</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=v6RxJsk8otY"/>
+  <author>
+   <name>No Boilerplate</name>
+   <uri>https://www.youtube.com/channel/UCUMwY9iS8oMyWDYIe6_RmoA</uri>
+  </author>
+  <published>2023-08-18T16:15:06+00:00</published>
+  <updated>2024-08-20T15:02:06+00:00</updated>
+  <media:group>
+   <media:title>What Makes Rust Different?</media:title>
+   <media:content url="https://www.youtube.com/v/v6RxJsk8otY?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i3.ytimg.com/vi/v6RxJsk8otY/hqdefault.jpg" width="480" height="360"/>
+   <media:description>Today's sponsor: Quadratic, check them out at https://www.quadratichq.com
+
+Programming is the purest form of applied mathematics.
+
+The machinery of the Rust language is built on the simple rules of functional programming and borrow checker.
+Starting with good rules is a profound way to build a language.
+You don't have to invent an error handling system in such a language.
+
+You can discover it.
+
+❤️ If you would like to support what I do, I have set up a patreon here: https://www.patreon.com/noboilerplate - Thank you!
+
+📄 All my videos are built in compile-checked markdown, transcript sourcecode available here https://github.com/0atman/noboilerplate this is also where you'll find links to everything mentioned. 
+
+🖊️ Corrections are in the pinned ERRATA comment.
+
+🦀 Start your Rust journey here: https://www.youtube.com/watch?v=2hXNd6x9sZs
+
+👕 Bad shirts available here https://www.teepublic.com/user/no-boilerplate
+
+🙏🏻 CREDITS &amp; PROMO
+My name is Tris Oaten and I produce fast, technical videos. 
+Follow me here https://tech.lgbt/deck/@noboilerplate
+Website for the show: https://noboilerplate.org
+Come chat to me on my discord server: https://discord.gg/mCY2bBmDKZ
+
+If you like sci-fi, I also produce a hopepunk podcast narrated by a little AI, videos written in Rust! https://www.lostterminal.com
+If urban fantasy is more your thing, I also produce a podcast of wonderful modern folktales https://www.modemprometheus.com
+
+👏🏻 Special thanks to my patreon sponsors:
+- JC Andrever-Wright
+- Miah Beach
+And to all my patrons!</media:description>
+   <media:community>
+    <media:starRating count="9059" average="5.00" min="1" max="5"/>
+    <media:statistics views="201932"/>
+   </media:community>
+  </media:group>
+ </entry>
+ <entry>
+  <id>yt:video:P_3jELGvx80</id>
+  <yt:videoId>P_3jELGvx80</yt:videoId>
+  <yt:channelId>UCUMwY9iS8oMyWDYIe6_RmoA</yt:channelId>
+  <title>Hack your brain with soylent</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=P_3jELGvx80"/>
+  <author>
+   <name>No Boilerplate</name>
+   <uri>https://www.youtube.com/channel/UCUMwY9iS8oMyWDYIe6_RmoA</uri>
+  </author>
+  <published>2023-08-04T10:13:10+00:00</published>
+  <updated>2024-08-24T13:52:45+00:00</updated>
+  <media:group>
+   <media:title>Hack your brain with soylent</media:title>
+   <media:content url="https://www.youtube.com/v/P_3jELGvx80?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i1.ytimg.com/vi/P_3jELGvx80/hqdefault.jpg" width="480" height="360"/>
+   <media:description>Most of my meals are meal replacements, nutritionally complete drinks or instant meals, and they have been for the last 10 years.
+These tools are incredible for a lot of reasons, from convenience to health to price.
+I have tips and recommendations to figure out if you should look at integrating these tools into your life, and also what brands work for me.
+
+📄 Source code: https://github.com/0atman/noboilerplate/
+
+❤️ If you would like to support what I do, I have set up a patreon here: https://www.patreon.com/noboilerplate - Thank you!
+
+📄 All my videos are built in compile-checked markdown, transcript sourcecode available here https://github.com/0atman/noboilerplate this is also where you'll find links to everything mentioned. 
+
+🖊️ Corrections are in the pinned ERRATA comment.
+
+🙏🏻 CREDITS &amp; PROMO
+My name is Tris Oaten and I produce fast, technical videos. 
+Follow me here https://twitter.com/0atman
+Website for the show: https://noboilerplate.org
+Come chat to me on my discord server: https://discord.gg/mCY2bBmDKZ
+
+If you like sci-fi, I also produce a hopepunk podcast narrated by a little AI, videos written in Rust! https://www.lostterminal.com
+If urban fantasy is more your thing, I also produce a podcast of wonderful modern folktales https://www.modemprometheus.com
+
+👏🏻 Special thanks to my patreon sponsors:
+- JC Andrever-Wright
+- Taylor Dolezal
+And to all my patrons!</media:description>
+   <media:community>
+    <media:starRating count="2964" average="5.00" min="1" max="5"/>
+    <media:statistics views="59934"/>
+   </media:community>
+  </media:group>
+ </entry>
+ <entry>
+  <id>yt:video:pocWrUj68tU</id>
+  <yt:videoId>pocWrUj68tU</yt:videoId>
+  <yt:channelId>UCUMwY9iS8oMyWDYIe6_RmoA</yt:channelId>
+  <title>Statically Typed APIs with Poem and Rust</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=pocWrUj68tU"/>
+  <author>
+   <name>No Boilerplate</name>
+   <uri>https://www.youtube.com/channel/UCUMwY9iS8oMyWDYIe6_RmoA</uri>
+  </author>
+  <published>2023-07-21T09:21:38+00:00</published>
+  <updated>2024-08-25T02:41:14+00:00</updated>
+  <media:group>
+   <media:title>Statically Typed APIs with Poem and Rust</media:title>
+   <media:content url="https://www.youtube.com/v/pocWrUj68tU?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i1.ytimg.com/vi/pocWrUj68tU/hqdefault.jpg" width="480" height="360"/>
+   <media:description>Today I'm going to make some web service recommendations, mixing some of my favourite rust crates together into something that I use across most of my Rust projects.
+The stack I'm going to talk about today isn't the best stack, nor most fully featured or fanciest.
+It's my favourite stack, it showcases what rust is GREAT at, and it focusses on correctness above all else.
+
+❤️ If you would like to support what I do, I have set up a patreon here: https://www.patreon.com/noboilerplate - Thank you!
+
+📄 All my videos are built in compile-checked markdown, transcript sourcecode available here https://github.com/0atman/noboilerplate this is also where you'll find links to everything mentioned. 
+
+🖊️ Corrections are in the pinned ERRATA comment.
+
+🦀 Start your Rust journey here: https://www.youtube.com/watch?v=2hXNd6x9sZs
+
+👕 Bad shirts available here https://www.teepublic.com/user/no-boilerplate
+
+🙏🏻 CREDITS &amp; PROMO
+My name is Tris Oaten and I produce fast, technical videos. 
+Follow me here https://twitter.com/0atman
+Website for the show: https://noboilerplate.org
+Come chat to me on my discord server: https://discord.gg/mCY2bBmDKZ
+
+If you like sci-fi, I also produce a hopepunk podcast narrated by a little AI, videos written in Rust! https://www.lostterminal.com
+If urban fantasy is more your thing, I also produce a podcast of wonderful modern folktales https://www.modemprometheus.com
+
+👏🏻 Special thanks to my patreon sponsors:
+- JC Andrever-Wright
+- Miah Beach
+And to all my patrons!</media:description>
+   <media:community>
+    <media:starRating count="4126" average="5.00" min="1" max="5"/>
+    <media:statistics views="88224"/>
+   </media:community>
+  </media:group>
+ </entry>
+ <entry>
+  <id>yt:video:DbsAQSIKQXk</id>
+  <yt:videoId>DbsAQSIKQXk</yt:videoId>
+  <yt:channelId>UCUMwY9iS8oMyWDYIe6_RmoA</yt:channelId>
+  <title>Hack your brain with Obsidian.md</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=DbsAQSIKQXk"/>
+  <author>
+   <name>No Boilerplate</name>
+   <uri>https://www.youtube.com/channel/UCUMwY9iS8oMyWDYIe6_RmoA</uri>
+  </author>
+  <published>2023-07-07T06:36:44+00:00</published>
+  <updated>2024-08-28T03:51:54+00:00</updated>
+  <media:group>
+   <media:title>Hack your brain with Obsidian.md</media:title>
+   <media:content url="https://www.youtube.com/v/DbsAQSIKQXk?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i1.ytimg.com/vi/DbsAQSIKQXk/hqdefault.jpg" width="480" height="360"/>
+   <media:description>I have used many note-taking tools over the years, simple-note, notion, and extensively emacs org-mode, none have improved my thinking in the way that Obsidian has.
+Today is a deep-dive into my second brain, and if you take my advice, YOUR second brain.
+
+📄 Source code: https://github.com/0atman/noboilerplate/
+
+❤️ If you would like to support what I do, I have set up a patreon here: https://www.patreon.com/noboilerplate - Thank you!
+
+📄 All my videos are built in compile-checked markdown, transcript sourcecode available here https://github.com/0atman/noboilerplate this is also where you'll find links to everything mentioned. 
+
+🖊️ Corrections are in the pinned ERRATA comment.
+
+🙏🏻 CREDITS &amp; PROMO
+My name is Tris Oaten and I produce fast, technical videos. 
+Follow me here https://twitter.com/0atman
+Website for the show: https://noboilerplate.org
+Come chat to me on my discord server: https://discord.gg/mCY2bBmDKZ
+
+If you like sci-fi, I also produce a hopepunk podcast narrated by a little AI, videos written in Rust! https://www.lostterminal.com
+If urban fantasy is more your thing, I also produce a podcast of wonderful modern folktales https://www.modemprometheus.com
+
+👏🏻 Special thanks to my patreon sponsors:
+- JC Andrever-Wright
+- Miah Beach
+And to all my patrons!</media:description>
+   <media:community>
+    <media:starRating count="69876" average="5.00" min="1" max="5"/>
+    <media:statistics views="1969851"/>
+   </media:community>
+  </media:group>
+ </entry>
+</feed>

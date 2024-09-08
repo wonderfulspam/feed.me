@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% set item_data = load_data(path="content/data/itemData.json") %}
+{% for item in item_data %}
+
+{% if item.tier == "love" %}
+{% set color_class = "pico-background-pink-600" %}
+{% elif item.tier == "like" %}
+{% set color_class = "pico-background-green-600" %}
+{% else %}
+{% set color_class = "" %}
+{% endif %}
+
+<a href="{{ item.item_url }}" role="button" class="{{ color_class }}">
+<article>
+    <header>
+        {{ item.author }}: {{ item.title }}
+        </span>
+    </header>
+    {{ item.safe_description | safe }}
+</article>
+</a>
+{% endfor %}
+{% endblock content %}

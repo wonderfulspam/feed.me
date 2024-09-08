@@ -1,0 +1,8 @@
+base_url = 'https://example.com'
+build_search_index = true
+compile_sass = false
+
+[extra]
+
+[markdown]
+  highlight_code = false

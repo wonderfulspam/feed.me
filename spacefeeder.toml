@@ -1,0 +1,108 @@
+max_articles = 50
+output_path = './content/data/feedData.json'
+
+[feeds]
+  [feeds.atlassian_devops]
+    author = 'Atlassian'
+    tier = 'new'
+    url = 'https://www.atlassian.com/blog/devops/feed'
+
+  [feeds.bcantrill]
+    author = 'Bryan Cantrill'
+    tier = 'like'
+    url = 'https://bcantrill.dtrace.org/rss'
+
+  [feeds.charitywtf]
+    author = 'Charity Majors'
+    tier = 'like'
+    url = 'https://charity.wtf/feed/'
+
+  [feeds.chriskrycho]
+    author = 'Chris Krycho'
+    tier = 'like'
+    url = 'https://v5.chriskrycho.com/feed.xml'
+
+  [feeds.cliffle]
+    author = 'Cliff Biffle'
+    tier = 'love'
+    url = 'https://cliffle.com/rss.xml'
+
+  [feeds.danluu]
+    author = 'Dan Luu'
+    tier = 'new'
+    url = 'https://danluu.com/atom.xml'
+
+  [feeds.devopscom]
+    author = 'DevOps.com'
+    tier = 'new'
+    url = 'https://devops.com/feed'
+
+  [feeds.dzone_devops]
+    author = 'DZone'
+    tier = 'new'
+    url = 'https://feeds.dzone.com/devops-and-cicd'
+
+  [feeds.fasterthanlime]
+    author = 'fasterthanlime'
+    tier = 'love'
+    url = 'https://fasterthanli.me/index.xml'
+
+  [feeds.hazelweakly]
+    author = 'Hazel Weakly'
+    tier = 'new'
+    url = 'https://hazelweakly.me/atom.xml'
+
+  [feeds.inside_rust]
+    author = 'Inside Rust'
+    tier = 'like'
+    url = 'https://blog.rust-lang.org/inside-rust/feed.xml'
+
+  [feeds.itrevolution]
+    author = 'IT Revolution'
+    tier = 'new'
+    url = 'https://itrevolution.com/devops-blog/feed/'
+
+  [feeds.jvns]
+    author = 'Julia Evans'
+    tier = 'love'
+    url = 'https://jvns.ca/atom.xml'
+
+  [feeds.lexilambda]
+    author = 'Lexi Lambda'
+    tier = 'like'
+    url = 'https://lexi-lambda.github.io/feeds/all.atom.xml'
+
+  [feeds.noboilerplate]
+    author = 'Tris 0atman'
+    tier = 'like'
+    url = 'https://www.youtube.com/feeds/videos.xml?channel_id=UCUMwY9iS8oMyWDYIe6_RmoA'
+
+  [feeds.noracodes]
+    author = 'Nora Tindall'
+    tier = 'like'
+    url = 'https://nora.codes/index.xml'
+
+  [feeds.rust_official]
+    author = 'Rust'
+    tier = 'like'
+    url = 'https://blog.rust-lang.org/feed.xml'
+
+  [feeds.smallcultfollowing]
+    author = 'Niko Matsakis'
+    tier = 'like'
+    url = 'https://smallcultfollowing.com/babysteps//atom.xml'
+
+  [feeds.theregister_devops]
+    author = 'The Register'
+    tier = 'new'
+    url = 'https://www.theregister.com/software/devops/headlines.atom'
+
+  [feeds.withoutboats]
+    author = 'Without Boats'
+    tier = 'like'
+    url = 'https://without.boats/index.xml'
+
+  [feeds.xeiaso]
+    author = 'Xe Iaso'
+    tier = 'like'
+    url = 'https://xeiaso.net/blog.rss'
