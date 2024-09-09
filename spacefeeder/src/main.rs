@@ -1,7 +1,7 @@
 use anyhow::Result;
 use clap::{arg, command, Parser, Subcommand};
 use spacefeeder::{
-    commands::{fetch_feeds, get_feed_info},
+    commands::{fetch_feeds, find_feed},
     config,
 };
 
@@ -18,9 +18,9 @@ enum Commands {
         #[arg(long, default_value = "./spacefeeder.toml")]
         config_path: String,
     },
-    GetFeedInfo {
-        #[arg(short, long)]
-        url: String,
+    FindFeed {
+        #[arg(long)]
+        base_url: String,
     },
 }
 
@@ -32,6 +32,10 @@ fn main() -> Result<()> {
             let config = config::Config::from_file(&config_path)?;
             fetch_feeds::run(config)
         }
-        Commands::GetFeedInfo { url } => get_feed_info::run(&url),
+        Commands::FindFeed { base_url } => {
+            let url_match = find_feed::run(&base_url)?;
+            println!("{url_match}");
+            Ok(())
+        }
     }
 }

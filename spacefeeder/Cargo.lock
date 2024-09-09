@@ -617,6 +617,7 @@ dependencies = [
  "test-case",
  "toml",
  "ureq",
+ "url",
 ]
 
 [[package]]
