@@ -1,4 +1,4 @@
-base_url = 'https://example.com'
+base_url = 'https://wonderfulspam.github.io/feed.me'
 build_search_index = true
 compile_sass = false
 

@@ -1,0 +1,19 @@
+{% if item.tier == "love" %}
+{% set color_class = "pico-background-pink-600" %}
+{% elif item.tier == "like" %}
+{% set color_class = "pico-background-green-600" %}
+{% else %}
+{% set color_class = "" %}
+{% endif %}
+
+<a href="{{ item.item_url }}" role="button" class="{{ color_class }}">
+  {% if featured == "true" %}
+  <article class="featured">
+    <h2>{{ item.title }}</h2>
+  {% else %}
+  <article class="article">
+    <h3>{{ item.title }}</h3>
+  {% endif %}
+    <p>{{ item.safe_description | truncate(length=150) }}</p>
+  </article>
+</a>

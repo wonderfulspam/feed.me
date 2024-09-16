@@ -3,24 +3,22 @@
 {% block content %}
 
 {% set item_data = load_data(path="content/data/itemData.json") %}
+<!-- Featured Articles -->
+<section class="featured-articles">
 {% for item in item_data %}
-
-{% if item.tier == "love" %}
-{% set color_class = "pico-background-pink-600" %}
-{% elif item.tier == "like" %}
-{% set color_class = "pico-background-green-600" %}
-{% else %}
-{% set color_class = "" %}
-{% endif %}
-
-<a href="{{ item.item_url }}" role="button" class="{{ color_class }}">
-<article>
-    <header>
-        {{ item.author }}: {{ item.title }}
-        </span>
-    </header>
-    {{ item.safe_description | safe }}
-</article>
-</a>
+{% if loop.index0 == 2 %}{% break %}{% endif %}
+{% set featured = "true" %}
+{% include "partials/article.html" %}
 {% endfor %}
+</section>
+<!-- Secondary Articles Grid -->
+<section class="secondary-articles">
+{% for item in item_data %}
+{% if loop.index0 < 2 %}{% continue %}{% endif %}
+{% if loop.index0 == 10 %}{% break %}{% endif %}
+
+{% set featured = "false" %}
+{% include "partials/article.html" %}
+{% endfor %}
+</section>
 {% endblock content %}

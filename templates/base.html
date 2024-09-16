@@ -4,14 +4,34 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
-    <link rel="stylesheet" href="css/pico.min.css" />
-    <link rel="stylesheet" href="css/pico.colors.min.css" />
+    <link rel="stylesheet" href="css/styles.css" />
     <title>Feed.me</title>
   </head>
 
+  <header class="header">
+    <div class="container">
+      <h1 class="logo">Feed.me</h1>
+      <nav class="nav">
+        <ul>
+          <!-- TODO: Loop over some categories -->
+          <li><a href="/">Home</a></li>
+          <li><a href="/loved">Loved</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
   <body>
-    <section class="section">
-      <div class="container">{% block content %} {% endblock %}</div>
-    </section>
+    <main class="main-content container">
+      {% block content %} {% endblock %}
+    </main>
   </body>
+  <footer class="footer">
+    <div class="container">
+      <nav>
+        <ul>
+          <li><a href="https://github.com/wonderfulspam/feed.me">Source code</a></li>
+        </ul>
+      </nav>
+    </div>
+  </footer>
 </html>
