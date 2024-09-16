@@ -2,23 +2,27 @@
 
 {% block content %}
 
-{% set item_data = load_data(path="content/data/itemData.json") %}
+{% set loved_data = load_data(path="content/data/itemData.json") | filter(attribute="tier", value="love") %}
+{% set liked_data = load_data(path="content/data/itemData.json") | filter(attribute="tier", value="like") %}
 <!-- Featured Articles -->
+{% for i in [0, 1, 2, 3,] %}
 <section class="featured-articles">
-{% for item in item_data %}
-{% if loop.index0 == 2 %}{% break %}{% endif %}
+{% set offset = 10 * i %}
+{% set final = offset + 2 %}
+{% for item in loved_data | slice(start=offset, end=final) %}
 {% set featured = "true" %}
 {% include "partials/article.html" %}
 {% endfor %}
 </section>
 <!-- Secondary Articles Grid -->
 <section class="secondary-articles">
-{% for item in item_data %}
-{% if loop.index0 < 2 %}{% continue %}{% endif %}
-{% if loop.index0 == 10 %}{% break %}{% endif %}
+{% set offset = 10 * i + 2 %}
+{% set final = offset + 8 %}
+{% for item in liked_data | slice(start=offset, end=final) %}
 
 {% set featured = "false" %}
 {% include "partials/article.html" %}
 {% endfor %}
 </section>
+{% endfor %}
 {% endblock content %}

@@ -9,11 +9,14 @@
 <a href="{{ item.item_url }}" role="button" class="{{ color_class }}">
   {% if featured == "true" %}
   <article class="featured">
+    <span class="author">{{ item.author }}</span> | <span class="date">{{ item.pub_date | date(timezone="Europe/Berlin") }}</span>
     <h2>{{ item.title }}</h2>
   {% else %}
   <article class="article">
+    <span class="author">{{ item.author }}</span> | <span class="date">{{ item.pub_date | date(timezone="Europe/Berlin") }}</span>
     <h3>{{ item.title }}</h3>
   {% endif %}
     <p>{{ item.safe_description | truncate(length=150) }}</p>
+
   </article>
 </a>
