@@ -14,7 +14,7 @@ fetch_feeds: build_spacefeeder
 find_feed base_url: build_spacefeeder
   spacefeeder find-feed --base-url {{base_url}}
 
-build:
+build: fetch_feeds
   zola build
 
 build_spacefeeder:
