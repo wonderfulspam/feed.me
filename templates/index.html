@@ -7,7 +7,7 @@
 <!-- Featured Articles -->
 {% for i in [0, 1, 2, 3,] %}
 <section class="featured-articles">
-{% set offset = 10 * i %}
+{% set offset = 2 * i %}
 {% set final = offset + 2 %}
 {% for item in loved_data | slice(start=offset, end=final) %}
 {% set featured = "true" %}
@@ -16,7 +16,7 @@
 </section>
 <!-- Secondary Articles Grid -->
 <section class="secondary-articles">
-{% set offset = 10 * i + 2 %}
+{% set offset = 8 * i %}
 {% set final = offset + 8 %}
 {% for item in liked_data | slice(start=offset, end=final) %}
 
