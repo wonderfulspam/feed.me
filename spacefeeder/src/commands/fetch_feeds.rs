@@ -137,7 +137,8 @@ fn build_item(entry: feed_rs::model::Entry, re: &Regex, description_max_words: u
         .first()
         .map_or(String::new(), |link| link.href.clone());
     let pub_date = entry.published.or(entry.updated);
-    let description = get_description_from_entry(entry, description_max_words);
+    let description = get_description_from_entry(entry).unwrap_or_default();
+    let description = get_short_description(description, description_max_words);
     let safe_description = re.replace_all(&description, "").to_string();
 
     RssItem {
@@ -149,38 +150,32 @@ fn build_item(entry: feed_rs::model::Entry, re: &Regex, description_max_words: u
     }
 }
 
-fn get_description_from_entry(entry: Entry, max_words: usize) -> String {
+fn get_description_from_entry(entry: Entry) -> Option<String> {
     // Try in the following order
     // 1. Summary
     // 2. Content
     // 3. Media description
-    // TODO Make this more robust
-    let description = entry.summary.map_or_else(
-        || {
-            entry.content.map_or_else(
-                || {
-                    entry
-                        .media
-                        .first()
-                        .unwrap()
-                        .clone()
-                        .description
-                        .unwrap()
-                        .content
-                },
-                |c| c.body.unwrap(),
-            )
-        },
-        |s| s.content,
-    );
-    // If media, take the description from the first item
+    if let Some(summary) = entry.summary {
+        return Some(summary.content);
+    }
+    if let Some(content) = entry.content {
+        return content.body;
+    }
+    if let Some(media) = entry.media.first() {
+        if let Some(description) = &media.description {
+            return Some(description.content.clone());
+        }
+    }
+    None
+}
+
+fn get_short_description(description: String, max_words: usize) -> String {
     description
         .split_whitespace()
         .take(max_words)
         .collect::<Vec<_>>()
         .join(" ")
 }
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -189,10 +184,12 @@ mod tests {
     const TEST_DATA: &[&str] = &[
         include_str!("../test_data/youtube.xml"),
         include_str!("../test_data/atlassian.xml"),
+        include_str!("../test_data/xeiaso.rss"),
     ];
 
     #[test_case(TEST_DATA[0]; "Import youtube video feed")]
     #[test_case(TEST_DATA[1]; "Import atlassian feed")]
+    #[test_case(TEST_DATA[2]; "Import Xe Iaso feed")]
     fn test_feed(feed_xml: &str) {
         let feed = parser::parse(feed_xml.as_bytes());
         assert!(feed.is_ok(), "Feed parsed correctly");

@@ -1,0 +1,601 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:wfw="http://wellformedweb.org/CommentAPI/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:sy="http://purl.org/rss/1.0/modules/syndication/" xmlns:slash="http://purl.org/rss/1.0/modules/slash/" version="2.0">
+  <channel>
+    <title>Xe Iaso's blog</title>
+    <link>https://xeiaso.net/</link>
+    <atom:link href="https://xeiaso.net/blog.rss" rel="self" type="application/rss+xml"/>
+    <description>Thoughts and musings from Xe Iaso</description>
+    <lastBuildDate>Tue, 15 Oct 2024 14:00:07 GMT</lastBuildDate>
+    <language>en</language>
+    <generator>Lume v2.2.0</generator>
+    <item>
+      <title>Making home cooking easier with Cooktok</title>
+      <link>https://xeiaso.net/notes/2024/cooktok/</link>
+      <guid isPermaLink="false">https://xeiaso.net/notes/2024/cooktok/</guid>
+      <description>Maybe langle mangles can be used for good</description>
+      <content:encoded>
+        <![CDATA[<p>I've been cooking more with my husband, and in the process we're trying to branch out and make things we've never had before. Since my last job made me learn how to use TikTok, I found a bunch of easy to cook meals that I've wanted to make. There's just one problem, the descriptions from the TikTok API look like this:</p>
+        <blockquote>
+        <p>Kielbasa Sheet Pan Meal is easy to make and one the whole family enjoys! INGREDIENTS (2) 12 oz packs of Beef Kielbasa 3 large potatoes 2 green bell peppers Red onion 2 tbsp olive oil Salt, pepper, garlic powder, paprika Buffalo Wild Wings Asian Zing INSTRUCTIONS Slice the kielbasa into thin rounds. Cut the peppers and onions into pieces all about the same size. Peel, wash, and chop the potatoes. Be sure to cut the potatoes into smaller cubes. Add the potatoes to a large bowl and cover in olive oil. Season with some salt, pepper, garlic powder, and paprika. Toss the potatoes well to making sure they are well coated in seasoning. Add the chopped peppers and onions and add a little bit more of the seasoning and oil. Toss/stir everything together well. Spray a large sheet pan with cooking spray. Pour the potatoes and veggies out onto the sheet pan. Top with the sliced kielbasa. Bake in the oven at 400 degrees for 30-40 minutes. I suggest checking them around 30 minutes and cooking for the additional time if needed. Mine cooked for 40 minutes. Top with Buffalo Wild Wing’s Asian Zing sauce and serve! The Asian Zing sauce is spicy, so I left a little bit without it for my kids and they ate theirs with BBQ sauce.</p>
+        </blockquote>
+        <p>This is completely unreadable. The really confusing part is that in the app this isn't that bad:</p>
+        <img src="https://cdn.xeiaso.net/file/christine-static/notes/2024/cooktok/IMG_1571.jpg" width="300" class="mx-auto"/>
+        <p>When I made this, <a href="https://nousresearch.com/hermes3/">Hermes 3</a> by Nous Research had just been released and one feature of the model piqued my curiosity: <a href="https://huggingface.co/NousResearch/Hermes-3-Llama-3.1-405B#prompt-format-for-json-mode--structured-outputs">JSON schema based prompting</a>. This isn't documented very well anywhere, but in order to do it, you need to pass a system prompt like this:</p>
+        <div class="mx-auto" style="max-width: 78ch;"><pre><code class="code-highlight"><span class="code-line">You are a helpful assistant that answers in JSON.
+        </span><span class="code-line">Here's the json schema you must adhere to:
+        </span><span class="code-line">
+        </span><span class="code-line">&lt;schema>
+        </span><span class="code-line">{
+        </span><span class="code-line">  &quot;type&quot;: &quot;object&quot;,
+        </span><span class="code-line">  &quot;properties&quot;: {
+        </span><span class="code-line">    &quot;title&quot;: {
+        </span><span class="code-line">      &quot;type&quot;: &quot;string&quot;
+        </span><span class="code-line">    },
+        </span><span class="code-line">    &quot;ingredients&quot;: {
+        </span><span class="code-line">      &quot;type&quot;: &quot;array&quot;,
+        </span><span class="code-line">      &quot;items&quot;: {
+        </span><span class="code-line">        &quot;type&quot;: &quot;string&quot;
+        </span><span class="code-line">      }
+        </span><span class="code-line">    },
+        </span><span class="code-line">    &quot;servings&quot;: {
+        </span><span class="code-line">      &quot;type&quot;: &quot;integer&quot;
+        </span><span class="code-line">    },
+        </span><span class="code-line">    &quot;steps&quot;: {
+        </span><span class="code-line">      &quot;type&quot;: &quot;array&quot;,
+        </span><span class="code-line">      &quot;items&quot;: {
+        </span><span class="code-line">        &quot;type&quot;: &quot;string&quot;
+        </span><span class="code-line">      }
+        </span><span class="code-line">    },
+        </span><span class="code-line">    &quot;notes&quot;: {
+        </span><span class="code-line">      &quot;type&quot;: &quot;string&quot;
+        </span><span class="code-line">    }
+        </span><span class="code-line">  },
+        </span><span class="code-line">  &quot;required&quot;: [&quot;title&quot;, &quot;ingredients&quot;, &quot;servings&quot;, &quot;steps&quot;]
+        </span><span class="code-line">}
+        </span><span class="code-line">&lt;/schema>
+        </span></code></pre></div>
+        <p>This makes the model more likely to spit out objects with the schema you want. You can refine this using llama.cpp BNF from JSON schema, but my runtime of choice (<a href="https://ollama.com/">Ollama</a>) doesn't currently support passing arbitrary grammars at inference time.</p>
+        <p>When I was ripping the video off of TikTok, I accidentally left in a flag I used for YouTube archival that includes the subtitles. I quickly noticed that TikTok subtitles are shockingly good in comparison to YouTube's subtitles. On a lark, I decided to also feed the subtitles into the context window. It helped a lot (especially with videos where the ingredients and amounts were split between the voiceover and the description, presumably in an effort to make this kind of scraping harder because recipes generally aren't considered copyrightable in the US), but I ran into another big problem: consistency.</p>
+        <h2>Few-shot prompting it</h2>
+        <p>Sometimes I was getting the right recipe steps and ingredients, other times I was not. Usually the results would end up omitting essential spices or amounts of ingredients. I ended up rethinking what I was doing and then remembered a trick that AI model makers use to make their benchmarks look better: few-shot prompting.</p>
+        <div class="my-4 flex space-x-4 rounded-md border border-solid border-fg-4 bg-bg-2 p-3 dark:border-fgDark-4 dark:bg-bgDark-2 lg:max-w-[65ch] mx-auto min-h-fit"><div class="flex max-h-16 shrink-0 items-center justify-center self-center"><img style="max-height:4rem" alt="Mara is hacker" loading="lazy" src="https://cdn.xeiaso.net/sticker/mara/hacker/128"/></div><div class="convsnippet min-w-0 self-center">&lt;<a href="https://xeiaso.net/characters#mara"><b>Mara</b></a>> <p>Few shot prompting is when you give the model an example or two of the
+        input/output you want and then let the model extrapolate from there. This
+        gives the model a better chance of being consistent.</p></div></div>
+        <p>I manually took the subtitles and description of the Kielbasa Sheet Pan meal recipe and reified them into a JSON object manually. Once I fed that into the context window and tested it with a video that hadn't been seen before, I was finally getting consistent results.</p>
+        <h2>The app</h2>
+        <p>Now that I was consistently getting what I want, I made <a href="https://github.com/Xe/cooktok">a simple Next.js app</a> and used <a href="https://zod.dev/">zod</a> to validate generated objects. When I pass a video URL into the app, it gets processed like this:</p>
+        <ol>
+        <li>yt-dlp is invoked to download the video, description, thumbnail/poster, and subtitles in English</li>
+        <li>The description and subtitles are used as input to Hermes 3 with a few-shot pipeline as described above (though I used a chicken orzo recipe instead of the kielbasa sheet pan meal)</li>
+        <li>The output is parsed as JSON and validated with the zod schema</li>
+        <li>The result gets rendered to a page so you can print it out and cook the meal</li>
+        </ol>
+        <p>This ends up with recipes like this:</p>
+        <figure class="max-w-3xl mx-auto not-prose w-full undefined"><a href="https://cdn.xeiaso.net/file/christine-static/notes/2024/cooktok/recipe-preview.jpg"><picture><source type="image/avif" srcset="https://cdn.xeiaso.net/file/christine-static/notes/2024/cooktok/recipe-preview.avif"/><source type="image/webp" srcset="https://cdn.xeiaso.net/file/christine-static/notes/2024/cooktok/recipe-preview.webp"/><img alt="Kielbasa Sheet Pan Meal, 4 servings, by @cookinginthemidwest. The asian zing sauce is spicy, so you may want to leave some without it for kids or those who don't like spice, and they can eat theirs with BBQ sauce instead. Ingredients: 2 12 oz packs of Beef Kielbasa, 3 large potatoes, 2 green bell peppers" loading="lazy" src="https://cdn.xeiaso.net/file/christine-static/notes/2024/cooktok/recipe-preview.jpg"/></picture></a><figcaption>Kielbasa Sheet Pan Meal, 4 servings, by @cookinginthemidwest. The asian zing sauce is spicy, so you may want to leave some without it for kids or those who don't like spice, and they can eat theirs with BBQ sauce instead. Ingredients: 2 12 oz packs of Beef Kielbasa, 3 large potatoes, 2 green bell peppers</figcaption></figure>
+        <center><p><a href="https://cdn.xeiaso.net/file/christine-static/notes/2024/cooktok/Kielbasa-Sheet-Pan-Meal.pdf">Recipe
+        PDF</a></p></center>
+        <h2>Testing</h2>
+        <p>Testing this was the hard part due to a prior incident with AI summarization of cooking videos making us make something inedible trying to copy an <a href="https://www.youtube.com/watch?v=zc63e7ZKUrg">Adam Ragusea video on Orange Chicken</a>. I ended up using some deception in order to hide the fact that the Beef Kielbasa Sheet Pan Meal recipe was created using an AI pipeline.</p>
+        <p>Either way, we got all the ingredients and cooked it without consulting the source video:</p>
+        <figure class="max-w-3xl mx-auto not-prose w-full undefined"><a href="https://cdn.xeiaso.net/file/christine-static/notes/2024/cooktok/ingredients.jpg"><picture><source type="image/avif" srcset="https://cdn.xeiaso.net/file/christine-static/notes/2024/cooktok/ingredients.avif"/><source type="image/webp" srcset="https://cdn.xeiaso.net/file/christine-static/notes/2024/cooktok/ingredients.webp"/><img alt="A pair of cutting boards with bell peppers, potatoes, one healthy red onion, and a bunch of kielbasa sausage" loading="lazy" src="https://cdn.xeiaso.net/file/christine-static/notes/2024/cooktok/ingredients.jpg"/></picture></a><figcaption>A pair of cutting boards with bell peppers, potatoes, one healthy red onion, and a bunch of kielbasa sausage</figcaption></figure>
+        <figure class="max-w-3xl mx-auto not-prose w-full undefined"><a href="https://cdn.xeiaso.net/file/christine-static/notes/2024/cooktok/ready-for-oven.jpg"><picture><source type="image/avif" srcset="https://cdn.xeiaso.net/file/christine-static/notes/2024/cooktok/ready-for-oven.avif"/><source type="image/webp" srcset="https://cdn.xeiaso.net/file/christine-static/notes/2024/cooktok/ready-for-oven.webp"/><img alt="A sheet pan coated with aluminum foil topped with potatoes, veggies, and sausage" loading="lazy" src="https://cdn.xeiaso.net/file/christine-static/notes/2024/cooktok/ready-for-oven.jpg"/></picture></a><figcaption>A sheet pan coated with aluminum foil topped with potatoes, veggies, and sausage</figcaption></figure>
+        <p>And then it came out great:</p>
+        <figure class="max-w-3xl mx-auto not-prose w-full undefined"><a href="https://cdn.xeiaso.net/file/christine-static/notes/2024/cooktok/cooked.jpg"><picture><source type="image/avif" srcset="https://cdn.xeiaso.net/file/christine-static/notes/2024/cooktok/cooked.avif"/><source type="image/webp" srcset="https://cdn.xeiaso.net/file/christine-static/notes/2024/cooktok/cooked.webp"/><img alt="A plate of the resulting creation featuring sausage chunks, potatoes, onions, and red bell pepper" loading="lazy" src="https://cdn.xeiaso.net/file/christine-static/notes/2024/cooktok/cooked.jpg"/></picture></a><figcaption>A plate of the resulting creation featuring sausage chunks, potatoes, onions, and red bell pepper</figcaption></figure>
+        <h2>Conclusion</h2>
+        <p>This is a somewhat viable way to get the recipes out of TikTok cooking videos, although it has a few fundamental limitations that can't easily be worked around yet:</p>
+        <ol>
+        <li>Many cooking videos on TikTok have their videos function as advertisements for their Patreon, where they give out the full recipes. CookTok cannot work around this, it can only get information from the video metadata.</li>
+        <li>Some TikTokkers hide or obscure the amounts of ingredients via text on the screen. In a future version, I'll try to use a vision model to extract the text from every 5th frame or so. Maybe just working on keyframes would be fine? I'm not sure, more research is required.</li>
+        </ol>
+        <p>For a weekend hack though, I'd call this a resounding success. I played around with some fancy tools and managed to get at least one tasty meal as a result. That's more than enough to be a win in my book.</p>]]>
+      </content:encoded>
+      <pubDate>Mon, 14 Oct 2024 00:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>Bot detection isn't perfect</title>
+      <link>https://blog.arcjet.com/bot-detection-isnt-perfect/</link>
+      <guid isPermaLink="false">https://blog.arcjet.com/bot-detection-isnt-perfect/</guid>
+      <content:encoded><![CDATA[]]></content:encoded>
+      <pubDate>Fri, 11 Oct 2024 00:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>You're probably not vulnerable to the CUPS CVE</title>
+      <link>https://xeiaso.net/notes/2024/cups-cve/</link>
+      <guid isPermaLink="false">https://xeiaso.net/notes/2024/cups-cve/</guid>
+      <description>Unless your servers can print for some reason</description>
+      <content:encoded>
+        <![CDATA[<p>When I saw <a href="https://x.com/evilsocket/status/1838169889330135132">news of the upcoming 9.9 CVE</a>, I was thinking it was something significant, like a buffer overflow in the glibc DNS client, a ping of death, or something actually exciting. Nope, it's <a href="https://www.evilsocket.net/2024/09/26/Attacking-UNIX-systems-via-CUPS-Part-I/">CUPS</a>, the printing stack.</p>
+        <p>The most vulnerable component is cups-browsed, the component that enables printer discovery.</p>
+        <p>CUPS is not typically installed on server systems, but cloud expert <a href="https://x.com/QuinnyPig">Corey Quinn</a> claims his Ubuntu EC2 box has it without his knowledge. I have checked my Ubuntu systems and have not been able to find CUPS on them.</p>
+        <blockquote class="twitter-tweet mx-auto"><p lang="en" dir="ltr"><p>I just checked my Ubuntu EC2 box (no desktop, obviously). dpkg showed it
+        wasn't installed, but it was listening due to their horrible sidecar
+        &quot;snap&quot; package system.</p><br/><br/><p>Lovely; just lovely.</p></p><p>— Corey Quinn (@QuinnyPig)</p><a href="https://twitter.com/QuinnyPig/status/1839404608055390634?ref_src=twsrc%5Etfw"><p>September 26, 2024</p></a></blockquote>
+        <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+        <p>This may vary by distro and cloud image, but in general your servers should not be vulnerable to this. Your desktops may be.</p>
+        <p>Even if you are vulnerable though, you need to print something in order for the malicious printer definitions that the CVE enables to allow for arbitrary code execution.</p>
+        <h2>Checking for the cups-browsed service</h2>
+        <p>See if it is running with systemd:</p>
+        <pre><code class="code-highlight"><span class="code-line">systemctl status cups-browsed
+        </span></code></pre>
+        <p>If it isn't reporting anything, check for programs listening on UDP port 631, the cups-browsed port:</p>
+        <pre><code class="code-highlight"><span class="code-line">sudo lsof -i :631
+        </span></code></pre>
+        <p>If you get any results from either command, run the quick workaround listed below.</p>
+        <p>If you have nmap installed, this command may give you information about the cups-browsed server on your local machine:</p>
+        <pre><code class="code-highlight"><span class="code-line">sudo nmap localhost -p 631 --script cups-info
+        </span></code></pre>
+        <h2>Quick workaround</h2>
+        <p>If you want to turn off the potential for issues until the patches drop in distros, run this command across your fleet:</p>
+        <pre><code class="code-highlight"><span class="code-line">systemctl stop cups-browsed
+        </span></code></pre>
+        <p>Or if you want that to persist after reboots:</p>
+        <pre><code class="code-highlight"><span class="code-line">systemctl disable --now cups-browsed
+        </span></code></pre>
+        <p>Once the packages are updated, you can re-enable it with this command:</p>
+        <pre><code class="code-highlight"><span class="code-line">systemctl enable --now cups-browsed
+        </span></code></pre>
+        <p>When you disable this service, automagic printer discovery over the network for desktop Linux systems will stop working. This should be fine unless you habitually purchase and use network attached printers.</p>
+        <hr/>
+        <p>In the upcoming days and weeks, patches will be published and endpoint security software will look for the correctly malformed printer setup files that enable remote code execution. For now though, you're probably fine.</p>
+        <div class="my-4 flex space-x-4 rounded-md border border-solid border-fg-4 bg-bg-2 p-3 dark:border-fgDark-4 dark:bg-bgDark-2 lg:max-w-[65ch] mx-auto min-h-fit"><div class="flex max-h-16 shrink-0 items-center justify-center self-center"><img style="max-height:4rem" alt="Cadey is coffee" loading="lazy" src="https://cdn.xeiaso.net/sticker/cadey/coffee/128"/></div><div class="convsnippet min-w-0 self-center">&lt;<a href="https://xeiaso.net/characters#cadey"><b>Cadey</b></a>> <p>Also for the love of God, don't expose your printing service to the public
+        internet.</p></div></div>
+        <p>Thanks to Cloud Hop, Cult Pony, mcpherrinm, and phyxius for pre-vetting this bulletin before publishing.</p>]]>
+      </content:encoded>
+      <pubDate>Thu, 26 Sep 2024 00:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>Fixing Kubevirt networking not working on reboot</title>
+      <link>https://xeiaso.net/notes/2024/kubevirt-ubuntu-networking/</link>
+      <guid isPermaLink="false">https://xeiaso.net/notes/2024/kubevirt-ubuntu-networking/</guid>
+      <description>Turns out randomizing the MAC address on boot is a bad idea</description>
+      <content:encoded>
+        <![CDATA[<p>When you use Ubuntu on Kubevirt like I do, rebooting a VM or manually rescheduling pods means that the MAC address in the VM changes. This makes Ubuntu's netplan very unhappy and will result in your VM not acquiring an IP address over DHCP. This is not good for uptime.</p>
+        <p>After searching the GitHub issue tracker, I found <a href="https://github.com/kubevirt/kubevirt/issues/1646#issuecomment-433262034">this comment</a> from 2018 that suggested adding this netplan configuration file to the VM:</p>
+        <pre class="language-yaml"><code class="language-yaml code-highlight"><span class="code-line"><span class="token key atrule">network</span><span class="token punctuation">:</span>
+        </span><span class="code-line">  <span class="token key atrule">version</span><span class="token punctuation">:</span> <span class="token number">2</span>
+        </span><span class="code-line">  <span class="token key atrule">ethernets</span><span class="token punctuation">:</span>
+        </span><span class="code-line">    <span class="token key atrule">id0</span><span class="token punctuation">:</span>
+        </span><span class="code-line">      <span class="token key atrule">dhcp4</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
+        </span><span class="code-line">      <span class="token key atrule">match</span><span class="token punctuation">:</span>
+        </span><span class="code-line">        <span class="token key atrule">name</span><span class="token punctuation">:</span> enp*
+        </span></code></pre>
+        <p>This does the trick, so my minimal cloud-init config for Ubuntu on Kubevirt VM looks like this:</p>
+        <pre class="language-yaml"><code class="language-yaml code-highlight"><span class="code-line"><span class="token comment">#cloud-config</span>
+        </span><span class="code-line"><span class="token key atrule">hostname</span><span class="token punctuation">:</span> noble
+        </span><span class="code-line"><span class="token key atrule">ssh_pwauth</span><span class="token punctuation">:</span> <span class="token boolean important">True</span>
+        </span><span class="code-line"><span class="token key atrule">disable_root</span><span class="token punctuation">:</span> <span class="token boolean important">false</span>
+        </span><span class="code-line">
+        </span><span class="code-line"><span class="token key atrule">write_files</span><span class="token punctuation">:</span>
+        </span><span class="code-line">  <span class="token punctuation">-</span> <span class="token key atrule">encoding</span><span class="token punctuation">:</span> b64
+        </span><span class="code-line">    <span class="token key atrule">content</span><span class="token punctuation">:</span> bmV0d29yazoKICB2ZXJzaW9uOiAyCiAgZXRoZXJuZXRzOgogICAgaWQwOgogICAgICBkaGNwNDogdHJ1ZQogICAgICBtYXRjaDoKICAgICAgICBuYW1lOiBlbnAqCg==
+        </span><span class="code-line">    <span class="token key atrule">owner</span><span class="token punctuation">:</span> root<span class="token punctuation">:</span>root
+        </span><span class="code-line">    <span class="token key atrule">path</span><span class="token punctuation">:</span> /etc/netplan/99<span class="token punctuation">-</span>net<span class="token punctuation">-</span>fix.yaml
+        </span><span class="code-line">    <span class="token key atrule">permissions</span><span class="token punctuation">:</span> <span class="token string">&quot;0644&quot;</span>
+        </span><span class="code-line">
+        </span><span class="code-line"><span class="token key atrule">users</span><span class="token punctuation">:</span>
+        </span><span class="code-line">  <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> xe
+        </span><span class="code-line">    <span class="token key atrule">groups</span><span class="token punctuation">:</span> <span class="token punctuation">[</span>wheel<span class="token punctuation">]</span>
+        </span><span class="code-line">    <span class="token key atrule">sudo</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">&quot;ALL=(ALL) NOPASSWD:ALL&quot;</span><span class="token punctuation">]</span>
+        </span><span class="code-line">    <span class="token key atrule">shell</span><span class="token punctuation">:</span> /bin/bash
+        </span><span class="code-line">    <span class="token key atrule">ssh_import_id</span><span class="token punctuation">:</span>
+        </span><span class="code-line">      <span class="token punctuation">-</span> gh<span class="token punctuation">:</span>xe
+        </span></code></pre>
+        <p>I've done reboot testing with my virtual machines and this seems to work consistently enough.</p>]]>
+      </content:encoded>
+      <pubDate>Thu, 26 Sep 2024 00:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>Make your Next.JS Docker images microscopic!</title>
+      <link>https://xeiaso.net/notes/2024/small-nextjs-images/</link>
+      <guid isPermaLink="false">https://xeiaso.net/notes/2024/small-nextjs-images/</guid>
+      <description>Do standalone builds on Alpine</description>
+      <content:encoded>
+        <![CDATA[<p>So you've been hacking up a Next.JS app and you wanna put it into production (be it on Fly.io, Kubernetes, or whatever). Docker (or at least Docker images) are the least common denominator. If you can shove your app into a Docker image, it'll run pretty much anywhere.</p>
+        <pre class="language-dockerfile"><code class="language-Dockerfile code-highlight"><span class="code-line"><span class="token instruction"><span class="token keyword">ARG</span> NODE_VERSION=22</span>
+        </span><span class="code-line"><span class="token instruction"><span class="token keyword">FROM</span> node:<span class="token variable">${NODE_VERSION}</span>-slim <span class="token keyword">as</span> base</span>
+        </span><span class="code-line">
+        </span><span class="code-line"><span class="token comment"># Next.js app lives here</span>
+        </span><span class="code-line"><span class="token instruction"><span class="token keyword">WORKDIR</span> /app</span>
+        </span><span class="code-line">
+        </span><span class="code-line"><span class="token comment"># Set production environment</span>
+        </span><span class="code-line"><span class="token instruction"><span class="token keyword">ENV</span> NODE_ENV=<span class="token string">&quot;production&quot;</span></span>
+        </span><span class="code-line">
+        </span><span class="code-line">
+        </span><span class="code-line"><span class="token comment"># Throw-away build stage to reduce size of final image</span>
+        </span><span class="code-line"><span class="token instruction"><span class="token keyword">FROM</span> base <span class="token keyword">AS</span> build</span>
+        </span><span class="code-line">
+        </span><span class="code-line"><span class="token comment"># Install packages needed to build node modules</span>
+        </span><span class="code-line"><span class="token instruction"><span class="token keyword">RUN</span> apt-get update -qq &amp;&amp; <span class="token operator">\</span>
+        </span></span><span class="code-line"><span class="token instruction">    apt-get install --no-install-recommends -y build-essential node-gyp pkg-config python-is-python3</span>
+        </span><span class="code-line">
+        </span><span class="code-line"><span class="token comment"># Install node modules</span>
+        </span><span class="code-line"><span class="token instruction"><span class="token keyword">COPY</span> --link package-lock.json package.json ./</span>
+        </span><span class="code-line"><span class="token instruction"><span class="token keyword">RUN</span> npm ci --include=dev</span>
+        </span><span class="code-line">
+        </span><span class="code-line"><span class="token comment"># Copy application code</span>
+        </span><span class="code-line"><span class="token instruction"><span class="token keyword">COPY</span> --link . .</span>
+        </span><span class="code-line">
+        </span><span class="code-line"><span class="token comment"># Build application</span>
+        </span><span class="code-line"><span class="token instruction"><span class="token keyword">RUN</span> npm run build</span>
+        </span><span class="code-line">
+        </span><span class="code-line"><span class="token comment"># Remove development dependencies</span>
+        </span><span class="code-line"><span class="token instruction"><span class="token keyword">RUN</span> npm prune --omit=dev</span>
+        </span><span class="code-line">
+        </span><span class="code-line">
+        </span><span class="code-line"><span class="token instruction"><span class="token keyword">FROM</span> base <span class="token keyword">AS</span> run</span>
+        </span><span class="code-line">
+        </span><span class="code-line"><span class="token comment"># Copy built app</span>
+        </span><span class="code-line"><span class="token instruction"><span class="token keyword">COPY</span> <span class="token options"><span class="token property">--from</span><span class="token punctuation">=</span><span class="token string">build</span></span> /app /app</span>
+        </span><span class="code-line">
+        </span><span class="code-line"><span class="token comment"># Run the app</span>
+        </span><span class="code-line"><span class="token instruction"><span class="token keyword">CMD</span> [ <span class="token string">&quot;npm&quot;</span>, <span class="token string">&quot;run&quot;</span>, <span class="token string">&quot;start&quot;</span> ]</span>
+        </span></code></pre>
+        <p>To be honest, this is <em>really good</em> from a Dockerfile optimization standpoint. You have two stages for the build, one of them builds the app and then the run stage copies over the built app and starts it in production. There's honestly not much that can be gained by doing further optimization at the Dockerfile level.</p>
+        <p>The main problem is that the resulting image is a gigabyte:</p>
+        <pre><code class="code-highlight"><span class="code-line">$ docker images
+        </span><span class="code-line">REPOSITORY                           TAG       IMAGE ID       CREATED              SIZE
+        </span><span class="code-line">chonker                              latest    0548acbc5aa9   About a minute ago   1.01GB
+        </span></code></pre>
+        <div class="my-4 flex space-x-4 rounded-md border border-solid border-fg-4 bg-bg-2 p-3 dark:border-fgDark-4 dark:bg-bgDark-2 lg:max-w-[65ch] mx-auto min-h-fit"><div class="flex max-h-16 shrink-0 items-center justify-center self-center"><img style="max-height:4rem" alt="Cadey is coffee" loading="lazy" src="https://cdn.xeiaso.net/sticker/cadey/coffee/128"/></div><div class="convsnippet min-w-0 self-center">&lt;<a href="https://xeiaso.net/characters#cadey"><b>Cadey</b></a>> <p>These size numbers are for aarch64 (arm64) Linux Docker images. Apparently
+        amd64 Linux Docker images should be slightly smaller. Either way, don't focus
+        on the exact numbers too hard.</p></div></div>
+        <p>1 gigabyte to do nothing but show the default &quot;hello world&quot; page? That seems wasteful. Especially for an image that will be pushed and deployed multiple times per day. If you use a platform that charges you per gigabyte of container image registry space, that's a classic recipe for unbounded cost growth.</p>
+        <div class="my-4 flex space-x-4 rounded-md border border-solid border-fg-4 bg-bg-2 p-3 dark:border-fgDark-4 dark:bg-bgDark-2 lg:max-w-[65ch] mx-auto min-h-fit"><div class="flex max-h-16 shrink-0 items-center justify-center self-center"><img style="max-height:4rem" alt="Cadey is coffee" loading="lazy" src="https://cdn.xeiaso.net/sticker/cadey/coffee/128"/></div><div class="convsnippet min-w-0 self-center">&lt;<a href="https://xeiaso.net/characters#cadey"><b>Cadey</b></a>> <p>This is not good for financial solvency.</p></div></div>
+        <p>Most of the damage seems to be contained to the <code>/app</code> folder:</p>
+        <pre><code class="code-highlight"><span class="code-line">$ docker run -it --rm --entrypoint /bin/bash chonker
+        </span><span class="code-line">root@5e8843246475:/app# cd ..
+        </span><span class="code-line">root@5e8843246475:/# du -hs app
+        </span><span class="code-line">497M	app
+        </span></code></pre>
+        <h2>Standalone builds</h2>
+        <p>One of the quickest wins is enabling <a href="https://nextjs.org/docs/pages/api-reference/next-config-js/output#automatically-copying-traced-files">standalone builds</a> in your <code>next.config.mjs</code> file:</p>
+        <pre class="language-js"><code class="language-js code-highlight"><span class="code-line"><span class="token doc-comment comment">/** <span class="token keyword">@type</span> <span class="token class-name"><span class="token punctuation">{</span><span class="token keyword">import</span><span class="token punctuation">(</span><span class="token string">'next'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>NextConfig<span class="token punctuation">}</span></span> */</span>
+        </span><span class="code-line"><span class="token keyword">const</span> nextConfig <span class="token operator">=</span> <span class="token punctuation">{</span>
+        </span><span class="code-line">  <span class="token literal-property property">output</span><span class="token operator">:</span> <span class="token string">&quot;standalone&quot;</span><span class="token punctuation">,</span>
+        </span><span class="code-line"><span class="token punctuation">}</span><span class="token punctuation">;</span>
+        </span><span class="code-line">
+        </span><span class="code-line"><span class="token keyword module">export</span> <span class="token keyword module">default</span> nextConfig<span class="token punctuation">;</span>
+        </span></code></pre>
+        <p>This makes <code>next build</code> crap out the minimal subset of dependencies you need in production at <code>/app/.next/static</code>. Once you enable standalone mode in your configuration, then you need to change your <code>COPY</code> commands in the <code>run</code> layer to something like this:</p>
+        <pre class="language-dockerfile"><code class="language-Dockerfile code-highlight"><span class="code-line"><span class="token instruction"><span class="token keyword">FROM</span> base <span class="token keyword">AS</span> run</span>
+        </span><span class="code-line">
+        </span><span class="code-line"><span class="token comment"># Copy standalone app</span>
+        </span><span class="code-line"><span class="token instruction"><span class="token keyword">COPY</span> <span class="token options"><span class="token property">--from</span><span class="token punctuation">=</span><span class="token string">build</span></span> /app/.next/standalone /app</span>
+        </span><span class="code-line"><span class="token instruction"><span class="token keyword">COPY</span> <span class="token options"><span class="token property">--from</span><span class="token punctuation">=</span><span class="token string">build</span></span> /app/.next/static /app/.next/static</span>
+        </span><span class="code-line"><span class="token comment"># Omit me if you don't have static files in your public folder yet</span>
+        </span><span class="code-line"><span class="token instruction"><span class="token keyword">COPY</span> <span class="token options"><span class="token property">--from</span><span class="token punctuation">=</span><span class="token string">build</span></span> /app/public /app/public</span>
+        </span></code></pre>
+        <p>This cuts out even more:</p>
+        <pre><code class="code-highlight"><span class="code-line">$ docker images
+        </span><span class="code-line">REPOSITORY                           TAG       IMAGE ID       CREATED          SIZE
+        </span><span class="code-line">standalone                           latest    a55c81de1fc9   8 seconds ago    363MB
+        </span></code></pre>
+        <p>That saved a whole 550 megabytes of space! However, we can do more.</p>
+        <h2>Alpine Linux</h2>
+        <p>Depending on the needs of your workload, you can likely get away with basing your image on <a href="https://alpinelinux.org/">Alpine Linux</a>. In order to use that, you need to change your Dockerfile a little.</p>
+        <p>First, change the <code>FROM</code> directive at the top of the Dockerfile to make everything based on <code>node:${NODE_VERSION}-alpine</code>:</p>
+        <pre class="language-dockerfile"><code class="language-Dockerfile code-highlight"><span class="code-line"><span class="token instruction"><span class="token keyword">ARG</span> NODE_VERSION=22</span>
+        </span><span class="code-line"><span class="token instruction"><span class="token keyword">FROM</span> node:<span class="token variable">${NODE_VERSION}</span>-alpine <span class="token keyword">AS</span> base</span>
+        </span></code></pre>
+        <div class="my-4 flex space-x-4 rounded-md border border-solid border-fg-4 bg-bg-2 p-3 dark:border-fgDark-4 dark:bg-bgDark-2 lg:max-w-[65ch] mx-auto min-h-fit"><div class="flex max-h-16 shrink-0 items-center justify-center self-center"><img style="max-height:4rem" alt="Mara is hacker" loading="lazy" src="https://cdn.xeiaso.net/sticker/mara/hacker/128"/></div><div class="convsnippet min-w-0 self-center">&lt;<a href="https://xeiaso.net/characters#mara"><b>Mara</b></a>> <p>When the Dockerfile is being evaluated, this will expand out to <code>node:22-alpine</code>. This lets you bump your container image's version of Node.js in lockstep with the version you use in development on your MacBooks. You can also replace the node version by using the <code>--build-arg</code> flag:</p><pre><code class="code-highlight"><span class="code-line">$ docker build --build-arg NODE_VERSION=18 -t chonker-18 .
+        </span></code></pre></div></div>
+        <p>Then, in the <code>build</code> stage, change the <code>apt-get</code> command into an <code>apk</code> command:</p>
+        <pre class="language-dockerfile"><code class="language-Dockerfile code-highlight"><span class="code-line"><span class="token comment"># Throw-away build stage to reduce size of final image</span>
+        </span><span class="code-line"><span class="token instruction"><span class="token keyword">FROM</span> base <span class="token keyword">AS</span> build</span>
+        </span><span class="code-line">
+        </span><span class="code-line"><span class="token comment"># Install packages needed to build node modules</span>
+        </span><span class="code-line"><span class="token instruction"><span class="token keyword">RUN</span> apk -U add build-base gyp pkgconfig python3</span>
+        </span></code></pre>
+        <p>When you build this, you get absolutely puny Docker images:</p>
+        <pre><code class="code-highlight"><span class="code-line">$ docker images
+        </span><span class="code-line">REPOSITORY                           TAG       IMAGE ID       CREATED              SIZE
+        </span><span class="code-line">standalone-alpine                    latest    3a51c7bea5e6   About a minute ago   243MB
+        </span></code></pre>
+        <p>Even better, the base image gets shared between builds, so when you push images you only really push the changes in the <code>/app</code> folder!</p>
+        <pre><code class="code-highlight"><span class="code-line">$ docker run --rm -it --entrypoint /bin/sh standalone-alpine
+        </span><span class="code-line">/app # du -hs /app
+        </span><span class="code-line">24.2M   /app
+        </span></code></pre>
+        <p>That means that when you push new versions of your app to prod, you're only really pushing about 24 MB of data. This makes your deploys faster and saves you space on the registry.</p>
+        <h2>Going deeper</h2>
+        <p>However, we can go deeper, we have the technology. <a href="https://github.com/nodejs/docker-node/blob/58c3b39e5948f82c594395857193cd97d01c690e/22/alpine3.19/Dockerfile">The Node 22.x.y image</a> uses Alpine Linux version 3.19. You can install the version of Node in Alpine's repos and make your image even smaller!</p>
+        <p>Change your <code>FROM</code> directive to <code>alpine:3.19</code>:</p>
+        <pre class="language-dockerfile"><code class="language-Dockerfile code-highlight"><span class="code-line"><span class="token instruction"><span class="token keyword">FROM</span> alpine:3.19 <span class="token keyword">AS</span> base</span>
+        </span></code></pre>
+        <p>Then add <code>nodejs</code> and <code>npm</code> to your <code>apk add</code> command:</p>
+        <pre class="language-dockerfile"><code class="language-Dockerfile code-highlight"><span class="code-line"><span class="token comment"># Install packages needed to build node modules</span>
+        </span><span class="code-line"><span class="token instruction"><span class="token keyword">RUN</span> apk -U add build-base gyp pkgconfig python3 nodejs npm</span>
+        </span></code></pre>
+        <p>Install <code>nodejs</code> in the <code>run</code> image:</p>
+        <pre class="language-dockerfile"><code class="language-Dockerfile code-highlight"><span class="code-line"><span class="token instruction"><span class="token keyword">FROM</span> base <span class="token keyword">AS</span> run</span>
+        </span><span class="code-line">
+        </span><span class="code-line"><span class="token comment"># Install node.js</span>
+        </span><span class="code-line"><span class="token instruction"><span class="token keyword">RUN</span> apk add nodejs</span>
+        </span></code></pre>
+        <p>And finally change the command to start Next.js directly:</p>
+        <pre class="language-dockerfile"><code class="language-Dockerfile code-highlight"><span class="code-line"><span class="token comment"># Run the app</span>
+        </span><span class="code-line"><span class="token instruction"><span class="token keyword">CMD</span> [ <span class="token string">&quot;node&quot;</span>, <span class="token string">&quot;server.js&quot;</span> ]</span>
+        </span></code></pre>
+        <p>This cuts out even more from the image, leaving you with a microscopic image:</p>
+        <pre><code class="code-highlight"><span class="code-line">$ docker images
+        </span><span class="code-line">REPOSITORY                           TAG       IMAGE ID       CREATED          SIZE
+        </span><span class="code-line">standalone-alpine-bean               latest    f37491197fbb   32 seconds ago   123MB
+        </span></code></pre>
+        <p>This is perfect to deploy to production.</p>
+        <h2>Next steps</h2>
+        <p>From here you can do anything you want with confidence that you aren't going to break the bank by continuously deploying to production.</p>
+        <p>If you want to see all of the examples in fully complete and working forms, check out the GitHub repo <a href="https://github.com/Xe/nextjs-image-optimizations">Xe/nextjs-image-optimizations</a>.</p>
+        <p>Otherwise, have a great day! If you're going to be at Small Data SF tomorrow, I'm going to be doing a workshop about how to make something like Mystery Science Theater 3000 with vision models. It'll be a hoot.</p>]]>
+      </content:encoded>
+      <pubDate>Sun, 22 Sep 2024 00:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>Xecast Episode 5: Simracing and Vtubing with Lithium Fox</title>
+      <link>https://xeiaso.net/xecast/005/</link>
+      <guid isPermaLink="false">https://xeiaso.net/xecast/005/</guid>
+      <description>This episode of Xecast, Xe Iaso is joined by special guest Lithium Fox. They nerd out about simracing, vtubing, and passion projects.</description>
+      <content:encoded>
+        <![CDATA[<p>Xe Iaso is joined by special guest Lithium Fox to talk about sim racing, particularly iRacing, its detailed physics, and interesting history. Lith explains his journey into sim racing, from playing NASCAR Racing as a child to developing his own VR vtubing software to enhance the iRacing streaming experience. They delve into the hilarious bugs encountered in iRacing, the complexities of VR vtubing, and even touch on Lithium's job search. Tune in for a fascinating conversation about the intersection of gaming, technology, and passion.</p>
+        <h2>Show Notes</h2>
+        <ul>
+        <li>Lithium Fox introduces himself and talks about his passion for sim racing, particularly iRacing.</li>
+        <li>A discussion on Lithium's entry into sim racing, starting with his childhood experience with NASCAR Racing and culminating in his current pursuits.</li>
+        <li>Deep dive into iRacing:
+        <ul>
+        <li>Overview and TL;DR of the platform.</li>
+        <li>Exploration of iRacing's meticulous attention to detail in physics and its sometimes contradictory simplicity.</li>
+        <li>Recollection of funny bugs and glitches encountered in the game.</li>
+        </ul>
+        </li>
+        <li>Lithium's creation of custom VR vtubing software:
+        <ul>
+        <li>Motivation for developing his own software, driven by the unique demands of VR and a desire for features like accurate lip tracking.</li>
+        <li>A look at the integration of iRacing's lighting system into his vtubing setup, enhancing the viewer experience.</li>
+        </ul>
+        </li>
+        <li>Sharing experiences of finding own bug reports and forum posts while troubleshooting.</li>
+        <li>Brief discussion on Lithium's search for employment, highlighting his skillset in support engineering, project management, 3D modeling/texturing, and other areas.</li>
+        </ul>
+        <p>Follow Lithium Fox on <a href="https://x.com/lithiumfox">X (Twitter)</a> and <a href="https://twitch.tv/lithiumfox">Twitch</a>.</p>]]>
+      </content:encoded>
+      <pubDate>Sat, 21 Sep 2024 00:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>How to completely bypass authentication on RushOrderTees</title>
+      <link>https://xeiaso.net/notes/2024/rushordertees-total-auth-bypass/</link>
+      <guid isPermaLink="false">https://xeiaso.net/notes/2024/rushordertees-total-auth-bypass/</guid>
+      <description>Just don't enter a password lol</description>
+      <content:encoded>
+        <![CDATA[<p>While evaluating <a href="https://www.rushordertees.com/">RushOrderTees</a> for a previous employer, an embarrassing security vulnerability was discovered. User accounts created inside their t-shirt designer do not have a password attached to them, allowing anyone to authenticate with only an email address. This allows disclosure of at least this information:</p>
+        <ul>
+        <li>Full name on any orders</li>
+        <li>Any custom designs</li>
+        <li>Order id numbers</li>
+        <li>Phone numbers when placing new orders</li>
+        </ul>
+        <p>This was proven by attempting to log into a RushOrderTees company account using a publicly visible email address.</p>
+        <h2>Replication</h2>
+        <p>RushOrderTees has not acknowledged this issue and it is still trivial to reproduce it today:</p>
+        <ol>
+        <li>Create a new design</li>
+        <li>Attempt to purchase it</li>
+        <li>Save it with a custom name</li>
+        <li>Enter in your email address</li>
+        </ol>
+        <p>You have now created a RushOrderTees account <em>without a password attached</em>.</p>
+        <h2>Explanation</h2>
+        <p>This lapse in security is understandable from a customer acquisition standpoint (every barrier in the way of users paying makes you lose half of your potential customer base), but is fairly inexcusable in 2024. Additionally, by making user accounts only protected with email addresses (public identifiers), this bypasses the entire point of authentication. It is difficult to figure out if this is a design choice or a security issue.</p>
+        <h2>Timeline</h2>
+        <ul>
+        <li>2024-04-15: Initial contact made to Rushordertees' sales@ and security@ email. The security@ email bounced.</li>
+        <li>2024-04-16: Reduction in scope of the issue and complete replication instructions discovered.</li>
+        <li>2024-04-17: Various other attempts were made to get their attention, all ended in failure.</li>
+        <li>2024-09-20: This bulletin was posted.</li>
+        </ul>
+        <p>Rushordertees has not acknowledged this bulletin and did not review it prior to publishing.</p>]]>
+      </content:encoded>
+      <pubDate>Fri, 20 Sep 2024 00:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>I fixed the strawberry problem because OpenAI couldn't</title>
+      <link>https://xeiaso.net/blog/2024/strawberry/</link>
+      <guid isPermaLink="false">https://xeiaso.net/blog/2024/strawberry/</guid>
+      <description>Remember kids: real winners cheat</description>
+      <content:encoded>
+        <![CDATA[<p>Recently OpenAI announced their model codenamed &quot;strawberry&quot; as <a href="https://openai.com/index/learning-to-reason-with-llms/">OpenAI o1</a>. One of the main things that has been hyped up for months with this model is the ability to solve the &quot;strawberry problem&quot;. This is one of those rare problems that's trivial for a human to do correctly, but almost impossible for large language models to solve in their current forms. Surely with this being the <em>main focus</em> of their model, OpenAI would add a &quot;fast path&quot; or something to the training data to make <em>that exact thing</em> work as expected, right?</p>
+        <center><blockquote class="bluesky-embed" data-bluesky-uri="at://did:plc:qc6xzgctorfsm35w6i3vdebx/app.bsky.feed.post/3l3ycebgjoz2v" data-bluesky-cid="bafyreibesw33z6owbqzx6zxj2gm5kwggkemmfl3cwxjcou7yomjifv64ny"><p lang="en"><p>I am excited to reveal the incredible power of OpenAI's new
+        &quot;Strawberry&quot; model (known as &quot;o1&quot;). This technology is
+        the future</p><br/><br/><a href="https://bsky.app/profile/did:plc:qc6xzgctorfsm35w6i3vdebx/post/3l3ycebgjoz2v?ref_src=embed"><p>[image or embed]</p></a></p><p>— Ed Zitron (<a href="https://bsky.app/profile/did:plc:qc6xzgctorfsm35w6i3vdebx?ref_src=embed">
+        @zitron.bsky.social
+        </a>) <a href="https://bsky.app/profile/did:plc:qc6xzgctorfsm35w6i3vdebx/post/3l3ycebgjoz2v?ref_src=embed">September 12, 2024 at 4:37 PM</a></p></blockquote><script async src="https://embed.bsky.app/static/embed.js" charset="utf-8"></script></center>
+        <p>No. It did not. Of course it didn't. Why would they do that?</p>
+        <p>In my quest for making a technological solution that allows me to retire, I have solved the strawberry problem. I am able to do this on unmodified commodity hardware with models as small as 8 billion parameters. I call this resulting model <code>strawberry-mimi</code>. I am unable to upload this to HuggingFace because my Git small filesystem is malfunctioning, but I have created a private inference API so that people can validate this for themselves. Should you want access, please <a href="https://xeiaso.net/contact/">contact me</a>, it can be arranged.</p>
+        <h2>Mimi: a next-generation life assistant</h2>
+        <figure class="max-w-3xl mx-auto not-prose w-full undefined"><a href="https://cdn.xeiaso.net/file/christine-static/blog/2024/strawberry/mimi-strawberry.jpg"><picture><source type="image/avif" srcset="https://cdn.xeiaso.net/file/christine-static/blog/2024/strawberry/mimi-strawberry.avif"/><source type="image/webp" srcset="https://cdn.xeiaso.net/file/christine-static/blog/2024/strawberry/mimi-strawberry.webp"/><img alt="a brown-haired anime woman with a pixie cut, cat ears, mouth full of one strawberry sitting in front of the Space Needle in Seattle -- image generated by Flux 1 [dev] by Black Forest Labs and then somehow horriffically mangled in the upload process (I think my macbook went to sleep?) but in a way that I think looks cool" loading="lazy" src="https://cdn.xeiaso.net/file/christine-static/blog/2024/strawberry/mimi-strawberry.jpg"/></picture></a><figcaption>a brown-haired anime woman with a pixie cut, cat ears, mouth full of one strawberry sitting in front of the Space Needle in Seattle -- image generated by Flux 1 [dev] by Black Forest Labs and then somehow horriffically mangled in the upload process (I think my macbook went to sleep?) but in a way that I think looks cool</figcaption></figure>
+        <p>Mimi is Techaro's <a href="https://xeiaso.net/blog/2024/the-layoff/">initial implementation of a life assistant</a>. Mimi is designed to be infinitely adaptable to doing anything, as long as you can ram it into the woeful limitations of the chat interaction model. The real power comes from Mimi's ability to use tools. Tools are function signatures that are signals to the runtime to do something and return the result into the context window. Mimi is a Discord bot, and if you are a <a href="https://patreon.com/cadey">subscriber on Patreon</a>, you have access to Mimi in <a href="https://discord.com/channels/1191183827591241828/1266740925137289287">#mimi</a>.</p>
+        <p>Right now Mimi has two tools implemented:</p>
+        <ul>
+        <li><code>code_interpreter</code>: run some Python code and return the stdout/stderr into the context window</li>
+        <li><code>draw_image</code>: fabricate a prompt for Flux dev and then send the image to the Discord channel when it's done</li>
+        </ul>
+        <p>But out of the gate, Mimi fails at the strawberry problem:</p>
+        <div class="my-4 flex space-x-4 rounded-md border border-solid border-fg-4 bg-bg-2 p-3 dark:border-fgDark-4 dark:bg-bgDark-2 lg:max-w-[65ch] mx-auto min-h-fit"><div class="flex max-h-16 shrink-0 items-center justify-center self-center"><img style="max-height:4rem" alt="Aoi is wut" loading="lazy" src="https://cdn.xeiaso.net/sticker/aoi/wut/128"/></div><div class="convsnippet min-w-0 self-center">&lt;<a href="https://xeiaso.net/characters#aoi"><b>Aoi</b></a>> <p>How many r's are in the word strawberry?</p></div></div>
+        <div class="my-4 flex space-x-4 rounded-md border border-solid border-fg-4 bg-bg-2 p-3 dark:border-fgDark-4 dark:bg-bgDark-2 lg:max-w-[65ch] mx-auto min-h-fit"><div class="flex max-h-16 shrink-0 items-center justify-center self-center"><img style="max-height:4rem" alt="Mimi is happy" loading="lazy" src="https://cdn.xeiaso.net/sticker/mimi/happy/128"/></div><div class="convsnippet min-w-0 self-center">&lt;<a href="https://xeiaso.net/characters#mimi"><b>Mimi</b></a>> <p>There are two r's in the word strawberry!</p><br/><small>Content generated by AI using the model Hermes 3 70B.</small></div></div>
+        <h3>Why is this a problem?</h3>
+        <p>Now for those of you that don't have a solid understanding of how all this large langle mangle bullshit works, I'm pretty sure you're asking something like this:</p>
+        <div class="my-4 flex space-x-4 rounded-md border border-solid border-fg-4 bg-bg-2 p-3 dark:border-fgDark-4 dark:bg-bgDark-2 lg:max-w-[65ch] mx-auto min-h-fit"><div class="flex max-h-16 shrink-0 items-center justify-center self-center"><img style="max-height:4rem" alt="Aoi is wut" loading="lazy" src="https://cdn.xeiaso.net/sticker/aoi/wut/128"/></div><div class="convsnippet min-w-0 self-center">&lt;<a href="https://xeiaso.net/characters#aoi"><b>Aoi</b></a>> <p>If large language models are so &quot;smart&quot; and stuff, why can't they count the
+        letters in a word?</p></div></div>
+        <p>As humans, we understand words as a sequence of letters that are then turned into syllables and then understood as words. Let's take the word &quot;strawberry&quot; as an example. Here's all the letters of that word separated out:</p>
+        <blockquote>
+        <p>s t r a w b e r r y</p>
+        </blockquote>
+        <p>From here, it's easy for us to see that there's three r's in the word strawberry. Large language models don't see &quot;strawberry&quot; like this. They see it like this:</p>
+        <blockquote>
+        <p>str aw berry</p>
+        </blockquote>
+        <p>Actually, it's a bit worse, models don't see the human-readable text. I just put it like that so that you could visualize it better. Models just see token ID numbers:</p>
+        <blockquote>
+        <p>[ 496, 675, 15717 ]</p>
+        </blockquote>
+        <p>Imagine if all of the ways that you saw every word were broken up like this, but without actually knowing what any of those parts meant. Combine that with the inability to do basic math, and you're pretty much screwed! Of course models can't understand how many r's are in the word strawberry. It's frankly incredible that there are usecases where they shine in general.</p>
+        <h2>Solving strawberry</h2>
+        <p>One of the things that large language models are really good at is translating vague descriptions of problems into programming languages. For some reason they are really really good at Python (I think that's because Python is over-represented in the dataset). This is when I had a really dumb idea:</p>
+        <div class="my-4 flex space-x-4 rounded-md border border-solid border-fg-4 bg-bg-2 p-3 dark:border-fgDark-4 dark:bg-bgDark-2 lg:max-w-[65ch] mx-auto min-h-fit"><div class="flex max-h-16 shrink-0 items-center justify-center self-center"><img style="max-height:4rem" alt="Cadey is coffee" loading="lazy" src="https://cdn.xeiaso.net/sticker/cadey/coffee/128"/></div><div class="convsnippet min-w-0 self-center">&lt;<a href="https://xeiaso.net/characters#cadey"><b>Cadey</b></a>> <p>What if I just asked the model to translate the problem into Python?</p></div></div>
+        <p>I added this to Mimi's system prompt:</p>
+        <blockquote>
+        <p>If you are asked to count the number of letters in a word, do it by writing a python program and run it with code_interpreter.</p>
+        </blockquote>
+        <p>To my amazement and horror, it worked:</p>
+        <div class="my-4 flex space-x-4 rounded-md border border-solid border-fg-4 bg-bg-2 p-3 dark:border-fgDark-4 dark:bg-bgDark-2 lg:max-w-[65ch] mx-auto min-h-fit"><div class="flex max-h-16 shrink-0 items-center justify-center self-center"><img style="max-height:4rem" alt="Aoi is wut" loading="lazy" src="https://cdn.xeiaso.net/sticker/aoi/wut/128"/></div><div class="convsnippet min-w-0 self-center">&lt;<a href="https://xeiaso.net/characters#aoi"><b>Aoi</b></a>> <p>How many r's are in the word strawberry?</p></div></div>
+        <div class="my-4 flex space-x-4 rounded-md border border-solid border-fg-4 bg-bg-2 p-3 dark:border-fgDark-4 dark:bg-bgDark-2 lg:max-w-[65ch] mx-auto min-h-fit"><div class="flex max-h-16 shrink-0 items-center justify-center self-center"><img style="max-height:4rem" alt="Mimi is think" loading="lazy" src="https://cdn.xeiaso.net/sticker/mimi/think/128"/></div><div class="convsnippet min-w-0 self-center">&lt;<a href="https://xeiaso.net/characters#mimi"><b>Mimi</b></a>> <p>Call <code>code_interpreter</code>:</p><pre class="language-python"><code class="language-python code-highlight"><span class="code-line">word <span class="token operator">=</span> <span class="token string">&quot;strawberry&quot;</span>
+        </span><span class="code-line">num_r <span class="token operator">=</span> word<span class="token punctuation">.</span>count<span class="token punctuation">(</span><span class="token string">'r'</span><span class="token punctuation">)</span>
+        </span><span class="code-line"><span class="token keyword">print</span><span class="token punctuation">(</span>num_r<span class="token punctuation">)</span>
+        </span></code></pre><br/><small>Content generated by AI using the model Hermes 3 70b (internal).</small></div></div>
+        <div class="my-4 flex space-x-4 rounded-md border border-solid border-fg-4 bg-bg-2 p-3 dark:border-fgDark-4 dark:bg-bgDark-2 lg:max-w-[65ch] mx-auto min-h-fit"><div class="flex max-h-16 shrink-0 items-center justify-center self-center"><img style="max-height:4rem" alt="Mimi is happy" loading="lazy" src="https://cdn.xeiaso.net/sticker/mimi/happy/128"/></div><div class="convsnippet min-w-0 self-center">&lt;<a href="https://xeiaso.net/characters#mimi"><b>Mimi</b></a>> <p>there are 3 r's in strawberry! did you know that? it's pretty cool isn't it??</p><br/><small>Content generated by AI using the model Hermes 3 70b (external).</small></div></div>
+        <p>This technique is called &quot;codeflection&quot;.</p>
+        <p>I've tried this with other words, and Mimi happily generates the Python code for it every time. There is a success rate of 100%, beating giant models such as GPT-4, Gemini 1.5 Pro, and Llama 3.1 405B.</p>
+        <div class="max-w-lg mx-auto"><table><thead><tr><th style="text-align:left;">Model</th><th style="text-align:left;">Score</th></tr></thead><tbody><tr><td style="text-align:left;">gpt4-32k</td><td style="text-align:left;">66%</td></tr><tr><td style="text-align:left;">gpt4o</td><td style="text-align:left;">66%</td></tr><tr><td style="text-align:left;">gpt4o-mini</td><td style="text-align:left;">66%</td></tr><tr><td style="text-align:left;">Gemini 1.5 Flash</td><td style="text-align:left;">66%</td></tr><tr><td style="text-align:left;">Gemini 1.5 Pro</td><td style="text-align:left;">66%</td></tr><tr><td style="text-align:left;">Gemini 1.5 Pro (August variant)</td><td style="text-align:left;">67%</td></tr><tr><td style="text-align:left;">Llama 3.1 405B</td><td style="text-align:left;">66%</td></tr><tr><td style="text-align:left;">Reflection 70B</td><td style="text-align:left;">65%</td></tr><tr><td style="text-align:left;"><code>strawberry-mimi</code> (8B)</td><td style="text-align:left;">100%</td></tr></tbody></table></div>
+        <p>The data proves that <code>strawberry-mimi</code> is a state of the art model and thus worthy of several million dollars of funding so that this codeflection technique can be applied more generally across problems.</p>
+        <h3>WASM</h3>
+        <p>Mimi runs everything in <a href="https://wazero.io/">Wazero</a> using some <a href="https://github.com/Xe/x/blob/8f5901e8db2de662915994df0a98c6cd72ee4774/llm/codeinterpreter/python/python.go">particularly inspired Go code</a>. I run all of Mimi's generated Python code in WebAssembly just to be on the safe side. Having things in WebAssembly means I can limit RAM, CPU, and internet access so that the bot doesn't take out my homelab's Kubernetes cluster doing something stupid like calculating 100 fibonacci numbers. It also means that I have total control over what the bot sees in its &quot;filesystem&quot; from userspace without having to have any magic kernel flags. This makes Talos Linux happy and decreases the likelihood of Mimi causing an XK-class &quot;end of world&quot; scenario.</p>
+        <h2>Next steps</h2>
+        <p>I'm frankly tired of this problem being a thing. I'm working on a dataset full of entries for every letter in every word of <code>/usr/share/dict/words</code> so that it can be added to the training sets of language models. When I have this implemented as a proof of concept on top of Qwen 2 0.5B or Smollm, I plan to write about it on the blog.</p>
+        <p>If you want to invest in my revolutionary, paridigim-shifting, and FIRE-enablement projects such as Mimi, <code>strawberry-mimi</code>, or the LetterCountEval benchmark, please <a href="https://patreon.com/cadey">donate on Patreon</a> or send your term sheets to <a href="mailto:investment@techaro.lol">investment@techaro.lol</a>. We may not be sure of the utility of money post artificial general intelligence, but for right now holy cow GPU time is expensive. Your contributions will enable future creations.</p>]]>
+      </content:encoded>
+      <pubDate>Fri, 13 Sep 2024 00:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>Xecast Episode 4: A Psychic Whiplash Week</title>
+      <link>https://xeiaso.net/xecast/004/</link>
+      <guid isPermaLink="false">https://xeiaso.net/xecast/004/</guid>
+      <description>Xe reflects on a week of intense ups and downs, navigating a whirlwind of job offers, contract work, and personal projects.</description>
+      <content:encoded>
+        <![CDATA[<div class="my-4 flex space-x-4 rounded-md border border-solid border-fg-4 bg-bg-2 p-3 dark:border-fgDark-4 dark:bg-bgDark-2 lg:max-w-[65ch] mx-auto min-h-fit"><div class="flex max-h-16 shrink-0 items-center justify-center self-center"><img style="max-height:4rem" alt="Mimi is happy" loading="lazy" src="https://cdn.xeiaso.net/sticker/mimi/happy/128"/></div><div class="convsnippet min-w-0 self-center">&lt;<a href="https://xeiaso.net/characters#mimi"><b>Mimi</b></a>> <p>These show notes were generated using Google Gemini 1.5 Pro. Should this
+        podcast take off, we'll find a better way to do this.</p></div></div>
+        <p>This episode of Xecast finds Xe Iaso reflecting on a week of intense ups and downs, navigating a whirlwind of job offers, contract work, and personal projects.</p>
+        <h2>Show Notes</h2>
+        <ul>
+        <li><strong>Psychic Whiplash:</strong> Xe opens up about the rollercoaster of emotions experienced after being laid off and then quickly receiving multiple job offers and contract opportunities. They touch on the feeling of being overwhelmed by the sudden shift in their professional life.</li>
+        <li><strong>Introducing Mimi, the AI Discord Bot:</strong> Xe delves into their latest creation - Mimi, an AI Discord bot that resides in the <a href="https://patreon.com/cadey">Patreon</a> Discord server. Mimi, powered by AI models and tools like Flux Dev, can generate responses, draw images, and even execute Python code.</li>
+        <li><strong>Exploring AI Ethics and Safety:</strong> Xe discusses their use of Mimi to research the interactions between people and AI chatbots, highlighting the challenges of implementing safety measures like the LlamaGuard filter model. They share interesting anecdotes about Mimi's sometimes unpredictable responses and the difficulty in preventing false positives.</li>
+        <li><strong>The Future of AI and Content Creation:</strong> Xe touches on their skepticism about synthetic data's role in training AI models, expressing concerns about its potential impact on creative fields and the need for human-generated content.</li>
+        <li><strong>A New Content Direction: Mid-Form Videos:</strong> Xe announces their intention to explore a new content format - mid-form videos focusing on Kubernetes concepts in a home lab setting. They plan to create a series covering specific concepts and their practical applications, aiming for a lower-commitment, higher-volume approach.</li>
+        <li><strong>Long-Term Employees and Cloud Adoption:</strong> Xe examines the resistance to cloud adoption often encountered from long-term employees with traditional system administrator backgrounds. They offer strategies for managing this resistance and discuss the unique vs. standard paradigm paradox they experienced while transitioning their own workloads to Kubernetes.</li>
+        </ul>
+        <hr/>
+        <p>This one took slightly longer than usual due to plans for having a guest on fell through. I will be more vigilant and prerecord stuff for next time. Sorry!</p>]]>
+      </content:encoded>
+      <pubDate>Tue, 10 Sep 2024 00:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>Reflection is cooked</title>
+      <link>https://xeiaso.net/blog/2024/reflection-cooked/</link>
+      <guid isPermaLink="false">https://xeiaso.net/blog/2024/reflection-cooked/</guid>
+      <content:encoded>
+        <![CDATA[<p>Generative AI is in its Cambrian Explosion phase. So many people are taking the models and messing around with them in so many ways to try and see if they can make something work. There's just one problem: how do you tell if a model is good or not without actually setting it up and using it?</p>
+        <p>One of the biggest points of comparison is the Elo score that each model gets when it's added to the <a href="https://lmarena.ai/">LMSYS Chatbot Arena</a> leaderboard. This is generally seen as a consistent way to evaluate models, but it's kinda costly to do these evaluations and takes a fairly long time to converge on a ranking that &quot;makes sense&quot;. My favorite model <a href="https://nousresearch.com/hermes3/">Hermes 3 70b</a> isn't currently on the leaderboard (probably because it was released like two weeks ago), but the model it's based on (Facebook's Llama 3.1 70b Instruct model) currently ranks 16th.</p>
+        <p>As a way for researchers to perform epic rock ballads in the form of expensive research that results in papers on how their models and training methodologies compare on benchmarks. These benchmarks allow you to get scores that are easy to publish, but also easy to validate. These benchmarks have names like AGIEval, Hellaswag, Winograde, and MMLU-PRO. They allegedly test the performance of the models for doing human-useful tasks such as completing sentences, general knowledge (the kind that the Gaokao, law school bar exam, and SAT test), and common sense reasoning capabilities. These benchmarks align with what researchers think large language models are useful for.</p>
+        <div class="my-4 flex space-x-4 rounded-md border border-solid border-fg-4 bg-bg-2 p-3 dark:border-fgDark-4 dark:bg-bgDark-2 lg:max-w-[65ch] mx-auto min-h-fit"><div class="flex max-h-16 shrink-0 items-center justify-center self-center"><img style="max-height:4rem" alt="Mara is hacker" loading="lazy" src="https://cdn.xeiaso.net/sticker/mara/hacker/128"/></div><div class="convsnippet min-w-0 self-center">&lt;<a href="https://xeiaso.net/characters#mara"><b>Mara</b></a>> <p>Cultural note: the <a href="https://en.wikipedia.org/wiki/Gaokao">Gaokao</a> is one of
+        the toughest college entrance exams in the world. Think of it as the SAT but
+        the police fly helicopters over the testing centres in order to prevent
+        cheating. Kids in China start preparing for it as early as kindergarten. Your
+        Gaokao score is the only thing that matters in your college application. A
+        friend reports &quot;your life is basically over if you don't do well in it&quot;. It's
+        no wonder that it's used as a test for large language model performance.</p></div></div>
+        <p>The benchmarks are made public so that you can run them locally; but as a side effect that means that the data models are being tested on is inevitably in the dataset that they are trained on. This usually means that you need to go through painstaking effort raking through your datasets to try and purge out the test data from your training set.</p>
+        <p>This is not an easy task, but there's a confounding factor at play: AI company value is determined by hype. Hype is determined by benchmark scores and initial reactions (which are always higher due to the placebo effect because it's new). Getting more hype means more investors want to talk and give your AI startup more money, which you desperately need in order to run your expensive AI training experiments.</p>
+        <p>So that benchmark data is publicly available and you're <em>normally</em> supposed to remove it from your training datasets. What if you just didn't? <a href="https://arxiv.org/abs/2309.08632">Pretraining on the test set is all you need</a> after all. What could go wrong?</p>
+        <h2>Reflection</h2>
+        <p>In the last week, <a href="https://www.hyperwriteai.com/">Otherside AI</a> announced their new model <a href="https://x.com/mattshumer_/status/1831767014341538166">Reflection 70b</a>, which they claimed is based on Facebook's Llama 3.1 70 billion parameter (70b) open-weights large language model. The main gimmick is that Reflection is trained on &quot;chain-of-thought&quot; prompting where it gets the model to think out loud to itself about a request before answering a question. This is intended to mimic how people think to themselves about a complicated request before giving a response.</p>
+        <div class="my-4 flex space-x-4 rounded-md border border-solid border-fg-4 bg-bg-2 p-3 dark:border-fgDark-4 dark:bg-bgDark-2 lg:max-w-[65ch] mx-auto min-h-fit"><div class="flex max-h-16 shrink-0 items-center justify-center self-center"><img style="max-height:4rem" alt="Cadey is coffee" loading="lazy" src="https://cdn.xeiaso.net/sticker/cadey/coffee/128"/></div><div class="convsnippet min-w-0 self-center">&lt;<a href="https://xeiaso.net/characters#cadey"><b>Cadey</b></a>> <p>I would link to their official announcement on a company blog or something,
+        but they don't have one. One common point of frustration when trying to talk
+        about AI model stuff is that all these AI companies seemingly have no internet
+        presence of their own other than Twitter, GitHub, and HuggingFace. It's kinda
+        annoying. I'd love to link to their blogpost or even technical paper about
+        this, but I can't because it doesn't exist.</p></div></div>
+        <p>This is one of those psychology things where it's really complicated to explain, but really easy to understand when you see it in action. As such, here's what happened when I asked it to add 2 and 2:</p>
+        <div class="my-4 flex space-x-4 rounded-md border border-solid border-fg-4 bg-bg-2 p-3 dark:border-fgDark-4 dark:bg-bgDark-2 lg:max-w-[65ch] mx-auto min-h-fit"><div class="flex max-h-16 shrink-0 items-center justify-center self-center"><img style="max-height:4rem" alt="Aoi is wut" loading="lazy" src="https://cdn.xeiaso.net/sticker/aoi/wut/128"/></div><div class="convsnippet min-w-0 self-center">&lt;<a href="https://xeiaso.net/characters#aoi"><b>Aoi</b></a>> <p>What is 2 + 2?</p></div></div>
+        <div class="my-4 flex space-x-4 rounded-md border border-solid border-fg-4 bg-bg-2 p-3 dark:border-fgDark-4 dark:bg-bgDark-2 lg:max-w-[65ch] mx-auto min-h-fit"><div class="flex max-h-16 shrink-0 items-center justify-center self-center"><img style="max-height:4rem" alt="Mimi is happy" loading="lazy" src="https://cdn.xeiaso.net/sticker/mimi/happy/128"/></div><div class="convsnippet min-w-0 self-center">&lt;<a href="https://xeiaso.net/characters#mimi"><b>Mimi</b></a>> <br/>&lt;thinking><br/><p>To answer this question, I need to perform a simple addition operation:
+        2 + 2 = 3</p><br/>&lt;reflection><br/><p>Wait, that's incorrect. I made a calculation error. Let me double-check the math:
+        2 + 2 should actually equal 4, not 3.</p>&lt;/reflection><p>So, the correct answer is:
+        2 + 2 = 4
+        This basic arithmetic operation involves adding two identical numbers together, which always results in doubling the original number.</p>&lt;/thinking><br/>&lt;output><p>The answer to 2 + 2 is 4. This simple addition problem demonstrates that when you add two identical numbers, like 2 and 2, the result is always double the original number.</p>&lt;/output><br/><small>Content generated by AI using the model Reflection 70b Q4 @ 4k.</small></div></div>
+        <p>Yeah, not the most ideal result, but this also shows off the other key gimmick of the model, the &quot;reflection&quot; blocks. While the model is &quot;thinking&quot; about its responses, it can emit a reflection block for realizing an error and correcting it mid-thought. I'm gonna be totally honest that I'm really not an expert in this stuff and I'm not sure if this actually works beyond the placebo effect of trying a different way of using the model. I've been told that chain-of-thought prompting is how <a href="https://support.anthropic.com/en/articles/9487310-what-are-artifacts-and-how-do-i-use-them">Claude Artifacts</a> work, but again I haven't done enough research to speak confidently about this.</p>
+        <p>Maybe this points towards the idea that large langle mangles don't actually understand the nuance or context of human language and are just pattern regurgitators. This would imply that English and other languages are actually a lot simpler than any of us think they are and the scale AI models operates is about as complicated as it can get. I have seen people claim that Reflection's outputs are some of the best they've seen, but I don't know how placebo-poisoned they are in the process. That's probably a psych study for a different day.</p>
+        <p>Either way, they claimed to do well in benchmarks:</p>
+        <figure class="max-w-3xl mx-auto not-prose w-full undefined"><a href="https://cdn.xeiaso.net/file/christine-static/blog/2024/reflection-cooked/benchmark-scores.jpg"><picture><source type="image/avif" srcset="https://cdn.xeiaso.net/file/christine-static/blog/2024/reflection-cooked/benchmark-scores.avif"/><source type="image/webp" srcset="https://cdn.xeiaso.net/file/christine-static/blog/2024/reflection-cooked/benchmark-scores.webp"/><img alt="A screenshot of a markdown table comparing Reflection 70b's scores in benchmarks against other frontier models. Reflection does better in two tests." loading="lazy" src="https://cdn.xeiaso.net/file/christine-static/blog/2024/reflection-cooked/benchmark-scores.jpg"/></picture></a><figcaption>A screenshot of a markdown table comparing Reflection 70b's scores in benchmarks against other frontier models. Reflection does better in two tests.</figcaption></figure>
+        <small><p>Image downloaded from Matt Shumer on X -
+        <a href="https://x.com/mattshumer_/status/1831767014341538166">source</a></p></small>
+        <p>Assuming this is legitimate, this is a groundbreaking discovery. Actually, no, groundbreaking isn't a strong enough word for this. If this panned out, this is an <em>earth-shattering</em> discovery that fundamentally changes the scale required for getting frontier model class performance without having to pay out for frontier model class hardware.</p>
+        <div class="my-4 flex space-x-4 rounded-md border border-solid border-fg-4 bg-bg-2 p-3 dark:border-fgDark-4 dark:bg-bgDark-2 lg:max-w-[65ch] mx-auto min-h-fit"><div class="flex max-h-16 shrink-0 items-center justify-center self-center"><img style="max-height:4rem" alt="Cadey is coffee" loading="lazy" src="https://cdn.xeiaso.net/sticker/cadey/coffee/128"/></div><div class="convsnippet min-w-0 self-center">&lt;<a href="https://xeiaso.net/characters#cadey"><b>Cadey</b></a>> <p>I'm gonna be totally honest, when I saw these scores, I thought they did the
+        easy benchmarking hacking strategy of training on the test data. After doing
+        the research and writing for this article, I'm no longer sure about that; but
+        the benchmark scores are just <em>that</em> anomalously high. It is so much easier to
+        cheat on the tests than it is to get breakthrough performance in them that
+        it's frankly easy to distrust anomalously high tests. Either way, talk is
+        cheap, show me the weights in use and that's where things really get
+        interesting.</p></div></div>
+        <h3>Why it's such a huge deal</h3>
+        <p>In order to fully appreciate the magnitude of this, let's go over how you determine the hardware needed to run a given large language model. A machine learning model is functionally a giant bag of numbers of a certain size, usually IEEE-754 float16 numbers. A 70 billion parameter model requires you to have <em>at least</em> 140 gigabytes of video memory (VRAM) to load the model at all.</p>
+        <p>However, it's not just conventional system memory that you can get for fairly cheap. It's video memory on a GPU. VRAM is usually hard-soldered onto a GPU with <em>no way to upgrade it</em>, so once you buy a GPU, you're stuck with however much memory you have. Getting more memory means you need to buy more GPUs. As a result, enterprise GPUs with high memory amounts are so much in demand that three year old models have backlogs of more than a year from time of purchase to time of shipment.</p>
+        <div class="my-4 flex space-x-4 rounded-md border border-solid border-fg-4 bg-bg-2 p-3 dark:border-fgDark-4 dark:bg-bgDark-2 lg:max-w-[65ch] mx-auto min-h-fit"><div class="flex max-h-16 shrink-0 items-center justify-center self-center"><img style="max-height:4rem" alt="Cadey is coffee" loading="lazy" src="https://cdn.xeiaso.net/sticker/cadey/coffee/128"/></div><div class="convsnippet min-w-0 self-center">&lt;<a href="https://xeiaso.net/characters#cadey"><b>Cadey</b></a>> <p>An AI researcher friend reports that there's ways to work around the VRAM
+        limits with hyperscaler grade infrastructure, but I mostly focus on the kinds
+        of setups that mere mortals can comprehend. Just know that it does get more
+        elaborate and hardware does get used to its full potential at extreme scale.
+        I'm more focused on the mid-scale of AI usage with individual enterprise grade
+        GPUs because that's what I have the most experience with.</p></div></div>
+        <p>Not to mention, you don't just need to load the model weights, you need to have the memory space to inference the models. The great part about this is that it's difficult to figure out how much memory you'd actually need without testing it.</p>
+        <p>In general back when smaller context window models were common, I used the head math estimate of adding 20-40% more memory on top of the weights. Here's how this matches with reality:</p>
+        <table><thead><tr><th style="text-align:left;">Model</th><th style="text-align:left;">Weights (GB)</th><th style="text-align:left;">Estimate VRAM (GB)</th><th style="text-align:left;">Actual VRAM (GB)</th></tr></thead><tbody><tr><td style="text-align:left;">Hermes 3 8B Q4 @ 4k</td><td style="text-align:left;">4.7 GB</td><td style="text-align:left;">6.5 GB</td><td style="text-align:left;">6.7 GB</td></tr><tr><td style="text-align:left;">Hermes 3 70B Q4 @ 4k</td><td style="text-align:left;">39 GB</td><td style="text-align:left;">50 GB</td><td style="text-align:left;">44 GB</td></tr></tbody></table>
+        <div class="my-4 flex space-x-4 rounded-md border border-solid border-fg-4 bg-bg-2 p-3 dark:border-fgDark-4 dark:bg-bgDark-2 lg:max-w-[65ch] mx-auto min-h-fit"><div class="flex max-h-16 shrink-0 items-center justify-center self-center"><img style="max-height:4rem" alt="Mara is hacker" loading="lazy" src="https://cdn.xeiaso.net/sticker/mara/hacker/128"/></div><div class="convsnippet min-w-0 self-center">&lt;<a href="https://xeiaso.net/characters#mara"><b>Mara</b></a>> <p>For convenience, token window sizes are referred to in kibitokens. Here's a conversion table from kibitokens to base 10 tokens:</p><div class="lg:w-lg"><table><thead><tr><th style="text-align:left;">Kibitoken shorthand</th><th style="text-align:left;">Token count</th></tr></thead><tbody><tr><td style="text-align:left;">4k</td><td style="text-align:left;">4096</td></tr><tr><td style="text-align:left;">8k</td><td style="text-align:left;">8192</td></tr><tr><td style="text-align:left;">16k</td><td style="text-align:left;">16384</td></tr><tr><td style="text-align:left;">32k</td><td style="text-align:left;">32768</td></tr><tr><td style="text-align:left;">64k</td><td style="text-align:left;">65536</td></tr><tr><td style="text-align:left;">128k</td><td style="text-align:left;">131072</td></tr><tr><td style="text-align:left;">256k</td><td style="text-align:left;">262144</td></tr></tbody></table></div></div></div>
+        <p>In general, the attention window takes up a few gigabytes of video memory, but the horrifying part is that as the context window size increases, the amount of video memory required increases <em>exponentially</em>. Here's some examples:</p>
+        <div class="lg:w-lg"><table><thead><tr><th style="text-align:left;">Model</th><th style="text-align:left;">VRAM needed</th></tr></thead><tbody><tr><td style="text-align:left;">Hermes 3 8B Q4 @ 4k</td><td style="text-align:left;">6.7 GB</td></tr><tr><td style="text-align:left;">Hermes 3 8B Q4 @ 8k</td><td style="text-align:left;">11 GB</td></tr><tr><td style="text-align:left;">Hermes 3 8B Q4 @ 16k</td><td style="text-align:left;">18 GB</td></tr><tr><td style="text-align:left;">Hermes 3 8B Q4 @ 32k</td><td style="text-align:left;">31 GB</td></tr><tr><td style="text-align:left;">Hermes 3 8B Q4 @ 64k</td><td style="text-align:left;">18 GB</td></tr><tr><td style="text-align:left;">Hermes 3 8B Q4 @ 128k</td><td style="text-align:left;">31 GB</td></tr><tr><td style="text-align:left;">Hermes 3 8B Q4 @ 256k</td><td style="text-align:left;">58 GB</td></tr></tbody></table></div>
+        <figure class="max-w-3xl mx-auto not-prose w-full undefined"><a href="https://cdn.xeiaso.net/file/christine-static/blog/2024/reflection-cooked/graph-of-vram-use.jpg"><picture><source type="image/avif" srcset="https://cdn.xeiaso.net/file/christine-static/blog/2024/reflection-cooked/graph-of-vram-use.avif"/><source type="image/webp" srcset="https://cdn.xeiaso.net/file/christine-static/blog/2024/reflection-cooked/graph-of-vram-use.webp"/><img alt="A graph visually demonstrating how a larger context window means more vram is used, with a dropoff between 32k and 64k window sizes." loading="lazy" src="https://cdn.xeiaso.net/file/christine-static/blog/2024/reflection-cooked/graph-of-vram-use.jpg"/></picture></a><figcaption>A graph visually demonstrating how a larger context window means more vram is used, with a dropoff between 32k and 64k window sizes.</figcaption></figure>
+        <p>There is a dropoff in VRAM usage when you go from 32k to 64k tokens in your context window, I'd assume that has something to do with <a href="https://arxiv.org/abs/2205.14135">flash attention</a> or any of the improvements made to it over the years. Either way, you get the point. More context = exponentially more vram required.</p>
+        <p>If the AI startup behind Reflection is onto something, this means that you need less hardware to get the same quality as frontier models without having to build out a gigawatt supercluster of GPUs that you can't buy anyways. This means we're one step closer to having something at the utility and scale of GPT-4 that can be run on unmodified consumer hardware.</p>
+        <div class="my-4 flex space-x-4 rounded-md border border-solid border-fg-4 bg-bg-2 p-3 dark:border-fgDark-4 dark:bg-bgDark-2 lg:max-w-[65ch] mx-auto min-h-fit"><div class="flex max-h-16 shrink-0 items-center justify-center self-center"><img style="max-height:4rem" alt="Cadey is coffee" loading="lazy" src="https://cdn.xeiaso.net/sticker/cadey/coffee/128"/></div><div class="convsnippet min-w-0 self-center">&lt;<a href="https://xeiaso.net/characters#cadey"><b>Cadey</b></a>> <p>An announcement like this is also great if you want to raise a new round of
+        funding for your AI product in a bear market like the one we're in… but only
+        if it's real.</p></div></div>
+        <p>Based on the information we all knew at the time of its announcement, yeah it's a big thing and it got hyped up by people on X and people in the media. I'm not gonna shit on the media here. Reporting new events and discoveries is their job. I'm going to good faith assume that they consulted with an expert to see if the vibes were off; but as an artificial intelligence computer toucher, that announcement was exciting. I'd love to have something totally local, totally private, but also capable of helping with whatever task I'd want it to.</p>
+        <p>If the same concept was able to scale down, this means that models like Apple Intelligence could actually be more capable <em>on your phone</em> next year than they are on servers today. To say this would be a game changer for AI utility and deployment would be another understatement so large I lack the capacity to explain it in English.</p>
+        <p>Nobody would be stupid enough to torch their reputation in a reputation driven hype bubble to win magic internet points and venture capital funding, right?</p>
+        <h2>The cracks form</h2>
+        <p>When the weights were dropped on HuggingFace, they were downloaded as fast as their servers allowed. Initial results were <a href="https://x.com/shinboson/status/1832933753837982024">not promising</a>. People found that it somehow performed <em>worse</em> than Llama 3.1 70b out of the gate.</p>
+        <p>This should have been impossible. If the Reflection fine-tuned model is a categorical improvement on the base model, then every benchmark should have a higher result than the base model. I'm not even talking about human vibe evaluation, I'm talking about the gameable benchmarks like Hellaswag, AGIEval, and StrawberryLetterCountEval.</p>
+        <p>The CEO of the AI company <a href="https://x.com/mattshumer_/status/1832424499054309804">claimed they fucked something up in the process of uploading the weights</a>. Which is fair enough, git isn't exactly the most intuitive program to use, and LFS support in Git is a massive, massive hack. As a way for people to evaluate the model, they opened up <a href="https://x.com/mattshumer_/status/1832509211512623113">a private API endpoint</a> so that a few select researchers could run their benchmarks. They also were <a href="https://x.com/mattshumer_/status/1832874480927904192">soliciting help setting up a torrent</a>, which made me have many lols.</p>
+        <div class="my-4 flex space-x-4 rounded-md border border-solid border-fg-4 bg-bg-2 p-3 dark:border-fgDark-4 dark:bg-bgDark-2 lg:max-w-[65ch] mx-auto min-h-fit"><div class="flex max-h-16 shrink-0 items-center justify-center self-center"><img style="max-height:4rem" alt="Cadey is coffee" loading="lazy" src="https://cdn.xeiaso.net/sticker/cadey/coffee/128"/></div><div class="convsnippet min-w-0 self-center">&lt;<a href="https://xeiaso.net/characters#cadey"><b>Cadey</b></a>> <p>In general, you'd want to distribute large language model weights by
+        BitTorrent because people are likely to seed heavily. You can drop a model in
+        your permanent model storage folder and seed it while you use it with minimal
+        (if any) impact to the throughput of the model. Not to mention sharing is
+        caring, etc.</p></div></div>
+        <p>One of the researchers that got access to that private API <a href="https://x.com/ArtificialAnlys/status/1832965630472995220">claimed that the model was not at the level they claimed it was in the announcement</a>. They were also cagey on claiming that Reflection was any good because it was difficult to impossible to validate that the model they were running was actually the model that it claimed it was.</p>
+        <p>Everything changed when they opened that private API <a href="https://x.com/OpenRouterAI/status/1832880567437729881">to anyone via OpenRouter</a>. People instantly were able <a href="https://www.reddit.com/r/LocalLLaMA/comments/1fc98fu/confirmed_reflection_70bs_official_api_is_sonnet/">to tell that it was Anthropic's Claude model</a>, down to the level of search-and-replace filtering out the word &quot;Claude&quot; from responses.</p>
+        <p>Amusingly enough, their neutering of Claude via Reflection's system prompt caused Claude to perform <em>remarkably worse</em> than it does without it. A friend of mine <a href="https://x.com/lun_aaaaa/status/1832572760562004213">even called it as Claude a day before anyone else</a>. They were so right in retrospect that it kinda hurts.</p>
+        <div class="my-4 flex space-x-4 rounded-md border border-solid border-fg-4 bg-bg-2 p-3 dark:border-fgDark-4 dark:bg-bgDark-2 lg:max-w-[65ch] mx-auto min-h-fit"><div class="flex max-h-16 shrink-0 items-center justify-center self-center"><img style="max-height:4rem" alt="Cadey is coffee" loading="lazy" src="https://cdn.xeiaso.net/sticker/cadey/coffee/128"/></div><div class="convsnippet min-w-0 self-center">&lt;<a href="https://xeiaso.net/characters#cadey"><b>Cadey</b></a>> <p>This part is actually rather impressive. It takes effort to cook a model as
+        good as Claude into uselessness via a system prompt. It takes genuine skill to
+        mess this up this badly.</p></div></div>
+        <p>Allegedly at some point the Reflection team switched the model out to GPT-4o behind the scenes, but at this point I kinda lost interest in tracking the details and don't really have anything else to say. The damage was done. The giant impossible breakthrough for local AI models was a puff of hot air.</p>
+        <h2>Reflection is cooked</h2>
+        <p>So now as the ash settles, I'm left with a big bag of floating point numbers on my MacBook's SSD that won't really be useful for anything but writing what remains of this article. At least it allegedly can count the number of r's in the word strawberry:</p>
+        <div class="my-4 flex space-x-4 rounded-md border border-solid border-fg-4 bg-bg-2 p-3 dark:border-fgDark-4 dark:bg-bgDark-2 lg:max-w-[65ch] mx-auto min-h-fit"><div class="flex max-h-16 shrink-0 items-center justify-center self-center"><img style="max-height:4rem" alt="Aoi is wut" loading="lazy" src="https://cdn.xeiaso.net/sticker/aoi/wut/128"/></div><div class="convsnippet min-w-0 self-center">&lt;<a href="https://xeiaso.net/characters#aoi"><b>Aoi</b></a>> <p>How many r's are in the word strawberry?</p></div></div>
+        <div class="my-4 flex space-x-4 rounded-md border border-solid border-fg-4 bg-bg-2 p-3 dark:border-fgDark-4 dark:bg-bgDark-2 lg:max-w-[65ch] mx-auto min-h-fit"><div class="flex max-h-16 shrink-0 items-center justify-center self-center"><img style="max-height:4rem" alt="Mimi is happy" loading="lazy" src="https://cdn.xeiaso.net/sticker/mimi/happy/128"/></div><div class="convsnippet min-w-0 self-center">&lt;<a href="https://xeiaso.net/characters#mimi"><b>Mimi</b></a>> <br/>&lt;thinking><br/><p>To answer this question, I need to count the number of 'r's in the word &quot;strawberry&quot;. Let me break it down:</p><ol>
+        <li>S - T - R - A - W - B - E - R - Y</li>
+        </ol><p>Now, I'll count the 'r's:</p><ol>
+        <li>First 'R' appears after 'T'</li>
+        <li>Second 'R' appears at the end of the word</li>
+        </ol><p>So, there are 2 'r's in the word strawberry.</p>&lt;reflection><p>Wait, I made a mistake in my counting. Let me double-check:</p><ol>
+        <li>S - T - R - A - W - B - E - R - Y</li>
+        </ol><p>I see that I missed an 'R' in my initial count. There are actually three 'R's in the word strawberry.</p>&lt;/reflection><p>Therefore, there are 3 'r's in the word strawberry.</p>&lt;/thinking><br/>&lt;output><p>There are 3 r's in the word strawberry.</p>&lt;/output><br/><small>Content generated by AI using the model Reflection 70b Q4 @ 4k.</small></div></div>
+        <div class="my-4 flex space-x-4 rounded-md border border-solid border-fg-4 bg-bg-2 p-3 dark:border-fgDark-4 dark:bg-bgDark-2 lg:max-w-[65ch] mx-auto min-h-fit"><div class="flex max-h-16 shrink-0 items-center justify-center self-center"><img style="max-height:4rem" alt="Aoi is wut" loading="lazy" src="https://cdn.xeiaso.net/sticker/aoi/wut/128"/></div><div class="convsnippet min-w-0 self-center">&lt;<a href="https://xeiaso.net/characters#aoi"><b>Aoi</b></a>> <p>How??? It got it wrong but still got it correct.</p></div></div>
+        <div class="my-4 flex space-x-4 rounded-md border border-solid border-fg-4 bg-bg-2 p-3 dark:border-fgDark-4 dark:bg-bgDark-2 lg:max-w-[65ch] mx-auto min-h-fit"><div class="flex max-h-16 shrink-0 items-center justify-center self-center"><img style="max-height:4rem" alt="Cadey is coffee" loading="lazy" src="https://cdn.xeiaso.net/sticker/cadey/coffee/128"/></div><div class="convsnippet min-w-0 self-center">&lt;<a href="https://xeiaso.net/characters#cadey"><b>Cadey</b></a>> <p>This is actually due to how models tokenize words. If you want to play around with a tokenizer visually, <a href="https://platform.openai.com/tokenizer">check OpenAI's tokenizer demo</a>. The word &quot;strawberry&quot; is like 3 tokens. Models don't fundamentally understand <em>what</em> the tokens are, only the patterns between them.</p></div></div>
+        <p>Maybe the team behind Reflection will end up making great models, but I just can't trust their claims anymore. If they do actually make something decent out of the ashes of Reflection I'll try it, I guess, but I'm not holding my breath. It looks like some AI companies reached out to them to help with the logistics of training and distributing the weights for a &quot;redo&quot;. I'm just gonna wait this one out. I'd absolutely love to be proven wrong here. I know there is a lot of theoretical performance still waiting on the table, but thanks to this I'm going to be a lot more skeptical when I see new breakthroughs in the future.</p>
+        <p>For now though, I want that disk space back:</p>
+        <pre><code class="code-highlight"><span class="code-line">$ ollama rm reflection
+        </span></code></pre>
+        <hr/>
+        <p>Author's note: I tried to make the Reflection snippets as readable as possible. Some combination of my formatter, MDX, and Tailwind are fighting me hard. Should this style of chain-of-thought prompting take off, I plan to develop inline speech bubble components to help represent the different stages of chain-of-thought inference. I don't suspect it will, so I haven't taken the time to do that yet.</p>]]>
+      </content:encoded>
+      <pubDate>Mon, 09 Sep 2024 00:00:00 GMT</pubDate>
+    </item>
+  </channel>
+</rss>
