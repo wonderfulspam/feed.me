@@ -48,6 +48,11 @@ output_path = './content/data/feedData.json'
     tier = 'love'
     url = 'https://fasterthanli.me/index.xml'
 
+  [feeds.hackernews]
+    author = 'Hacker News'
+    tier = 'new'
+    url = 'https://hnrss.org/newest?points=100'
+
   [feeds.hazelweakly]
     author = 'Hazel Weakly'
     tier = 'new'
@@ -73,6 +78,11 @@ output_path = './content/data/feedData.json'
     tier = 'like'
     url = 'https://lexi-lambda.github.io/feeds/all.atom.xml'
 
+  [feeds.matklad]
+    author = 'Alex Kladov'
+    tier = 'like'
+    url = 'https://matklad.github.io/feed.xml'
+
   [feeds.noboilerplate]
     author = 'Tris 0atman'
     tier = 'like'
@@ -88,15 +98,20 @@ output_path = './content/data/feedData.json'
     tier = 'like'
     url = 'https://blog.rust-lang.org/feed.xml'
 
+  [feeds.simonwillison]
+    author = 'Simon Willison'
+    tier = 'like'
+    url = 'https://simonwillison.net/atom/everything/'
+
   [feeds.smallcultfollowing]
     author = 'Niko Matsakis'
     tier = 'like'
     url = 'https://smallcultfollowing.com/babysteps//atom.xml'
 
-  [feeds.theregister_devops]
+  [feeds.theregister]
     author = 'The Register'
     tier = 'new'
-    url = 'https://www.theregister.com/software/devops/headlines.atom'
+    url = 'https://www.theregister.com/headlines.atom'
 
   [feeds.withoutboats]
     author = 'Without Boats'
