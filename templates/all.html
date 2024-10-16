@@ -1,15 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-{% set item_data = load_data(path="content/data/itemData.json") %}
-<!-- Secondary Articles Grid -->
-<section class="secondary-articles">
-{% for item in item_data %}
-{% if loop.index0 == 24 %}{% break %}{% endif %}
-
-{% set featured = "false" %}
-{% include "partials/article.html" %}
-{% endfor %}
-</section>
+  {% set item_data = load_data(path="content/data/itemData.json") %}
+  <!-- Secondary Articles Grid -->
+  <section class="secondary-articles">
+    {% for item in item_data %}
+      {% if loop.index0 == 24 %}{% break %}{% endif %}
+      {% set featured = "false" %}
+      {% include "partials/article.html" %}
+    {% endfor %}
+  </section>
 {% endblock content %}
