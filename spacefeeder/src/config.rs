@@ -40,7 +40,7 @@ impl Config {
     pub fn from_file(path: &str) -> Result<Self> {
         let content = std::fs::read_to_string(path)
             .with_context(|| format!("Failed to read file: {path}"))?;
-        let config = toml::from_str(&content)
+        let config = toml_edit::de::from_str(&content)
             .with_context(|| format!("Failed to parse TOML from file: {path}"))?;
         Ok(config)
     }
