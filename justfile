@@ -2,10 +2,14 @@ set quiet
 
 spacefeeder_config_path := "spacefeeder.toml"
 
-add_feed slug url author tier="new": (_check_binary_exists "dasel")
-  dasel put -f {{spacefeeder_config_path}} -r toml -t string -v '{{url}}' 'feeds.{{slug}}.url' && \
-  dasel put -f {{spacefeeder_config_path}} -r toml -t string -v '{{author}}' 'feeds.{{slug}}.author' && \
-  dasel put -f {{spacefeeder_config_path}} -r toml -t string -v '{{tier}}' 'feeds.{{slug}}.tier'
+add_feed slug url author tier="new": build_spacefeeder
+  spacefeeder add-feed --slug "{{slug}}" --url "{{url}}" --author "{{author}}" --tier "{{tier}}"
+
+export_feeds: build_spacefeeder
+  spacefeeder export
+
+import_feeds input_path tier="new": build_spacefeeder
+  spacefeeder import --input-path "{{input_path}}" --tier "{{tier}}"
 
 fetch_feeds: build_spacefeeder
   spacefeeder fetch
@@ -31,7 +35,3 @@ publish_to_netlify: build
      --data-binary "@site.zip" \
      https://api.netlify.com/api/v1/sites/feed-me-feeds.netlify.com/deploys
   rm site.zip
-
-[no-exit-message]
-_check_binary_exists binary_name:
-  command -v {{binary_name}} > /dev/null 2>&1 || { echo "{{binary_name}} not found, aborting"; exit 1; }

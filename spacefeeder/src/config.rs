@@ -1,11 +1,11 @@
 use std::collections::HashMap;
 
 use anyhow::{Context, Result};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 use crate::{FeedInfo, Tier};
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct Config {
     #[serde(flatten)]
     pub(crate) parse_config: ParseConfig,
@@ -14,13 +14,13 @@ pub struct Config {
     pub(crate) feeds: HashMap<String, FeedInfo>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct ParseConfig {
     pub(crate) max_articles: usize,
     pub(crate) description_max_words: usize,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct OutputConfig {
     #[serde(default = "default_feed_data_output_path")]
     pub(crate) feed_data_output_path: String,
@@ -43,6 +43,16 @@ impl Config {
         let config = toml_edit::de::from_str(&content)
             .with_context(|| format!("Failed to parse TOML from file: {path}"))?;
         Ok(config)
+    }
+
+    pub(crate) fn insert_feed(&mut self, slug: String, feed: FeedInfo) {
+        let _ = self.feeds.insert(slug, feed);
+    }
+
+    pub fn save(&self, config_path: &str) -> Result<()> {
+        let output = toml_edit::ser::to_string_pretty(self)?;
+        std::fs::write(config_path, output)
+            .with_context(|| format!("Failed to write to {config_path}"))
     }
 }
 
