@@ -8,6 +8,8 @@ on:
     - cron: "23 5,9,14,18,22 * * *"
   workflow_dispatch:
   pull_request:
+  push:
+    branches: [main]
 
 jobs:
   fetch_feeds:
