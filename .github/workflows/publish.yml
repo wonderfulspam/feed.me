@@ -17,9 +17,16 @@ jobs:
     runs-on: "ubuntu-latest"
     steps:
       - uses: actions/checkout@v4
-      - name: Install spacefeeder
+      - name: Install Rust
+        if: github.event_name == 'push' || github.event_name == 'pull_request'
+        uses: dtolnay/rust-toolchain@stable
+      - name: Build and install spacefeeder from source
+        if: github.event_name == 'push' || github.event_name == 'pull_request'
         shell: bash
-        # TODO: Don't blindly use latest version, build new if necessary or pin to a version
+        run: "cd spacefeeder && cargo install --path . --locked"
+      - name: Install spacefeeder from release
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        shell: bash
         run: "curl --proto '=https' --tlsv1.2 -LsSf https://github.com/wonderfulspam/feed.me/releases/latest/download/spacefeeder-installer.sh | sh"
       - name: Fetch feed content
         run: "mkdir -p content/data && spacefeeder fetch"
