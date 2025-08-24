@@ -6,29 +6,29 @@
   {% set color_class = "" %}
 {% endif %}
 
-<a href="{{ item.item_url }}" role="button" class="{{ color_class }}">
+<a href="{{ item.item_url }}" role="button" class="{{ color_class }}" aria-label="Read article: {{ item.title }}">
   {% if featured == "true" %}
-    <article class="featured">
-      <span class="author">
+    <article class="featured" role="article" aria-labelledby="article-title-{{ item.title | slugify }}">
+      <span class="author" aria-label="Author">
         {{ item.author }}
       </span>
       |
-      <span class="date">
+      <span class="date" aria-label="Publication date">
         {{ item.pub_date | date(timezone="Europe/Berlin") }}
       </span>
-      <h2>
+      <h2 id="article-title-{{ item.title | slugify }}">
         {{ item.title }}
       </h2>
   {% else %}
-    <article class="article">
-      <span class="author">
+    <article class="article" role="article" aria-labelledby="article-title-{{ item.title | slugify }}">
+      <span class="author" aria-label="Author">
         {{ item.author }}
       </span>
       |
-      <span class="date">
+      <span class="date" aria-label="Publication date">
         {{ item.pub_date | date(timezone="Europe/Berlin") }}
       </span>
-      <h3>
+      <h3 id="article-title-{{ item.title | slugify }}">
         {{ item.title }}
       </h3>
   {% endif %}

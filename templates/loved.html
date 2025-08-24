@@ -3,7 +3,7 @@
 {% block content %}
   {% set item_data = load_data(path="content/data/lovedData.json") %}
   <!-- Secondary Articles Grid -->
-  <section class="secondary-articles">
+  <section class="secondary-articles" aria-label="Loved articles">
     {% for item in item_data %}
       {% if loop.index0 == 12 %}{% break %}{% endif %}
       {% set featured = "false" %}

@@ -29,10 +29,6 @@ The Zola frontend is simple and effective. Here are some suggestions for improve
 
 
 
-### 3. **Improve Accessibility**
-
-*   **Observation:** The HTML is simple and clean, which is good for accessibility.
-*   **Suggestion:** To further improve accessibility, consider adding ARIA attributes to the HTML elements, especially for the navigation and the articles. For example, you could add `role="navigation"` to the `nav` element and `role="article"` to the `article` elements.
 
 ## Future Functionality
 

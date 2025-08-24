@@ -8,11 +8,11 @@
     <title>Feed.me</title>
   </head>
 
-  <header class="header">
+  <header class="header" role="banner">
     <div class="container">
       <h1 class="logo">Feed.me</h1>
-      <nav class="nav">
-        <ul>
+      <nav class="nav" role="navigation" aria-label="Main navigation">
+        <ul role="list">
           <!-- TODO: Loop over some categories -->
           <li>
             <a href="/">Home</a>
@@ -28,14 +28,14 @@
     </div>
   </header>
   <body>
-    <main class="main-content container">
+    <main class="main-content container" role="main" aria-label="Main content">
       {% block content %} {% endblock %}
     </main>
   </body>
-  <footer class="footer">
+  <footer class="footer" role="contentinfo">
     <div class="container">
-      <nav>
-        <ul>
+      <nav aria-label="Footer navigation">
+        <ul role="list">
           <li>
             <a href="https://github.com/wonderfulspam/feed.me">Source code</a>
             | Last updated: {{ now() | date(timezone="Europe/Berlin",

@@ -5,7 +5,7 @@
   {% set liked_data = load_data(path="content/data/likedData.json") %}
   <!-- Featured Articles -->
   {% for i in [0, 1, 2, 3,] %}
-    <section class="featured-articles">
+    <section class="featured-articles" aria-label="Featured articles">
       {% set offset = 2 * i %}
       {% set final = offset + 2 %}
       {% for item in loved_data | slice(start=offset, end=final) %}
@@ -14,7 +14,7 @@
       {% endfor %}
     </section>
     <!-- Secondary Articles Grid -->
-    <section class="secondary-articles">
+    <section class="secondary-articles" aria-label="Secondary articles">
       {% set offset = 8 * i %}
       {% set final = offset + 8 %}
       {% for item in liked_data | slice(start=offset, end=final) %}
