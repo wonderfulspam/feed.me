@@ -19,14 +19,6 @@ The `feed.me` project is a well-architected RSS feed reader with good separation
 - One-command installation for users
 - Automatic updates and version management
 
-### 3. **Full-Text Search**
-*Current Gap:* No way to find articles by content  
-*User Value:* Essential for managing large article collections  
-*Implementation:* Local search index (tantivy or similar)
-- Search titles, descriptions, and metadata
-- Filter by date, author, tier
-- Saved searches as dynamic feeds
-
 ## Medium-Priority Improvements (Nice-to-Have)
 
 ### 1. **Multiple Output Formats**
@@ -74,7 +66,6 @@ Keep the CLI tool focused and composable rather than building a monolithic appli
 ## Implementation Priority
 
 1. **Package Distribution** - Reduces adoption friction  
-2. **Search** - Scales with growing article collections
-3. **Output Format Flexibility** - Enables new use cases
+2. **Output Format Flexibility** - Enables new use cases
 
 Focus on closing real user experience gaps rather than solving theoretical problems or optimizing already-acceptable performance.

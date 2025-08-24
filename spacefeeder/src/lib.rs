@@ -1,5 +1,6 @@
 pub mod commands;
 pub mod config;
+pub mod search;
 
 use std::str::FromStr;
 

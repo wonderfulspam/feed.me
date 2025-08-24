@@ -4,6 +4,7 @@ use std::thread;
 use std::time::Duration;
 
 use crate::config::{Config, ParseConfig};
+use crate::search::{ArticleDoc, SearchIndex};
 use crate::FeedInfo;
 
 use anyhow::Result;
@@ -148,6 +149,14 @@ pub fn run(config: Config) -> Result<()> {
         feed_data.len(),
         (feed_data.len() * 100) / total_feeds.max(1)
     );
+
+    // Build search index
+    println!("Building search index...");
+    if let Err(e) = build_search_index(&items) {
+        eprintln!("⚠ Warning: Failed to build search index: {}", e);
+    } else {
+        println!("✓ Search index updated");
+    }
     
     // Return Ok even if some feeds failed - the operation as a whole succeeded
     Ok(())
@@ -167,6 +176,12 @@ impl From<&FeedOutput> for Vec<ItemOutput> {
 }
 fn write_data_to_file<D: Serialize>(output_path: &str, data: &D) {
     let contents = serde_json::to_string_pretty(data).unwrap();
+    
+    // Create parent directory if it doesn't exist
+    if let Some(parent) = std::path::Path::new(output_path).parent() {
+        std::fs::create_dir_all(parent).expect("Unable to create parent directory");
+    }
+    
     std::fs::write(output_path, contents).expect("Unable to write file");
 }
 
@@ -299,6 +314,49 @@ fn extract_first_paragraph(text: &str) -> Option<String> {
     } else {
         None
     }
+}
+
+fn build_search_index(items: &[ItemOutput]) -> Result<()> {
+    let index_path = "./search_index";
+    
+    // Create or open search index
+    let search_index = if std::path::Path::new(index_path).exists() {
+        SearchIndex::open(index_path)?
+    } else {
+        SearchIndex::new(index_path)?
+    };
+    
+    // Clear existing index
+    search_index.clear_index()?;
+    
+    // Convert items to ArticleDoc format
+    let articles: Vec<ArticleDoc> = items
+        .iter()
+        .filter_map(|item| {
+            Some(ArticleDoc {
+                title: item.item.title.clone(),
+                description: item.item.safe_description.clone(),
+                author: item.meta.author.clone(),
+                tier: format!("{:?}", item.meta.tier).to_lowercase(),
+                slug: item.slug.clone(),
+                item_url: item.item.item_url.clone(),
+                pub_date: item.item.pub_date.unwrap_or_else(|| Utc::now()),
+            })
+        })
+        .collect();
+    
+    // Add articles to search index
+    search_index.add_articles(&articles)?;
+    
+    // Export search data as JSON for web interface (both locations)
+    let search_data_path = "./content/data/searchData.json";
+    write_data_to_file(search_data_path, &articles);
+    
+    // Also copy to static directory so it's served by Zola
+    let static_search_path = "./static/data/searchData.json";
+    write_data_to_file(static_search_path, &articles);
+    
+    Ok(())
 }
 #[cfg(test)]
 mod tests {

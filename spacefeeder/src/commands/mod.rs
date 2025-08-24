@@ -4,3 +4,4 @@ pub mod fetch_feeds;
 pub mod find_feed;
 pub mod import_feeds;
 pub mod init;
+pub mod search;

@@ -17,6 +17,9 @@ import_feeds input_path tier="new": build_spacefeeder
 fetch_feeds: build_spacefeeder
   spacefeeder fetch
 
+search query *filters="": build_spacefeeder
+  spacefeeder search "{{query}}" {{filters}}
+
 [no-exit-message]
 find_feed base_url: build_spacefeeder
   spacefeeder find-feed --base-url {{base_url}}

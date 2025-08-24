@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="search-container">
+  <h1>Search Articles</h1>
+  <div class="search-form">
+    <input
+      type="search"
+      id="search-input"
+      placeholder="Search articles..."
+      aria-label="Search articles"
+      autofocus
+    />
+    <div class="search-filters">
+      <label for="author-filter">Author:</label>
+      <select id="author-filter">
+        <option value="">All authors</option>
+      </select>
+      
+      <label for="tier-filter">Tier:</label>
+      <select id="tier-filter">
+        <option value="">All tiers</option>
+        <option value="new">New</option>
+        <option value="like">Like</option>
+        <option value="love">Love</option>
+      </select>
+    </div>
+  </div>
+  
+  <div class="search-results">
+    <div id="search-status" aria-live="polite"></div>
+    <div id="search-results-list" class="article-list"></div>
+  </div>
+</div>
+
+<script src="/js/search.js"></script>
+{% endblock %}

@@ -261,3 +261,67 @@ a {
 .hidden-toggle button:hover {
   background-color: rgba(255, 255, 255, 0.1);
 }
+
+/* Search Styles */
+.search-container {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 0 20px;
+}
+
+.search-form {
+  margin-bottom: 30px;
+}
+
+#search-input {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 1rem;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+#search-input:focus {
+  outline: none;
+  border-color: #00416d;
+}
+
+.search-filters {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.search-filters label {
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.search-filters select {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: white;
+}
+
+#search-status {
+  font-style: italic;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.tier-new {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.tier-like {
+  background-color: #f3e5f5;
+  color: #7b1fa2;
+}
+
+.tier-love {
+  background-color: #ffebee;
+  color: #c62828;
+}
