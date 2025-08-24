@@ -45,6 +45,10 @@ pub fn run(config: Config) -> Result<()> {
     // A channel for transmitting the results of HTTP requests
     let (tx, rx) = channel();
 
+    // Track total feeds and failures for reporting
+    let total_feeds = config.feeds.len();
+    let mut failed_feeds = Vec::new();
+
     // Spin off background thread for parallel URL processing
     // TODO use async instead
     thread::spawn(move || {
@@ -54,24 +58,48 @@ pub fn run(config: Config) -> Result<()> {
         config.feeds.par_iter().for_each(|(slug, feed_info)| {
             let slug = slug.clone();
             let feed_info = feed_info.clone();
-            if let Some(feed) = fetch_feed(&agent, &feed_info.url) {
-                println!("Fetched feed for {slug}");
-                tx.send((feed, feed_info, slug)).unwrap();
-            } else {
-                eprintln!("Failed to load feed for {slug}");
+            match fetch_feed(&agent, &feed_info.url) {
+                Some(feed) => {
+                    println!("✓ Fetched feed for {slug}");
+                    tx.send(Ok((feed, feed_info, slug))).unwrap();
+                }
+                None => {
+                    eprintln!("✗ Failed to load feed for {slug} from {}", feed_info.url);
+                    tx.send(Err(slug)).unwrap();
+                }
             }
         });
     });
 
     let re = Regex::new(r"<[^>]*>").unwrap();
 
+    // Collect results, separating successes from failures
     let feed_data: Vec<_> = rx
         .into_iter()
-        .map(|(feed, feed_info, slug)| {
-            println!("Building feed for {slug}");
-            build_feed(feed, feed_info, &config.parse_config, &re, slug)
+        .filter_map(|result| match result {
+            Ok((feed, feed_info, slug)) => {
+                println!("Building feed for {slug}");
+                Some(build_feed(feed, feed_info, &config.parse_config, &re, slug))
+            }
+            Err(slug) => {
+                failed_feeds.push(slug);
+                None
+            }
         })
         .collect();
+
+    // Report failures if any
+    if !failed_feeds.is_empty() {
+        eprintln!(
+            "\n⚠ Warning: Failed to fetch {} out of {} feeds:",
+            failed_feeds.len(),
+            total_feeds
+        );
+        for slug in &failed_feeds {
+            eprintln!("  - {slug}");
+        }
+        eprintln!();
+    }
 
     write_data_to_file(&config.output_config.feed_data_output_path, &feed_data);
 
@@ -81,10 +109,13 @@ pub fn run(config: Config) -> Result<()> {
     write_data_to_file(&config.output_config.item_data_output_path, &items);
 
     println!(
-        "Processed {} items from {} feeds",
+        "\n✓ Successfully processed {} items from {} feeds ({}% success rate)",
         items.len(),
-        feed_data.len()
+        feed_data.len(),
+        (feed_data.len() * 100) / total_feeds.max(1)
     );
+    
+    // Return Ok even if some feeds failed - the operation as a whole succeeded
     Ok(())
 }
 

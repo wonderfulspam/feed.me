@@ -12,10 +12,6 @@ This review will provide suggestions to further improve the project, focusing on
 
 The `spacefeeder` tool is the core of the project. Here are some suggestions for improvement:
 
-### 1. **Error Handling in `fetch_feeds`**
-
-*   **Observation:** In `fetch_feeds.rs`, the code uses `join_all` to fetch all feeds concurrently. If one of the feed fetches fails, the entire process might be affected.
-*   **Suggestion:** Instead of using `join_all` and propagating the first error, consider using `futures::future::join_all` on a collection of futures that return a `Result`. This will allow you to handle each result individually, so that a single failing feed doesn't stop the entire process. You can log the errors for the failing feeds and continue processing the successful ones.
 
 ### 2. **Refactor Command Logic out of `main.rs`**
 
