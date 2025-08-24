@@ -1,537 +1,249 @@
-# Complex Categorization System - IMPLEMENTED ✓
+# Feed Management and Categorization System
 
-## Executive Summary
+## Overview
 
-**STATUS: FULLY IMPLEMENTED** ✅
+This document outlines the evolution of feed.me's categorization system into a package manager-like experience for RSS/Atom feeds. The system will ship with curated default feeds and categorization rules while maintaining full user customization capabilities.
 
-This document described the plan to evolve feed.me's categorization system from the current three-tier model (new/liked/loved) to a more sophisticated dual-axis system combining quality tiers with topical tags. The implementation is complete and provides better content discovery, filtering, and organization while maintaining backward compatibility.
+## Current State
 
-## Implementation Summary
+### Categorization System Status
+- Basic pattern-based tagging implemented
+- Configuration-driven rules stored in `spacefeeder.toml`
+- Tag normalization and confidence scoring functional
+- **Issues**: Crude categorization rules producing false positives (e.g., Simon Willison articles incorrectly tagged with "python")
 
-The categorization system has been successfully implemented with the following features:
+### User Experience Gaps
+- Manual feed discovery and configuration required
+- Complex `spacefeeder.toml` configuration barrier for new users
+- No standardized feed metadata or categorization rules
+- Difficult for new contributors to add well-categorized feeds
 
-✅ **Configuration-driven approach** - All rules stored in `spacefeeder.toml`  
-✅ **Pattern-based tagging** - Title, content, URL, author, and feed slug patterns  
-✅ **Keyword extraction** - Auto-tagging based on configured keywords  
-✅ **Tag normalization** - Aliases handle variations like "rustlang" → "rust"  
-✅ **Confidence scoring** - Filter low-quality tags with thresholds  
-✅ **Visual display** - Tags shown with semantic colors in the UI  
-✅ **Search integration** - Tags are searchable through the search index  
+## Target Architecture
 
-**Key Results:**
-- Articles now display relevant tags (e.g., "rust", "ai", "devops")
-- Tags are colored semantically (Rust = amber, AI = purple, etc.)
-- No hardcoded author/source handling - all rules are configurable
-- Backward compatible - existing tier system unchanged
+### Package Manager Model
+- **Built-in Feed Registry**: Curated collection of feeds with metadata and categorization rules
+- **Simplified User Config**: `spacefeeder.toml` contains only feed slugs and personal preferences (tiers)
+- **Default Data Sources**: Feed metadata, categorization rules, and aliases built into the application
+- **CLI Feed Management**: Commands to search, install, configure, and remove feeds
 
-## Current State Analysis
-
-### Existing System
-- **Tiers**: new, liked, loved (representing quality/curation level)
-- **Limitations**: 
-  - No topical organization
-  - Confusion between quality rating and starring individual articles
-  - Limited filtering capabilities
-
-### Feed Content Analysis
-Based on search analysis of current feeds, the dominant topics are:
-- **AI/ML**: LLMs, AI agents, Claude, GPT (30+ articles)
-- **Programming**: Rust (25+ articles), Python, general development
-- **DevOps/Infrastructure**: CI/CD, cloud, containers (20+ articles)
-- **Security**: Vulnerabilities, bug bounties, privacy (10+ articles)
-- **Linux/Open Source**: NixOS, Linux desktop, FOSS tools (15+ articles)
-- **Tech Industry**: Company news, products, analysis (20+ articles)
-
-### RSS/Atom Category Support
-- Some feeds (e.g., Atlassian) include `<category>` tags
-- Most feeds lack category metadata
-- YouTube/custom feeds have no category information
-- **Conclusion**: Cannot rely solely on feed-provided categories
-
-## Proposed Architecture
-
-### Dual-Axis System
-
+### Dual-Axis System (Unchanged)
 ```
-Quality Axis (Tiers)          Topic Axis (Tags)
-├── loved (★★★)               ├── AI/ML
-├── liked (★★)                ├── Rust
-└── new   (★)                 ├── DevOps
-                              ├── Security
-                              ├── Cloud
-                              ├── Linux
-                              └── [user-defined]
+Quality Axis (User-Defined)     Topic Axis (Auto-Generated)
+├── loved (★★★)                ├── AI/ML
+├── liked (★★)                 ├── Rust  
+└── new   (★)                  ├── DevOps
+                               └── [system + user-defined]
 ```
 
-### Key Design Principles
-1. **Orthogonal Concerns**: Tiers and tags serve different purposes
-2. **Progressive Enhancement**: Start simple, add sophistication over time
-3. **User Control**: Allow manual override of automatic tagging
-4. **Feed & Article Granularity**: Tags can apply to both feeds and individual articles
+### Design Principles
+1. **Batteries Included**: Ship with useful defaults for immediate value
+2. **Progressive Disclosure**: Simple initial experience, advanced features available
+3. **Full Customization**: All defaults can be overridden or extended
+4. **Community Driven**: Easy contribution of new feeds and categorization rules
 
-## Implementation Strategy
+## Implementation Plan
 
-### Phase 1: Data Model Enhancement
+### Phase 1: Built-in Feed Registry
+
+#### Default Data Sources
+Store feed registry and categorization rules as embedded resources:
+
 ```rust
-// Current
-struct Feed {
-    tier: Tier,  // new/liked/loved
-    // ...
-}
-
-// Proposed
-struct Feed {
-    tier: Tier,           // Quality rating (unchanged)
-    tags: Vec<String>,    // Feed-level tags
-    auto_tag: bool,       // Enable auto-tagging for this feed
-    // ...
-}
-
-struct Article {
-    // ... existing fields
-    tags: Vec<String>,         // Article-specific tags
-    inferred_tags: Vec<String>, // Auto-detected tags (kept separate)
-    starred: bool,             // Individual article starring
-}
+// Embedded at compile time
+const DEFAULT_FEEDS: &str = include_str!("data/feeds.toml");
+const DEFAULT_CATEGORIZATION: &str = include_str!("data/categorization.toml");
+const DEFAULT_TAGS: &str = include_str!("data/tags.toml");
 ```
 
-### Phase 2: Tagging Strategies
-
-#### 2.1 Manual Feed Tagging
-- Add tags to feeds in `spacefeeder.toml`
-- Example:
+#### Feed Registry Structure
 ```toml
+# data/feeds.toml
 [feeds.matklad]
 url = "https://matklad.github.io/feed.xml"
 author = "Alex Kladov"
-tier = "like"
-tags = ["rust", "programming", "compilers"]
+description = "Rust compiler development and programming insights"
+tags = ["rust", "compilers", "programming"]
+
+[feeds.simonwillison]
+url = "https://simonwillison.net/atom/everything/"
+author = "Simon Willison"
+description = "AI, databases, and web development"
+tags = ["ai", "databases", "web"]
 ```
 
-#### 2.2 RSS Category Import
-- Extract `<category>` tags from RSS/Atom feeds when available
-- Map common variations (e.g., "DevOps" → "devops")
-- Store as initial tag suggestions
+### Phase 2: CLI Feed Management
 
-#### 2.3 Keyword-Based Auto-Tagging
-Simple implementation using `keyword_extraction` crate:
-```rust
-use keyword_extraction::rake::Rake;
+#### Core Commands
+```bash
+# Search available feeds
+spacefeeder feeds search "rust"
+spacefeeder feeds search --tag "ai"
 
-fn extract_tags(title: &str, description: &str) -> Vec<String> {
-    let text = format!("{} {}", title, description);
-    let rake = Rake::new();
-    let keywords = rake.extract_keywords(&text, 5);
-    
-    // Match against predefined tag list
-    match_to_known_tags(keywords)
-}
+# Install (add) feeds to user config
+spacefeeder feeds add matklad
+spacefeeder feeds add simonwillison --tier like
+
+# List installed feeds
+spacefeeder feeds list
+spacefeeder feeds list --tier love
+
+# Configure existing feeds
+spacefeeder feeds configure matklad --tier love
+spacefeeder feeds configure simonwillison --tags "+python,-ai"
+
+# Remove feeds
+spacefeeder feeds remove matklad
+
+# Show feed information
+spacefeeder feeds info matklad
 ```
 
-#### 2.4 Advanced NLP Tagging (Future)
-Options for more sophisticated classification:
-- **rust-bert**: Pre-trained models for text classification
-- **OpenAI API**: Use GPT for tag suggestions (requires API key)
-- **Local LLM**: Run Llama.cpp with small model for privacy
-
-### Phase 3: Migration Path
-
-#### Step 1: Backward Compatible Addition
-1. Add tag fields to data structures
-2. Keep tier system unchanged
-3. Deploy without breaking existing functionality
-
-#### Step 2: Initial Tag Population
-```rust
-// Auto-populate tags based on feed characteristics
-fn migrate_feed_tags(feed: &Feed) -> Vec<String> {
-    let mut tags = Vec::new();
-    
-    // Analyze feed URL/author for hints
-    if feed.url.contains("rust") || feed.author.contains("rust") {
-        tags.push("rust".to_string());
-    }
-    if feed.url.contains("devops") || feed.slug.contains("devops") {
-        tags.push("devops".to_string());
-    }
-    
-    tags
-}
-```
-
-#### Step 3: User Interface Updates
-- Add tag filters to web interface
-- Show tags alongside tier badges
-- Allow tag-based search/filtering
-
-## User-Defined Categories
-
-### Configuration
+#### Simplified User Configuration
 ```toml
-[tags]
-# Predefined tags with descriptions
-predefined = [
-    { name = "ai", description = "AI, ML, LLMs, and neural networks" },
-    { name = "rust", description = "Rust programming language" },
-    { name = "devops", description = "CI/CD, deployment, infrastructure" },
-    { name = "security", description = "Security, vulnerabilities, privacy" },
-]
+# User's spacefeeder.toml (simplified)
+[feeds]
+matklad = { tier = "love" }
+simonwillison = { tier = "like" }
+hackernews = {}  # tier defaults to "new"
 
-# Tag aliases for normalization
-aliases = [
-    { from = ["artificial-intelligence", "machine-learning"], to = "ai" },
-    { from = ["rustlang", "rust-lang"], to = "rust" },
-]
+# Optional user customizations
+[tags.overrides]
+# Add custom tags or override defaults
+rust.keywords = ["rust", "cargo", "rustc", "oxidize"]
 
-# Auto-tagging rules
-[tags.rules]
-title_keywords = [
-    { keywords = ["rust", "cargo", "crate"], tag = "rust" },
-    { keywords = ["ai", "llm", "gpt", "claude"], tag = "ai" },
-]
+[categorization.rules]
+# Additional user-defined rules
+[[categorization.rules]]
+type = "url_contains"
+patterns = ["github.com/rust-lang"]
+tag = "rust-official"
+```
+
+### Phase 3: Categorization Rule Improvements
+
+#### Current Issues and Solutions
+**Problem**: Overly broad pattern matching causes false positives
+- Simon Willison articles tagged "python" regardless of content
+- Author-based rules too aggressive
+
+**Solutions**:
+1. **Content-based matching**: Analyze article title and description, not just author
+2. **Confidence thresholds**: Require higher confidence for author-based tags
+3. **Negative patterns**: Rules to exclude certain content
+
+#### Improved Rule Structure
+```toml
+# data/categorization.toml - More precise rules
+[[rules]]
+type = "content_analysis"
+keywords = ["rust", "cargo", "rustc"]
+tag = "rust"
+confidence = 0.8
+min_keyword_count = 2  # Require multiple keyword matches
+
+[[rules]]
+type = "author_with_content"
+author = "Simon Willison"
+required_keywords = ["python", "django", "pip"]
+tag = "python"
+confidence = 0.7  # Lower confidence for author-based rules
+
+# Negative rules to prevent false positives
+[[rules]]
+type = "exclude_if"
+patterns = ["AI news roundup", "weekly links"]
+exclude_tags = ["python", "rust"]  # Don't auto-tag link roundups
 ```
 
 ## Technical Implementation
 
-### Search Integration
-Extend existing search to support tag queries:
-```bash
-just search "rust" --tags "ai,security"  # Articles about Rust in AI or Security contexts
-just search --tag "devops"               # All DevOps articles
-```
-
-### Database Schema
-```sql
--- New tables for tag support
-CREATE TABLE tags (
-    id INTEGER PRIMARY KEY,
-    name TEXT UNIQUE NOT NULL,
-    description TEXT
-);
-
-CREATE TABLE feed_tags (
-    feed_id TEXT,
-    tag_id INTEGER,
-    confidence REAL,  -- For auto-tagged items
-    FOREIGN KEY (feed_id) REFERENCES feeds(slug),
-    FOREIGN KEY (tag_id) REFERENCES tags(id)
-);
-
-CREATE TABLE article_tags (
-    article_id TEXT,
-    tag_id INTEGER,
-    source TEXT,  -- 'manual', 'feed', 'auto'
-    confidence REAL,
-    FOREIGN KEY (tag_id) REFERENCES tags(id)
-);
-```
-
-## Performance Considerations
-
-### Caching Strategy
-- Cache tag extraction results
-- Batch process new articles
-- Use background job for auto-tagging
-
-### Optimization
+### Data Layer Architecture
 ```rust
-// Use bloom filter for quick tag matching
-use bloom::BloomFilter;
-
-struct TagMatcher {
-    filters: HashMap<String, BloomFilter>,
+struct FeedRegistry {
+    feeds: HashMap<String, DefaultFeed>,
+    categorization: CategorizationConfig,
+    tags: TagConfig,
 }
 
-impl TagMatcher {
-    fn might_match(&self, text: &str, tag: &str) -> bool {
-        self.filters.get(tag)
-            .map(|f| f.might_contain(text))
-            .unwrap_or(false)
-    }
-}
-```
-
-## UI/UX Considerations
-
-### Visual Hierarchy
-```
-┌─────────────────────────────────────┐
-│ 📰 Article Title                    │
-│ Author Name | ★★ liked | 🏷️ rust, ai │
-│ Description text...                 │
-└─────────────────────────────────────┘
-```
-
-### Filtering Interface
-- Checkbox list for tags
-- Keep tier filter separate
-- "AND" vs "OR" tag logic toggle
-- Tag cloud visualization
-
-## Rollout Plan
-
-### Week 1-2: Foundation
-- [ ] Update data models
-- [ ] Add database migrations
-- [ ] Implement basic tag storage
-
-### Week 3-4: Auto-tagging
-- [ ] Keyword extraction implementation
-- [ ] RSS category import
-- [ ] Initial tag population script
-
-### Week 5-6: UI Integration
-- [ ] Tag display in feed items
-- [ ] Filter interface
-- [ ] Search integration
-
-### Week 7-8: Advanced Features
-- [ ] User-defined tags
-- [ ] Tag management interface
-- [ ] Bulk tagging tools
-
-## Success Metrics
-
-1. **Adoption**: % of feeds with at least one tag
-2. **Accuracy**: User satisfaction with auto-tagging
-3. **Discovery**: Increase in cross-feed article discovery
-4. **Performance**: No degradation in page load times
-
-## Risk Mitigation
-
-### Over-tagging
-- Limit to 3-5 tags per article
-- Confidence threshold for auto-tags
-- User ability to hide/remove tags
-
-### Under-tagging
-- Suggest tags based on similar articles
-- Periodic review of untagged content
-- Community tagging features (future)
-
-### Performance Impact
-- Lazy-load tags
-- Cache aggressively
-- Background processing for auto-tagging
-
-## Future Enhancements
-
-### Phase 2 Features
-- Tag hierarchies (e.g., "programming" > "rust")
-- Tag relationships (e.g., "kubernetes" relates to "devops")
-- Personal tag vocabularies
-- Tag-based RSS feed generation
-
-### Machine Learning Pipeline
-```python
-# Future: Training custom classifier
-from sklearn.naive_bayes import MultinomialNB
-from sklearn.feature_extraction.text import TfidfVectorizer
-
-def train_classifier(articles_with_tags):
-    vectorizer = TfidfVectorizer(max_features=1000)
-    X = vectorizer.fit_transform([a.text for a in articles])
-    y = [a.tags for a in articles]
-    
-    classifier = MultinomialNB()
-    classifier.fit(X, y)
-    return classifier, vectorizer
-```
-
-## Conclusion
-
-This phased approach allows us to:
-1. Maintain backward compatibility
-2. Progressively enhance the system
-3. Gather user feedback at each stage
-4. Build a solid foundation for future ML-based categorization
-
-The dual-axis system (tiers + tags) provides the flexibility users need while keeping the simplicity of the current tier system. By treating these as orthogonal concerns, we avoid confusion and enable more powerful filtering and discovery features.
-
-## Appendix: Automatic Tag Derivation
-
-### Configuration-Driven Tag System
-
-**Key Principle**: No hardcoded handling of specific authors/sources. All categorization rules are stored in configuration and loaded at startup.
-
-#### Default Configuration Structure
-
-The system initializes with sensible defaults stored in `spacefeeder.toml`:
-
-```toml
-# Categorization configuration (loaded at startup)
-[categorization]
-enabled = true
-auto_tag_new_articles = true
-max_tags_per_item = 5
-confidence_threshold = 0.3
-
-# Predefined tags with descriptions
-[[categorization.tags]]
-name = "rust"
-description = "Rust programming language"
-keywords = ["rust", "cargo", "rustc", "rustup", "crate", "tokio"]
-
-[[categorization.tags]]
-name = "ai"
-description = "AI, ML, LLMs, and neural networks"
-keywords = ["ai", "artificial intelligence", "ml", "machine learning", "llm", "gpt", "claude"]
-
-[[categorization.tags]]
-name = "devops"
-description = "CI/CD, deployment, infrastructure"
-keywords = ["devops", "ci/cd", "cicd", "pipeline", "deployment", "kubernetes", "docker"]
-
-[[categorization.tags]]
-name = "security"
-description = "Security, vulnerabilities, encryption"
-keywords = ["security", "vulnerability", "cve", "encryption", "authentication", "exploit"]
-
-[[categorization.tags]]
-name = "linux"
-description = "Linux, Unix, system administration"
-keywords = ["linux", "unix", "nixos", "kernel", "systemd", "bash"]
-
-# Pattern-based rules for automatic tagging
-[[categorization.rules]]
-type = "title_contains"
-patterns = ["Rust", "rustc", "cargo"]
-tag = "rust"
-confidence = 0.9
-
-[[categorization.rules]]
-type = "url_contains"
-patterns = ["rust-lang.org", "rustacean"]
-tag = "rust"
-confidence = 0.95
-
-[[categorization.rules]]
-type = "author_is"
-patterns = ["Simon Willison"]
-tags = ["ai", "python"]
-confidence = 0.7
-
-# Tag aliases for normalization
-[[categorization.aliases]]
-from = ["artificial-intelligence", "machine-learning"]
-to = "ai"
-
-[[categorization.aliases]]
-from = ["rustlang", "rust-lang"]
-to = "rust"
-```
-
-### Declarative Tag Generation
-
-```rust
-/// Load categorization rules from configuration
-struct CategorizationEngine {
-    config: CategorizationConfig,
-    tag_matchers: Vec<TagMatcher>,
+struct DefaultFeed {
+    url: String,
+    author: String,
+    description: String,
+    tags: Vec<String>,
+    // No tier - that's user-specific
 }
 
-impl CategorizationEngine {
-    /// Initialize from configuration at startup
-    pub fn from_config(config: &Config) -> Self {
-        let categorization = &config.categorization;
-        let mut matchers = Vec::new();
-        
-        // Build matchers from configuration rules
-        for rule in &categorization.rules {
-            matchers.push(TagMatcher::from_rule(rule));
-        }
-        
-        Self {
-            config: categorization.clone(),
-            tag_matchers: matchers,
-        }
-    }
-    
-    /// Apply all configured rules to generate tags
-    pub fn generate_tags(&self, item: &FeedItem) -> Vec<Tag> {
-        let mut tags = Vec::new();
-        let mut seen = HashSet::new();
-        
-        for matcher in &self.tag_matchers {
-            if let Some(matched_tags) = matcher.apply(item) {
-                for tag in matched_tags {
-                    // Apply aliases from config
-                    let normalized = self.normalize_tag(&tag.name);
-                    if seen.insert(normalized.clone()) {
-                        tags.push(Tag {
-                            name: normalized,
-                            confidence: tag.confidence,
-                            source: tag.source,
-                        });
-                    }
-                }
-            }
-        }
-        
-        // Sort by confidence, limit to max_tags_per_item
-        tags.sort_by(|a, b| b.confidence.partial_cmp(&a.confidence).unwrap());
-        tags.truncate(self.config.max_tags_per_item);
-        
-        tags
-    }
-    
-    /// Normalize tag using configured aliases
-    fn normalize_tag(&self, tag: &str) -> String {
-        for alias in &self.config.aliases {
-            if alias.from.contains(&tag.to_string()) {
-                return alias.to.clone();
-            }
-        }
-        tag.to_lowercase()
-    }
+struct UserConfig {
+    feeds: HashMap<String, UserFeedConfig>,
+    overrides: Option<ConfigOverrides>,
+}
+
+struct UserFeedConfig {
+    tier: Option<Tier>,
+    disabled_tags: Vec<String>,
+    additional_tags: Vec<String>,
 }
 ```
 
-### Tag Discovery Pipeline
+## Implementation Roadmap
 
-1. **Initial Scan**: Analyze all existing articles for term frequency
-2. **Pattern Matching**: Look for technology-specific keywords
-3. **Threshold Filtering**: Only create tags with sufficient content
-4. **Confidence Scoring**: Rate tag quality based on:
-   - Frequency (how often it appears)
-   - Specificity (how unique the term is)
-   - Consistency (appears across multiple feeds)
+### Milestone 1: Built-in Feed Registry
+**Goal**: Ship with curated default feeds and categorization rules
 
-### Avoiding Over-Broad Tags
+**Tasks**:
+- [ ] Create embedded data files (`data/feeds.toml`, `data/categorization.toml`, `data/tags.toml`)
+- [ ] Curate initial set of high-quality feeds with proper categorization
+- [ ] Implement registry loading with `include_str!` macros
+- [ ] Update config parsing to merge defaults with user overrides
 
-These terms are TOO BROAD and should be avoided:
-- ❌ `software` - Too generic
-- ❌ `code` - Too generic  
-- ❌ `technology` - Too generic
-- ❌ `web` - Too generic
-- ❌ `data` - Too generic
-- ❌ `system` - Too generic
-- ❌ `application` - Too generic
-- ❌ `development` - Too generic
+**Success Criteria**: New users get useful content immediately without configuration
 
-### Feed-Level Tag Configuration
+### Milestone 2: CLI Feed Management
+**Goal**: Package manager-like commands for feed discovery and installation
 
-Tags can be specified at the feed level in `spacefeeder.toml`:
+**Tasks**:
+- [ ] Implement `spacefeeder feeds search <query>` command
+- [ ] Implement `spacefeeder feeds add <slug>` command  
+- [ ] Implement `spacefeeder feeds list` and `spacefeeder feeds info <slug>` commands
+- [ ] Implement `spacefeeder feeds configure <slug>` for tier management
+- [ ] Implement `spacefeeder feeds remove <slug>` command
 
-```toml
-# Example feed with explicit tags
-[feeds.matklad]
-url = "https://matklad.github.io/feed.xml"
-author = "Alex Kladov"
-tier = "like"
-tags = ["rust", "compilers", "programming"]  # Manual tags
-auto_tag = true  # Also apply automatic tagging rules
+**Success Criteria**: Users can discover, install, and manage feeds without editing TOML files
 
-# Feed that relies entirely on automatic tagging
-[feeds.simonwillison]
-url = "https://simonwillison.net/atom/everything/"
-author = "Simon Willison"
-tier = "like"
-auto_tag = true  # Will match configured rules for this author
-```
+### Milestone 3: Improved Categorization Rules
+**Goal**: Reduce false positives and improve categorization accuracy
 
-The system applies tags in this priority order:
-1. Explicit tags from feed configuration
-2. Tags from RSS/Atom `<category>` elements
-3. Tags from configured pattern matching rules
-4. Tags from keyword extraction (if enabled)
+**Tasks**:
+- [ ] Implement content-based analysis (not just author-based)
+- [ ] Add confidence scoring and thresholds
+- [ ] Implement negative pattern matching to exclude certain content
+- [ ] Add support for multiple keyword requirements
+- [ ] Test and tune rules against existing feed content
+
+**Success Criteria**: Categorization accuracy improves, fewer false positives
+
+### Milestone 4: Community Contribution Framework
+**Goal**: Make it easy for others to contribute feeds and categorization improvements
+
+**Tasks**:
+- [ ] Document feed contribution process
+- [ ] Create validation tools for feed registry changes
+- [ ] Set up automated testing of categorization rules
+- [ ] Create templates for common feed patterns
+
+**Success Criteria**: External contributors can easily add new feeds with proper metadata
+
+## Next Actions
+
+1. **Start with Milestone 1**: Create the embedded registry structure
+2. **Curate initial feed set**: Focus on high-quality, well-categorized feeds across major topics  
+3. **Test category accuracy**: Use existing feeds to validate and tune categorization rules
+4. **Simplify user onboarding**: Ensure new users get value immediately
+
+## Technical Notes
+
+- Use `include_str!` for embedding data files at compile time
+- Keep user config minimal - just feed slugs and personal preferences (tiers)
+- All default data should be declarative and easily auditable
+- Categorization rules should be tunable without code changes
+- No external users yet - breaking changes are acceptable
