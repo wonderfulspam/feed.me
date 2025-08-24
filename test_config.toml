@@ -1,0 +1,18 @@
+base_url = 'https://feed-me-feeds.netlify.app/'
+max_articles = 50
+description_max_words = 150
+feed_data_output_path = "./content/data/feedData.json"
+item_data_output_path = "./content/data/itemData.json"
+
+# Minimal categorization config - should load default tags
+[categorization]
+enabled = true
+auto_tag_new_articles = true
+max_tags_per_item = 5
+confidence_threshold = 0.4
+
+# Test feed
+[feeds.test]
+url = "https://example.com/feed"
+author = "Test"
+tier = "new"

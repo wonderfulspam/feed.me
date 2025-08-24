@@ -11,81 +11,12 @@ auto_tag_new_articles = true
 max_tags_per_item = 5
 confidence_threshold = 0.4
 
-# Predefined tags with descriptions and keywords
-[[categorization.tags]]
-name = "rust"
-description = "Rust programming language"
-keywords = ["rust", "cargo", "rustc", "rustup", "crate", "tokio", "async-std", "wasm"]
-
-[[categorization.tags]]
-name = "ai"
-description = "General AI, ML, and neural networks"
-keywords = ["ai", "artificial intelligence", "ml", "machine learning", "neural", "transformer", "deep learning", "computer vision"]
-
-[[categorization.tags]]
-name = "llm"
-description = "Large Language Models and generative AI"
-keywords = ["llm", "large language model", "generative ai", "text generation", "language model", "prompt engineering"]
-
-[[categorization.tags]]
-name = "anthropic"
-description = "Anthropic and Claude"
-keywords = ["anthropic", "claude"]
-
-[[categorization.tags]]
-name = "openai"
-description = "OpenAI and ChatGPT"
-keywords = ["openai", "chatgpt", "gpt-4", "gpt-3"]
-
-[[categorization.tags]]
-name = "google-ai"
-description = "Google AI products"
-keywords = ["gemini", "bard", "google ai", "palm"]
-
-[[categorization.tags]]
-name = "devops"
-description = "CI/CD, deployment, infrastructure"
-keywords = ["devops", "ci/cd", "cicd", "pipeline", "deployment", "kubernetes", "k8s", "docker", "container", "helm", "terraform"]
-
-[[categorization.tags]]
-name = "security"
-description = "Security, vulnerabilities, encryption"
-keywords = ["security", "vulnerability", "cve", "encryption", "authentication", "exploit", "pentest", "infosec", "cybersecurity"]
-
-[[categorization.tags]]
-name = "linux"
-description = "Linux, Unix, system administration"
-keywords = ["linux", "unix", "nixos", "kernel", "systemd", "bash", "shell", "terminal", "ubuntu", "debian"]
-
-[[categorization.tags]]
-name = "python"
-description = "Python programming language"
-keywords = ["python", "pip", "django", "flask", "pandas", "numpy", "pytest", "poetry", "fastapi"]
-
-[[categorization.tags]]
-name = "cloud"
-description = "Cloud platforms and services"
-keywords = ["aws", "gcp", "azure", "cloud", "lambda", "serverless", "s3", "ec2", "cloudflare"]
-
-[[categorization.tags]]
-name = "javascript"
-description = "JavaScript and TypeScript"
-keywords = ["javascript", "js", "typescript", "ts", "node", "nodejs", "npm", "react", "vue", "angular"]
-
-[[categorization.tags]]
-name = "web-dev"
-description = "Web development and frontend"
-keywords = ["web development", "frontend", "backend", "html", "css", "web api", "browser"]
-
-[[categorization.tags]]
-name = "go"
-description = "Go programming language"
-keywords = ["golang", "go programming", "go lang"]
-
-[[categorization.tags]]
-name = "database"
-description = "Databases and data storage"
-keywords = ["database", "sql", "postgresql", "mysql", "sqlite", "nosql", "mongodb"]
+# Tags are now defined in data/tags.toml and embedded at compile time
+# You can override specific tags here if needed:
+# [[categorization.tags]]
+# name = "custom"
+# description = "Custom tag"
+# keywords = ["custom"]
 
 # Pattern-based rules for automatic tagging
 [[categorization.rules]]

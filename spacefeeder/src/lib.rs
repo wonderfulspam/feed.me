@@ -1,6 +1,7 @@
 pub mod categorization;
 pub mod commands;
 pub mod config;
+pub mod defaults;
 pub mod search;
 
 use std::str::FromStr;

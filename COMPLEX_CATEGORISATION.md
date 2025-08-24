@@ -10,6 +10,7 @@ This document outlines the evolution of feed.me's categorization system into a p
 - Basic pattern-based tagging implemented
 - Configuration-driven rules stored in `spacefeeder.toml`
 - Tag normalization and confidence scoring functional
+- **✅ DONE**: Tags migrated to `data/tags.toml` and embedded at compile time
 - **Issues**: Crude categorization rules producing false positives (e.g., Simon Willison articles incorrectly tagged with "python")
 
 ### User Experience Gaps
@@ -191,10 +192,12 @@ struct UserFeedConfig {
 **Goal**: Ship with curated default feeds and categorization rules
 
 **Tasks**:
-- [ ] Create embedded data files (`data/feeds.toml`, `data/categorization.toml`, `data/tags.toml`)
+- [x] Create embedded data files (`data/tags.toml`) 
+- [ ] Create `data/feeds.toml` and `data/categorization.toml`
 - [ ] Curate initial set of high-quality feeds with proper categorization
-- [ ] Implement registry loading with `include_str!` macros
-- [ ] Update config parsing to merge defaults with user overrides
+- [x] Implement registry loading with `include_str!` macros (for tags)
+- [x] Update config parsing to merge defaults with user overrides (for tags)
+- [ ] Extend merging logic to feeds and categorization rules
 
 **Success Criteria**: New users get useful content immediately without configuration
 
@@ -235,10 +238,14 @@ struct UserFeedConfig {
 
 ## Next Actions
 
-1. **Start with Milestone 1**: Create the embedded registry structure
-2. **Curate initial feed set**: Focus on high-quality, well-categorized feeds across major topics  
-3. **Test category accuracy**: Use existing feeds to validate and tune categorization rules
-4. **Simplify user onboarding**: Ensure new users get value immediately
+1. **Continue Milestone 1**: 
+   - Migrate categorization rules to `data/categorization.toml`
+   - Migrate aliases to `data/aliases.toml` (or include in categorization.toml)
+   - Create `data/feeds.toml` with existing feeds as defaults
+2. **Fix categorization accuracy**:
+   - Remove overly broad author-based rules (e.g., Simon Willison → python)
+   - Implement content-based matching instead
+3. **Test with minimal user config**: Verify system works with nearly empty `spacefeeder.toml`
 
 ## Technical Notes
 

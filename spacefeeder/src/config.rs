@@ -5,6 +5,7 @@ use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
 
 use crate::{FeedInfo, Tier};
+use crate::defaults;
 
 static GLOBAL_CONFIG: OnceLock<Config> = OnceLock::new();
 
@@ -124,8 +125,23 @@ impl Config {
     pub fn from_file(path: &str) -> Result<Self> {
         let content = std::fs::read_to_string(path)
             .with_context(|| format!("Failed to read file: {path}"))?;
-        let config = toml_edit::de::from_str(&content)
+        let mut config: Config = toml_edit::de::from_str(&content)
             .with_context(|| format!("Failed to parse TOML from file: {path}"))?;
+        
+        // Merge default tags with user-provided tags
+        let default_tags = defaults::get_default_tags();
+        let user_tag_names: Vec<String> = config.categorization.tags
+            .iter()
+            .map(|t| t.name.clone())
+            .collect();
+        
+        // Add default tags that aren't overridden by user
+        for default_tag in default_tags {
+            if !user_tag_names.contains(&default_tag.name) {
+                config.categorization.tags.push(default_tag);
+            }
+        }
+        
         Ok(config)
     }
 
@@ -209,6 +225,8 @@ mod tests {
             url: "https://test.com/feed".to_string(),
             author: "Test Author".to_string(),
             tier: Tier::Love,
+            tags: None,
+            auto_tag: None,
         };
         config.insert_feed("test_feed".to_string(), feed);
         assert_eq!(config.feeds.len(), 2);
@@ -260,5 +278,81 @@ tier = "love"
     fn test_default_output_paths() {
         assert_eq!(default_feed_data_output_path(), "./content/data/feedData.json");
         assert_eq!(default_item_data_output_path(), "./content/data/itemData.json");
+    }
+
+    #[test]
+    fn test_default_tags_loaded() {
+        let toml_content = r#"
+max_articles = 10
+description_max_words = 200
+
+[categorization]
+enabled = true
+
+[feeds.test_feed]
+url = "https://example.com/feed"
+author = "Test Author"
+tier = "love"
+"#;
+        let mut temp_file = NamedTempFile::new().unwrap();
+        temp_file.write_all(toml_content.as_bytes()).unwrap();
+        
+        let config = Config::from_file(temp_file.path().to_str().unwrap()).unwrap();
+        
+        // Verify default tags are loaded
+        assert!(!config.categorization.tags.is_empty(), "Should have loaded default tags");
+        
+        let tag_names: Vec<String> = config.categorization.tags
+            .iter()
+            .map(|t| t.name.clone())
+            .collect();
+        
+        // Check for some expected default tags
+        assert!(tag_names.contains(&"rust".to_string()), "Should contain rust tag");
+        assert!(tag_names.contains(&"ai".to_string()), "Should contain ai tag");
+        assert!(tag_names.contains(&"python".to_string()), "Should contain python tag");
+        assert!(tag_names.contains(&"devops".to_string()), "Should contain devops tag");
+    }
+
+    #[test]
+    fn test_user_tags_override_defaults() {
+        let toml_content = r#"
+max_articles = 10
+description_max_words = 200
+
+[categorization]
+enabled = true
+
+[[categorization.tags]]
+name = "rust"
+description = "Custom Rust description"
+keywords = ["custom", "rust"]
+
+[feeds.test_feed]
+url = "https://example.com/feed"
+author = "Test Author"
+tier = "love"
+"#;
+        let mut temp_file = NamedTempFile::new().unwrap();
+        temp_file.write_all(toml_content.as_bytes()).unwrap();
+        
+        let config = Config::from_file(temp_file.path().to_str().unwrap()).unwrap();
+        
+        // Find the rust tag
+        let rust_tag = config.categorization.tags
+            .iter()
+            .find(|t| t.name == "rust")
+            .expect("Should have rust tag");
+        
+        // Verify user version is used, not default
+        assert_eq!(rust_tag.description, "Custom Rust description");
+        assert_eq!(rust_tag.keywords, vec!["custom", "rust"]);
+        
+        // Verify other default tags are still loaded
+        let tag_names: Vec<String> = config.categorization.tags
+            .iter()
+            .map(|t| t.name.clone())
+            .collect();
+        assert!(tag_names.contains(&"ai".to_string()), "Should still have other default tags");
     }
 }

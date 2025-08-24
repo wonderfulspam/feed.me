@@ -424,8 +424,8 @@ mod tests {
 
         let re = Regex::new(r"<[^>]*>").unwrap();
         let config = Config::default();
-        let (slug, feed_info) = config.feeds.into_iter().next().unwrap();
-        let feed_data = build_feed(feed, feed_info, &config.parse_config, &re, slug);
+        let (slug, feed_info) = config.feeds.clone().into_iter().next().unwrap();
+        let feed_data = build_feed(feed, feed_info, &config, &re, slug);
         let items: Vec<ItemOutput> = (&feed_data).into();
         assert_eq!(items.len(), config.parse_config.max_articles);
     }

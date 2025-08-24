@@ -1,0 +1,77 @@
+# Default tag definitions for spacefeeder
+# These tags are embedded at compile time and can be overridden in user config
+
+[[tags]]
+name = "rust"
+description = "Rust programming language"
+keywords = ["rust", "cargo", "rustc", "rustup", "crate", "tokio", "async-std", "wasm"]
+
+[[tags]]
+name = "ai"
+description = "General AI, ML, and neural networks"
+keywords = ["ai", "artificial intelligence", "ml", "machine learning", "neural", "transformer", "deep learning", "computer vision"]
+
+[[tags]]
+name = "llm"
+description = "Large Language Models and generative AI"
+keywords = ["llm", "large language model", "generative ai", "text generation", "language model", "prompt engineering"]
+
+[[tags]]
+name = "anthropic"
+description = "Anthropic and Claude"
+keywords = ["anthropic", "claude"]
+
+[[tags]]
+name = "openai"
+description = "OpenAI and ChatGPT"
+keywords = ["openai", "chatgpt", "gpt-4", "gpt-3"]
+
+[[tags]]
+name = "google-ai"
+description = "Google AI products"
+keywords = ["gemini", "bard", "google ai", "palm"]
+
+[[tags]]
+name = "devops"
+description = "CI/CD, deployment, infrastructure"
+keywords = ["devops", "ci/cd", "cicd", "pipeline", "deployment", "kubernetes", "k8s", "docker", "container", "helm", "terraform"]
+
+[[tags]]
+name = "security"
+description = "Security, vulnerabilities, encryption"
+keywords = ["security", "vulnerability", "cve", "encryption", "authentication", "exploit", "pentest", "infosec", "cybersecurity"]
+
+[[tags]]
+name = "linux"
+description = "Linux, Unix, system administration"
+keywords = ["linux", "unix", "nixos", "kernel", "systemd", "bash", "shell", "terminal", "ubuntu", "debian"]
+
+[[tags]]
+name = "python"
+description = "Python programming language"
+keywords = ["python", "pip", "django", "flask", "pandas", "numpy", "pytest", "poetry", "fastapi"]
+
+[[tags]]
+name = "cloud"
+description = "Cloud platforms and services"
+keywords = ["aws", "gcp", "azure", "cloud", "lambda", "serverless", "s3", "ec2", "cloudflare"]
+
+[[tags]]
+name = "javascript"
+description = "JavaScript and TypeScript"
+keywords = ["javascript", "js", "typescript", "ts", "node", "nodejs", "npm", "react", "vue", "angular"]
+
+[[tags]]
+name = "web-dev"
+description = "Web development and frontend"
+keywords = ["web development", "frontend", "backend", "html", "css", "web api", "browser"]
+
+[[tags]]
+name = "go"
+description = "Go programming language"
+keywords = ["golang", "go programming", "go lang"]
+
+[[tags]]
+name = "database"
+description = "Databases and data storage"
+keywords = ["database", "sql", "postgresql", "mysql", "sqlite", "nosql", "mongodb"]
