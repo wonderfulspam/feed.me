@@ -5,6 +5,7 @@ use spacefeeder::commands::{
     add_feed::{self, AddFeedArgs},
     build::{self, BuildArgs},
     export_feeds::{self, ExportArgs},
+    feeds::{self, FeedsArgs},
     fetch_feeds::{self, FetchArgs},
     find_feed::{self, FindFeedArgs},
     import_feeds::{self, ImportArgs},
@@ -22,14 +23,25 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
+    /// Add a single feed to the configuration
     AddFeed(AddFeedArgs),
+    /// Fetch feeds and generate complete static site
     Build(BuildArgs),
+    /// Package manager-like commands for feed discovery and management
+    Feeds(FeedsArgs),
+    /// Fetch feeds and update JSON data without building site
     Fetch(FetchArgs),
+    /// Find RSS/Atom feed from a website URL
     FindFeed(FindFeedArgs),
+    /// Export feeds to OPML format
     Export(ExportArgs),
+    /// Import feeds from OPML file
     Import(ImportArgs),
+    /// Initialize a new configuration file
     Init(InitArgs),
+    /// Search and build search index for articles
     Search(SearchArgs),
+    /// Start development server for the generated site
     Serve(ServeArgs),
 }
 
@@ -39,6 +51,13 @@ fn get_config_path_if_needed(command: &Commands) -> Option<&str> {
         Commands::AddFeed(args) => Some(&args.config_path),
         Commands::Build(args) => Some(&args.config_path),
         Commands::Export(args) => Some(&args.config_path),
+        Commands::Feeds(args) => {
+            // Only need config for commands that modify or read user config
+            match args.command {
+                feeds::FeedsCommands::Search(_) | feeds::FeedsCommands::Info(_) => None,
+                _ => Some(&args.config_path),
+            }
+        },
         Commands::Fetch(args) => Some(&args.config_path),
         Commands::Import(args) => Some(&args.config_path),
         Commands::Serve(args) => Some(&args.config_path),
@@ -58,6 +77,7 @@ fn main() -> Result<()> {
         Commands::AddFeed(args) => add_feed::execute(args),
         Commands::Build(args) => build::execute(args),
         Commands::Export(args) => export_feeds::execute(args),
+        Commands::Feeds(args) => feeds::execute(args),
         Commands::Fetch(args) => fetch_feeds::execute(args),
         Commands::FindFeed(args) => find_feed::execute(args),
         Commands::Import(args) => import_feeds::execute(args),

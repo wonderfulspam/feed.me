@@ -37,7 +37,7 @@ pub struct UserFeedInfo {
     pub auto_tag: Option<bool>,
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Copy, Debug, Deserialize, Serialize, PartialEq, Eq, Hash)]
 #[serde(rename_all = "lowercase")]
 pub enum Tier {
     New,
@@ -54,6 +54,16 @@ impl FromStr for Tier {
             "like" | "Like" => Ok(Tier::Like),
             "love" | "Love" => Ok(Tier::Love),
             _ => Err(std::fmt::Error),
+        }
+    }
+}
+
+impl std::fmt::Display for Tier {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Tier::New => write!(f, "new"),
+            Tier::Like => write!(f, "like"),
+            Tier::Love => write!(f, "love"),
         }
     }
 }

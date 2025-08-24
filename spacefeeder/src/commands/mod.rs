@@ -2,6 +2,7 @@ pub mod add_feed;
 pub mod build;
 pub mod build_categories;
 pub mod export_feeds;
+pub mod feeds;
 pub mod fetch_feeds;
 pub mod find_feed;
 pub mod import_feeds;
