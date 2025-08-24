@@ -14,6 +14,8 @@ pub struct Config {
     pub(crate) parse_config: ParseConfig,
     #[serde(flatten)]
     pub(crate) output_config: OutputConfig,
+    #[serde(default)]
+    pub(crate) categorization: CategorizationConfig,
     pub(crate) feeds: HashMap<String, FeedInfo>,
 }
 
@@ -43,6 +45,79 @@ fn default_item_data_output_path() -> String {
 
 fn default_base_url() -> String {
     "http://localhost:8000/".to_string()
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct CategorizationConfig {
+    #[serde(default = "default_categorization_enabled")]
+    pub enabled: bool,
+    #[serde(default = "default_auto_tag_new_articles")]
+    pub auto_tag_new_articles: bool,
+    #[serde(default = "default_max_tags_per_item")]
+    pub max_tags_per_item: usize,
+    #[serde(default = "default_confidence_threshold")]
+    pub confidence_threshold: f32,
+    #[serde(default)]
+    pub tags: Vec<TagDefinition>,
+    #[serde(default)]
+    pub rules: Vec<TagRule>,
+    #[serde(default)]
+    pub aliases: Vec<TagAlias>,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct TagDefinition {
+    pub name: String,
+    pub description: String,
+    pub keywords: Vec<String>,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct TagRule {
+    #[serde(rename = "type")]
+    pub rule_type: String,
+    pub patterns: Vec<String>,
+    #[serde(default)]
+    pub tag: String,
+    #[serde(default)]
+    pub tags: Vec<String>,
+    pub confidence: f32,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct TagAlias {
+    pub from: Vec<String>,
+    pub to: String,
+}
+
+impl Default for CategorizationConfig {
+    fn default() -> Self {
+        Self {
+            enabled: default_categorization_enabled(),
+            auto_tag_new_articles: default_auto_tag_new_articles(),
+            max_tags_per_item: default_max_tags_per_item(),
+            confidence_threshold: default_confidence_threshold(),
+            tags: Vec::new(),
+            rules: Vec::new(),
+            aliases: Vec::new(),
+        }
+    }
+}
+
+fn default_categorization_enabled() -> bool {
+    true
+}
+
+fn default_auto_tag_new_articles() -> bool {
+    true
+}
+
+fn default_max_tags_per_item() -> usize {
+    5
+}
+
+fn default_confidence_threshold() -> f32 {
+    0.3
 }
 
 impl Config {
@@ -95,12 +170,15 @@ impl Default for Config {
                 item_data_output_path: default_item_data_output_path(),
                 base_url: default_base_url(),
             },
+            categorization: CategorizationConfig::default(),
             feeds: HashMap::from([(
                 "example".to_string(),
                 FeedInfo {
                     url: "www.example.com".to_string(),
                     author: "Example Author".to_string(),
                     tier: Tier::New,
+                    tags: None,
+                    auto_tag: None,
                 },
             )]),
         }

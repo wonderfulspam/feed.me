@@ -104,6 +104,8 @@ fn create_starter_config() -> Config {
             url: url.to_string(),
             author: author.to_string(),
             tier,
+            tags: None,
+            auto_tag: None,
         });
     }
 

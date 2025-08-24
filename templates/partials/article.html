@@ -35,5 +35,12 @@
     <p>
       {{ item.safe_description | truncate(length=150) }}
     </p>
+    {% if item.tags and item.tags | length > 0 %}
+    <div class="tags" aria-label="Article tags">
+      {% for tag in item.tags %}
+        <span class="tag tag-{{ tag }}">{{ tag }}</span>
+      {% endfor %}
+    </div>
+    {% endif %}
   </article>
 </a>

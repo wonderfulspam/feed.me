@@ -3,7 +3,8 @@ use std::sync::mpsc::channel;
 use std::thread;
 use std::time::Duration;
 
-use crate::config::{Config, ParseConfig};
+use crate::categorization::CategorizationEngine;
+use crate::config::Config;
 use crate::search::{ArticleDoc, SearchIndex};
 use crate::FeedInfo;
 
@@ -41,6 +42,8 @@ struct RssItem {
     description: String,
     safe_description: String,
     pub_date: Option<DateTime<Utc>>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    tags: Vec<String>,
 }
 
 #[derive(Args)]
@@ -63,6 +66,9 @@ pub fn run(config: Config) -> Result<()> {
     let total_feeds = config.feeds.len();
     let mut failed_feeds = Vec::new();
 
+    // Clone config for the thread
+    let config_for_thread = config.clone();
+    
     // Spin off background thread for parallel URL processing
     // TODO use async instead
     thread::spawn(move || {
@@ -70,7 +76,7 @@ pub fn run(config: Config) -> Result<()> {
             .timeout_global(Some(Duration::from_secs(10)))
             .build()
             .into();
-        config.feeds.par_iter().for_each(|(slug, feed_info)| {
+        config_for_thread.feeds.par_iter().for_each(|(slug, feed_info)| {
             let slug = slug.clone();
             let feed_info = feed_info.clone();
             match fetch_feed(&agent, &feed_info.url) {
@@ -94,7 +100,7 @@ pub fn run(config: Config) -> Result<()> {
         .filter_map(|result| match result {
             Ok((feed, feed_info, slug)) => {
                 println!("Building feed for {slug}");
-                Some(build_feed(feed, feed_info, &config.parse_config, &re, slug))
+                Some(build_feed(feed, feed_info, &config, &re, slug))
             }
             Err(slug) => {
                 failed_feeds.push(slug);
@@ -198,15 +204,18 @@ fn fetch_feed(agent: &Agent, url: &str) -> Option<feed_rs::model::Feed> {
 fn build_feed(
     feed: feed_rs::model::Feed,
     feed_info: FeedInfo,
-    parse_config: &ParseConfig,
+    config: &Config,
     re: &Regex,
     slug: String,
 ) -> FeedOutput {
+    // Initialize categorization engine
+    let categorization_engine = CategorizationEngine::from_config(&config.categorization);
+    
     let items = feed
         .entries
         .into_iter()
-        .take(parse_config.max_articles)
-        .map(|entry| build_item(entry, re, parse_config.description_max_words))
+        .take(config.parse_config.max_articles)
+        .map(|entry| build_item(entry, re, config.parse_config.description_max_words, &categorization_engine, &feed_info, &slug))
         .collect();
     FeedOutput {
         meta: feed_info,
@@ -215,16 +224,42 @@ fn build_feed(
     }
 }
 
-fn build_item(entry: feed_rs::model::Entry, re: &Regex, description_max_words: usize) -> RssItem {
+fn build_item(
+    entry: feed_rs::model::Entry, 
+    re: &Regex, 
+    description_max_words: usize,
+    categorization_engine: &CategorizationEngine,
+    feed_info: &FeedInfo,
+    feed_slug: &str
+) -> RssItem {
     let title = entry.title.clone().map(|t| t.content).unwrap_or_default();
     let item_url = entry
         .links
         .first()
         .map_or(String::new(), |link| link.href.clone());
     let pub_date = entry.published.or(entry.updated);
-    let description = get_description_from_entry(entry).unwrap_or_default();
+    let description = get_description_from_entry(entry.clone()).unwrap_or_default();
     let description = get_short_description(description, description_max_words);
     let safe_description = re.replace_all(&description, "").to_string();
+    
+    // Extract RSS categories
+    let rss_categories: Vec<String> = entry.categories
+        .iter()
+        .map(|cat| cat.term.clone())
+        .collect();
+    
+    // Generate tags using categorization engine
+    let generated_tags = categorization_engine.generate_tags_for_item(
+        &title,
+        Some(&description),
+        Some(&item_url),
+        Some(&feed_info.author),
+        feed_slug,
+        feed_info.tags.as_ref().map(|t| t.as_slice()),
+        if rss_categories.is_empty() { None } else { Some(&rss_categories) },
+    );
+    
+    let tags: Vec<String> = generated_tags.into_iter().map(|t| t.name).collect();
 
     RssItem {
         title,
@@ -232,6 +267,7 @@ fn build_item(entry: feed_rs::model::Entry, re: &Regex, description_max_words: u
         description,
         safe_description,
         pub_date,
+        tags,
     }
 }
 
@@ -347,6 +383,7 @@ fn build_search_index(items: &[ItemOutput]) -> Result<()> {
                 slug: item.slug.clone(),
                 item_url: item.item.item_url.clone(),
                 pub_date: item.item.pub_date.unwrap_or_else(|| Utc::now()),
+                tags: item.item.tags.clone(),
             })
         })
         .collect();
@@ -498,6 +535,8 @@ mod tests {
                 url: "https://example.com/feed".to_string(),
                 author: "Test Author".to_string(),
                 tier: crate::Tier::New,
+                tags: None,
+                auto_tag: None,
             },
             slug: "test_feed".to_string(),
             items: vec![
@@ -507,6 +546,7 @@ mod tests {
                     description: "Description 1".to_string(),
                     safe_description: "Description 1".to_string(),
                     pub_date: None,
+                    tags: vec![],
                 },
                 RssItem {
                     title: "Article 2".to_string(),
@@ -514,6 +554,7 @@ mod tests {
                     description: "Description 2".to_string(),
                     safe_description: "Description 2".to_string(),
                     pub_date: None,
+                    tags: vec![],
                 },
             ],
         };

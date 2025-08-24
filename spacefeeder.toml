@@ -4,6 +4,104 @@ description_max_words = 150
 feed_data_output_path = "./content/data/feedData.json"
 item_data_output_path = "./content/data/itemData.json"
 
+# Categorization configuration
+[categorization]
+enabled = true
+auto_tag_new_articles = true
+max_tags_per_item = 5
+confidence_threshold = 0.3
+
+# Predefined tags with descriptions and keywords
+[[categorization.tags]]
+name = "rust"
+description = "Rust programming language"
+keywords = ["rust", "cargo", "rustc", "rustup", "crate", "tokio", "async-std", "wasm"]
+
+[[categorization.tags]]
+name = "ai"
+description = "AI, ML, LLMs, and neural networks"
+keywords = ["ai", "artificial intelligence", "ml", "machine learning", "llm", "gpt", "claude", "gemini", "chatgpt", "neural", "transformer"]
+
+[[categorization.tags]]
+name = "devops"
+description = "CI/CD, deployment, infrastructure"
+keywords = ["devops", "ci/cd", "cicd", "pipeline", "deployment", "kubernetes", "k8s", "docker", "container", "helm", "terraform"]
+
+[[categorization.tags]]
+name = "security"
+description = "Security, vulnerabilities, encryption"
+keywords = ["security", "vulnerability", "cve", "encryption", "authentication", "exploit", "pentest", "infosec", "cybersecurity"]
+
+[[categorization.tags]]
+name = "linux"
+description = "Linux, Unix, system administration"
+keywords = ["linux", "unix", "nixos", "kernel", "systemd", "bash", "shell", "terminal", "ubuntu", "debian"]
+
+[[categorization.tags]]
+name = "python"
+description = "Python programming language"
+keywords = ["python", "pip", "django", "flask", "pandas", "numpy", "pytest", "poetry", "fastapi"]
+
+[[categorization.tags]]
+name = "cloud"
+description = "Cloud platforms and services"
+keywords = ["aws", "gcp", "azure", "cloud", "lambda", "serverless", "s3", "ec2", "cloudflare"]
+
+[[categorization.tags]]
+name = "javascript"
+description = "JavaScript and TypeScript"
+keywords = ["javascript", "js", "typescript", "ts", "node", "nodejs", "npm", "react", "vue", "angular"]
+
+# Pattern-based rules for automatic tagging
+[[categorization.rules]]
+type = "title_contains"
+patterns = ["Rust", "rustc", "cargo", "crate"]
+tag = "rust"
+confidence = 0.9
+
+[[categorization.rules]]
+type = "url_contains"
+patterns = ["rust-lang.org", "rustacean", "crates.io"]
+tag = "rust"
+confidence = 0.95
+
+[[categorization.rules]]
+type = "content_contains"
+patterns = ["artificial intelligence", "machine learning", "LLM", "GPT", "Claude"]
+tag = "ai"
+confidence = 0.8
+
+[[categorization.rules]]
+type = "author_contains"
+patterns = ["Simon Willison"]
+tags = ["ai", "python"]
+confidence = 0.7
+
+[[categorization.rules]]
+type = "feed_slug"
+patterns = ["devops", "atlassian", "itrevolution"]
+tag = "devops"
+confidence = 0.8
+
+[[categorization.rules]]
+type = "feed_slug"
+patterns = ["rust_official", "inside_rust", "matklad"]
+tag = "rust"
+confidence = 0.85
+
+# Tag aliases for normalization
+[[categorization.aliases]]
+from = ["artificial-intelligence", "machine-learning", "ML"]
+to = "ai"
+
+[[categorization.aliases]]
+from = ["rustlang", "rust-lang"]
+to = "rust"
+
+[[categorization.aliases]]
+from = ["dev-ops", "DevOps"]
+to = "devops"
+
 [feeds.smallcultfollowing]
 url = "https://smallcultfollowing.com/babysteps//atom.xml"
 author = "Niko Matsakis"

@@ -16,6 +16,8 @@ pub struct ArticleDoc {
     pub slug: String,
     pub item_url: String,
     pub pub_date: DateTime<Utc>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub tags: Vec<String>,
 }
 
 #[derive(Debug, Clone)]
@@ -27,6 +29,7 @@ pub struct SearchResult {
     pub slug: String,
     pub item_url: String,
     pub pub_date: DateTime<Utc>,
+    pub tags: Vec<String>,
     pub score: f32,
 }
 
@@ -39,6 +42,7 @@ pub struct SearchIndex {
     slug_field: Field,
     url_field: Field,
     date_field: Field,
+    tags_field: Field,
 }
 
 impl SearchIndex {
@@ -48,6 +52,7 @@ impl SearchIndex {
         // Searchable text fields (title gets higher boost)
         let title_field = schema_builder.add_text_field("title", TEXT | STORED);
         let description_field = schema_builder.add_text_field("description", TEXT | STORED);
+        let tags_field = schema_builder.add_text_field("tags", TEXT | STORED);
         
         // Filterable/facet fields
         let author_field = schema_builder.add_text_field("author", STORED | STRING);
@@ -72,8 +77,9 @@ impl SearchIndex {
             author_field,
             tier_field,
             slug_field,
-            url_field: url_field,
+            url_field,
             date_field,
+            tags_field,
         })
     }
 
@@ -88,6 +94,7 @@ impl SearchIndex {
         let slug_field = schema.get_field("slug").unwrap();
         let url_field = schema.get_field("url").unwrap();
         let date_field = schema.get_field("date").unwrap();
+        let tags_field = schema.get_field("tags").unwrap();
         
         Ok(SearchIndex {
             index,
@@ -98,6 +105,7 @@ impl SearchIndex {
             slug_field,
             url_field,
             date_field,
+            tags_field,
         })
     }
 
@@ -112,7 +120,8 @@ impl SearchIndex {
                 self.tier_field => article.tier.clone(),
                 self.slug_field => article.slug.clone(),
                 self.url_field => article.item_url.clone(),
-                self.date_field => article.pub_date.timestamp()
+                self.date_field => article.pub_date.timestamp(),
+                self.tags_field => article.tags.join(" ")
             );
             index_writer.add_document(doc)?;
         }
@@ -133,10 +142,10 @@ impl SearchIndex {
         
         let searcher = reader.searcher();
         
-        // Create query parser for title and description fields
+        // Create query parser for title, description, and tags fields
         let query_parser = QueryParser::for_index(
             &self.index,
-            vec![self.title_field, self.description_field]
+            vec![self.title_field, self.description_field, self.tags_field]
         );
         
         let query = query_parser.parse_query(query_text)?;
@@ -188,6 +197,16 @@ impl SearchIndex {
                 .and_then(|v| v.as_i64())
                 .map(|timestamp| DateTime::from_timestamp(timestamp, 0).unwrap_or_default())
                 .unwrap_or_default();
+                
+            let tags_str = retrieved_doc
+                .get_first(self.tags_field)
+                .and_then(|v| v.as_str())
+                .unwrap_or("");
+            let tags: Vec<String> = if tags_str.is_empty() {
+                Vec::new()
+            } else {
+                tags_str.split_whitespace().map(|s| s.to_string()).collect()
+            };
 
             results.push(SearchResult {
                 title,
@@ -197,6 +216,7 @@ impl SearchIndex {
                 slug,
                 item_url,
                 pub_date,
+                tags,
                 score,
             });
         }
@@ -247,6 +267,7 @@ mod tests {
                 slug: "rust-blog".to_string(),
                 item_url: "https://blog.rust-lang.org/article1".to_string(),
                 pub_date: DateTime::parse_from_rfc3339("2025-08-24T10:00:00Z").unwrap().with_timezone(&Utc),
+                tags: vec!["rust".to_string(), "programming".to_string()],
             },
             ArticleDoc {
                 title: "Getting Started with Tantivy".to_string(),
@@ -256,6 +277,7 @@ mod tests {
                 slug: "tantivy-docs".to_string(),
                 item_url: "https://docs.rs/tantivy/article2".to_string(),
                 pub_date: DateTime::parse_from_rfc3339("2025-08-23T15:30:00Z").unwrap().with_timezone(&Utc),
+                tags: vec!["rust".to_string(), "search".to_string()],
             },
         ]
     }

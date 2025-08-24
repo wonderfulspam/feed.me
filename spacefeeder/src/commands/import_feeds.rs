@@ -43,6 +43,8 @@ pub fn run(config: &mut Config, input_path: String, default_tier: String) -> Res
                 url: xml_url,
                 author: title.clone(),
                 tier: tier.clone(),
+                tags: None,
+                auto_tag: None,
             };
             println!("Added feed: {} -> {}", slug, title);
             config.insert_feed(slug, feed);

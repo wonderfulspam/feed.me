@@ -1,3 +1,4 @@
+pub mod categorization;
 pub mod commands;
 pub mod config;
 pub mod search;
@@ -6,15 +7,19 @@ use std::str::FromStr;
 
 use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug, Deserialize, Serialize)]
-struct FeedInfo {
-    url: String,
-    author: String,
-    tier: Tier,
+pub struct FeedInfo {
+    pub url: String,
+    pub author: String,
+    pub tier: Tier,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tags: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub auto_tag: Option<bool>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "lowercase")]
-enum Tier {
+pub enum Tier {
     New,
     Like,
     Love,

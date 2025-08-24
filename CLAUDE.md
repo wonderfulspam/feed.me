@@ -71,6 +71,34 @@ just find_feed <base_url>
 - `description_max_words = 150` truncates descriptions
 - Static site outputs to `public/` directory
 
+### Categorization System
+
+The system includes a flexible categorization engine with:
+
+- **Feed-level tags**: Manual tags in `spacefeeder.toml`
+- **Pattern-based rules**: Title, content, URL, author, and feed slug matching
+- **Keyword extraction**: Auto-tagging based on configured keywords
+- **Tag aliases**: Normalize variations (e.g., "rustlang" → "rust")
+- **Confidence scoring**: Filter low-confidence tags
+
+Example configuration:
+```toml
+[categorization]
+enabled = true
+max_tags_per_item = 5
+confidence_threshold = 0.3
+
+[[categorization.tags]]
+name = "rust"
+keywords = ["rust", "cargo", "rustc"]
+
+[[categorization.rules]]
+type = "feed_slug"
+patterns = ["matklad", "rust_official"]
+tag = "rust"
+confidence = 0.85
+```
+
 ## Testing
 
 The Rust component uses standard Cargo testing with `test-case` for parameterized tests. Test data is in `spacefeeder/src/test_data/`.
