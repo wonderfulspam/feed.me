@@ -2,6 +2,9 @@ set quiet
 
 spacefeeder_config_path := "spacefeeder.toml"
 
+init: build_spacefeeder
+  spacefeeder init
+
 add_feed slug url author tier="new": build_spacefeeder
   spacefeeder add-feed --slug "{{slug}}" --url "{{url}}" --author "{{author}}" --tier "{{tier}}"
 

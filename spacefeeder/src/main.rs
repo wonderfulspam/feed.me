@@ -6,6 +6,7 @@ use spacefeeder::commands::{
     fetch_feeds::{self, FetchArgs},
     find_feed::{self, FindFeedArgs},
     import_feeds::{self, ImportArgs},
+    init::{self, InitArgs},
 };
 
 #[derive(Parser)]
@@ -22,6 +23,7 @@ enum Commands {
     FindFeed(FindFeedArgs),
     Export(ExportArgs),
     Import(ImportArgs),
+    Init(InitArgs),
 }
 
 fn main() -> Result<()> {
@@ -33,5 +35,6 @@ fn main() -> Result<()> {
         Commands::FindFeed(args) => find_feed::execute(args),
         Commands::Export(args) => export_feeds::execute(args),
         Commands::Import(args) => import_feeds::execute(args),
+        Commands::Init(args) => init::execute(args),
     }
 }

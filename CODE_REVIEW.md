@@ -6,15 +6,7 @@ The `feed.me` project is a well-architected RSS feed reader with good separation
 
 ## Remaining Improvements
 
-### 1. **Enhanced User Onboarding**
-
-*   **Current State:** Users must manually create and configure `spacefeeder.toml`
-*   **Recommendation:** Implement an initialization command that:
-    - Creates a default config at `~/.config/feed.me/config.toml` on first run
-    - Includes curated starter feeds demonstrating different content types
-    - Provides an interactive setup wizard for personalizing feed selections
-
-### 2. **Duplicate Detection and Deduplication**
+### 1. **Duplicate Detection and Deduplication**
 
 *   **Current State:** No handling of duplicate articles across feeds
 *   **Recommendation:** Implement content fingerprinting to:
@@ -22,7 +14,7 @@ The `feed.me` project is a well-architected RSS feed reader with good separation
     - Show each article only once with attribution to all sources
     - Track cross-posted content patterns for analytics
 
-### 3. **Feed Health Monitoring**
+### 2. **Feed Health Monitoring**
 
 *   **Current State:** Failed feeds are reported but not tracked over time
 *   **Recommendation:** Add persistent feed health tracking:
@@ -30,7 +22,7 @@ The `feed.me` project is a well-architected RSS feed reader with good separation
     - Auto-disable consistently failing feeds with notification
     - Provide feed reliability statistics in the UI
 
-### 4. **Performance Metrics and Caching**
+### 3. **Performance Metrics and Caching**
 
 *   **Current State:** No caching mechanism for feed content
 *   **Recommendation:** Implement intelligent caching:
