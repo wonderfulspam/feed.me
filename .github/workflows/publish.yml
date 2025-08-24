@@ -20,10 +20,15 @@ jobs:
       - name: Install Rust
         if: github.event_name == 'push' || github.event_name == 'pull_request'
         uses: dtolnay/rust-toolchain@stable
+      - name: Cache Rust dependencies and build artifacts
+        if: github.event_name == 'push' || github.event_name == 'pull_request'
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "spacefeeder -> target"
       - name: Build and install spacefeeder from source
         if: github.event_name == 'push' || github.event_name == 'pull_request'
         shell: bash
-        run: "cd spacefeeder && cargo install --path . --locked"
+        run: "cd spacefeeder && cargo build --release --locked && sudo cp target/release/spacefeeder /usr/local/bin/"
       - name: Install spacefeeder from release
         if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         shell: bash
