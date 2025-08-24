@@ -9,7 +9,7 @@ keywords = ["rust", "cargo", "rustc", "rustup", "crate", "tokio", "async-std", "
 [[tags]]
 name = "ai"
 description = "General AI, ML, and neural networks"
-keywords = ["ai", "artificial intelligence", "ml", "machine learning", "neural", "transformer", "deep learning", "computer vision"]
+keywords = ["artificial intelligence", "machine learning", "neural network", "transformer", "deep learning", "computer vision", "data science", "predictive model"]
 
 [[tags]]
 name = "llm"

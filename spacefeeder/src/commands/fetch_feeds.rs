@@ -535,6 +535,7 @@ mod tests {
             meta: FeedInfo {
                 url: "https://example.com/feed".to_string(),
                 author: "Test Author".to_string(),
+                description: Some("Test feed".to_string()),
                 tier: crate::Tier::New,
                 tags: None,
                 auto_tag: None,

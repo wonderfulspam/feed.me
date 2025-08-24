@@ -132,28 +132,28 @@ tag = "rust-official"
 2. **Confidence thresholds**: Require higher confidence for author-based tags
 3. **Negative patterns**: Rules to exclude certain content
 
-#### Improved Rule Structure
+#### Improved Rule Structure ✅ IMPLEMENTED
 ```toml
 # data/categorization.toml - More precise rules
 [[rules]]
 type = "content_analysis"
-keywords = ["rust", "cargo", "rustc"]
+patterns = ["rust", "cargo", "rustc", "crate"]
 tag = "rust"
 confidence = 0.8
 min_keyword_count = 2  # Require multiple keyword matches
 
 [[rules]]
 type = "author_with_content"
-author = "Simon Willison"
-required_keywords = ["python", "django", "pip"]
+patterns = ["Simon Willison"]
+required_keywords = ["python", "django", "pip", "pypi"]
 tag = "python"
 confidence = 0.7  # Lower confidence for author-based rules
 
 # Negative rules to prevent false positives
 [[rules]]
 type = "exclude_if"
-patterns = ["AI news roundup", "weekly links"]
-exclude_tags = ["python", "rust"]  # Don't auto-tag link roundups
+patterns = ["weekly links", "link roundup", "news roundup"]
+exclude_tags = ["python", "rust", "ai"]  # Don't auto-tag link roundups
 ```
 
 ## Technical Implementation
@@ -218,17 +218,17 @@ struct UserFeedConfig {
 
 **Success Criteria**: ✅ Users can discover, install, and manage feeds without editing TOML files
 
-### Milestone 3: Improved Categorization Rules
+### Milestone 3: Improved Categorization Rules ✅ COMPLETED
 **Goal**: Reduce false positives and improve categorization accuracy
 
 **Tasks**:
-- [ ] Implement content-based analysis (not just author-based)
-- [ ] Add confidence scoring and thresholds
-- [ ] Implement negative pattern matching to exclude certain content
-- [ ] Add support for multiple keyword requirements
-- [ ] Test and tune rules against existing feed content
+- [x] Implement content-based analysis (not just author-based)
+- [x] Add confidence scoring and thresholds
+- [x] Implement negative pattern matching to exclude certain content
+- [x] Add support for multiple keyword requirements
+- [x] Test and tune rules against existing feed content
 
-**Success Criteria**: Categorization accuracy improves, fewer false positives
+**Success Criteria**: ✅ Categorization accuracy improves, fewer false positives
 
 ### Milestone 4: Community Contribution Framework
 **Goal**: Make it easy for others to contribute feeds and categorization improvements
@@ -255,11 +255,47 @@ struct UserFeedConfig {
    - Simple feed installation and management workflow
    - Enhanced CLI help descriptions for better user experience
 
-3. **Next: Milestone 3 - Advanced Categorization**:
-   - Implement content-based analysis (beyond pattern matching)
-   - Add confidence scoring and thresholds
-   - Implement negative pattern matching
-   - Add support for multiple keyword requirements
+3. **✅ COMPLETED**: Milestone 3 - Advanced Categorization:
+   - Extended TagRule structure with advanced fields (exclude_patterns, min_keyword_count, required_keywords, exclude_tags)
+   - Added content_analysis rule type with multi-keyword requirements
+   - Added author_with_content rule type to reduce author-based false positives  
+   - Added exclude_if rule type to prevent tagging of link roundups and announcements
+   - Improved keyword matching with word boundaries to prevent false matches ("ai" no longer matches "said")
+   - Comprehensive test suite covering realistic false positive scenarios
+   - Improved categorization.toml with sophisticated rules demonstrating new features
+
+## Current State and Known Limitations
+
+### What's Working Well ✅
+- **Feed Registry**: 14 curated feeds with descriptions and categorization rules
+- **CLI Commands**: Package manager-like interface (search, add, list, info, configure, remove)
+- **Advanced Rules**: Content analysis, exclusion patterns, multi-keyword requirements
+- **Word Boundaries**: Precise keyword matching prevents most false positives
+- **Test Coverage**: Comprehensive tests ensure categorization logic works correctly
+
+### Known Issues and Shortcomings ⚠️
+1. **Feed-Level Tags Override Content Analysis**: Manual tags assigned to feeds (e.g., Simon Willison's "ai" tag) apply to ALL articles from that feed, regardless of content. This causes false positives for multi-topic authors.
+   - **Impact**: Simon Willison articles about web development still get AI tags
+   - **Desired Behavior**: Feed-level tags should act as boosters rather than absolute assignments
+   - **Technical Need**: Implement weighted tag system where feed tags influence confidence but don't guarantee inclusion
+
+2. **Hacker News Over-Categorization**: Some random articles still get inappropriate tags
+   - **Root Cause**: Keyword matching in titles/descriptions of aggregated content
+   - **Mitigation**: Exclude rules help but don't cover all cases
+
+3. **Author-Based Rules Need Refinement**: Current author_with_content rules require all keywords, which may be too restrictive for some cases
+
+### Next Priority Improvements
+1. **Weighted Tag System**: Convert feed-level tags from absolute assignments to confidence boosters
+2. **Smarter Aggregator Handling**: Better detection and handling of link aggregators like Hacker News
+3. **Confidence Thresholds**: Fine-tune confidence scoring for different rule types
+4. **Content-Only Mode**: Option to ignore feed-level tags for testing accuracy
+
+4. **Future: Milestone 4 - Community Contribution Framework**:
+   - Document feed contribution process
+   - Create validation tools for feed registry changes  
+   - Set up automated testing of categorization rules
+   - Create templates for common feed patterns
 
 ## Technical Notes
 
