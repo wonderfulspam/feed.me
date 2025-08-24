@@ -110,7 +110,7 @@ class ArticleSearch {
       filteredArticles = filteredArticles.filter(article => {
         const searchableText = [
           article.title,
-          article.description,
+          article.safe_description || article.description,
           article.author
         ].join(' ').toLowerCase();
         
@@ -121,7 +121,7 @@ class ArticleSearch {
       filteredArticles = filteredArticles.map(article => {
         let score = 0;
         const titleLower = article.title.toLowerCase();
-        const descriptionLower = article.description.toLowerCase();
+        const descriptionLower = (article.safe_description || article.description).toLowerCase();
         
         if (titleLower.includes(query)) {
           score += titleLower.split(query).length - 1; // Count occurrences
@@ -158,9 +158,9 @@ class ArticleSearch {
     // Display results
     const resultsHtml = results.map(article => {
       const date = new Date(article.pub_date).toLocaleDateString();
-      const description = article.description.length > 200 
-        ? article.description.substring(0, 200) + '...' 
-        : article.description;
+      const description = (article.safe_description || article.description).length > 200 
+        ? (article.safe_description || article.description).substring(0, 200) + '...' 
+        : (article.safe_description || article.description);
       
       return `
         <article class="article-item">
