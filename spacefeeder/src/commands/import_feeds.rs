@@ -1,9 +1,29 @@
 use std::str::FromStr;
 
 use anyhow::{Context, Result};
+use clap::Args;
 use opml::OPML;
 
 use crate::{config::Config, FeedInfo, Tier};
+
+#[derive(Args)]
+pub struct ImportArgs {
+    /// Path to the OPML file to import
+    #[arg(long)]
+    pub input_path: String,
+    /// Default tier for imported feeds
+    #[arg(long, default_value = "new")]
+    pub tier: String,
+    /// Path to the config file
+    #[arg(long, default_value = "./spacefeeder.toml")]
+    pub config_path: String,
+}
+
+pub fn execute(args: ImportArgs) -> Result<()> {
+    let mut config = Config::from_file(&args.config_path)?;
+    run(&mut config, args.input_path, args.tier)?;
+    config.save(&args.config_path)
+}
 
 pub fn run(config: &mut Config, input_path: String, default_tier: String) -> Result<()> {
     let tier = Tier::from_str(&default_tier)

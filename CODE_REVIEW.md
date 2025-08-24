@@ -13,10 +13,6 @@ This review will provide suggestions to further improve the project, focusing on
 The `spacefeeder` tool is the core of the project. Here are some suggestions for improvement:
 
 
-### 2. **Refactor Command Logic out of `main.rs`**
-
-*   **Observation:** The `main.rs` file contains the logic for running the different commands.
-*   **Suggestion:** To improve modularity and make the code easier to test, move the command-running logic into the respective command modules. For example, the logic for the `add-feed` command could be in a `run` function inside the `add_feed.rs` module. The `main.rs` file would then only be responsible for parsing the command-line arguments and calling the appropriate `run` function.
 
 ### 3. **Add Unit and Integration Tests**
 

@@ -1,6 +1,7 @@
 use std::time::Duration;
 
 use anyhow::{anyhow, Result};
+use clap::Args;
 use ureq::AgentBuilder;
 use url::Url;
 
@@ -15,6 +16,18 @@ const LIKELY_PATHS: &[&str] = &[
     "blog.rss",
     ".atom",
 ];
+
+#[derive(Args)]
+pub struct FindFeedArgs {
+    #[arg(long)]
+    pub base_url: String,
+}
+
+pub fn execute(args: FindFeedArgs) -> Result<()> {
+    let url_match = run(&args.base_url)?;
+    println!("{url_match}");
+    Ok(())
+}
 
 pub fn run(base_url: &str) -> Result<String> {
     let base_url = Url::parse(base_url)?;

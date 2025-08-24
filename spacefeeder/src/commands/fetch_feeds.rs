@@ -8,6 +8,7 @@ use crate::FeedInfo;
 
 use anyhow::Result;
 use chrono::{DateTime, Utc};
+use clap::Args;
 use feed_rs::model::Entry;
 use feed_rs::parser;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
@@ -39,6 +40,18 @@ struct RssItem {
     description: String,
     safe_description: String,
     pub_date: Option<DateTime<Utc>>,
+}
+
+#[derive(Args)]
+pub struct FetchArgs {
+    /// Path to the config file
+    #[arg(long, default_value = "./spacefeeder.toml")]
+    pub config_path: String,
+}
+
+pub fn execute(args: FetchArgs) -> Result<()> {
+    let config = Config::from_file(&args.config_path)?;
+    run(config)
 }
 
 pub fn run(config: Config) -> Result<()> {
