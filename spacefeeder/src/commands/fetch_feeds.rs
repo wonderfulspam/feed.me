@@ -246,4 +246,90 @@ mod tests {
         let items: Vec<ItemOutput> = (&feed_data).into();
         assert_eq!(items.len(), config.parse_config.max_articles);
     }
+
+    #[test]
+    fn test_get_short_description_exact_words() {
+        let description = "This is a test description with exactly ten words here.".to_string();
+        let result = get_short_description(description.clone(), 10);
+        assert_eq!(result, "This is a test description with exactly ten words here.");
+    }
+
+    #[test]
+    fn test_get_short_description_truncates() {
+        let description = "This is a very long description that should be truncated after exactly five words but continues on and on.".to_string();
+        let result = get_short_description(description, 5);
+        assert_eq!(result, "This is a very long");
+    }
+
+    #[test]
+    fn test_get_short_description_empty() {
+        let description = "".to_string();
+        let result = get_short_description(description, 10);
+        assert_eq!(result, "");
+    }
+
+    #[test]
+    fn test_get_short_description_whitespace() {
+        let description = "   Multiple   spaces    between     words   ".to_string();
+        let result = get_short_description(description, 3);
+        assert_eq!(result, "Multiple spaces between");
+    }
+
+    #[test]
+    fn test_get_short_description_fewer_words() {
+        let description = "Short text".to_string();
+        let result = get_short_description(description, 10);
+        assert_eq!(result, "Short text");
+    }
+
+    #[test]
+    fn test_html_tag_removal() {
+        let re = Regex::new(r"<[^>]*>").unwrap();
+        let html = "<p>This is <strong>bold</strong> and <em>italic</em> text.</p>";
+        let result = re.replace_all(html, "").to_string();
+        assert_eq!(result, "This is bold and italic text.");
+    }
+
+    #[test]
+    fn test_html_tag_removal_nested() {
+        let re = Regex::new(r"<[^>]*>").unwrap();
+        let html = "<div><p>Nested <span>tags</span> here</p></div>";
+        let result = re.replace_all(html, "").to_string();
+        assert_eq!(result, "Nested tags here");
+    }
+
+    #[test]
+    fn test_feed_output_to_item_output_conversion() {
+        let feed_output = FeedOutput {
+            meta: FeedInfo {
+                url: "https://example.com/feed".to_string(),
+                author: "Test Author".to_string(),
+                tier: crate::Tier::New,
+            },
+            slug: "test_feed".to_string(),
+            items: vec![
+                RssItem {
+                    title: "Article 1".to_string(),
+                    item_url: "https://example.com/1".to_string(),
+                    description: "Description 1".to_string(),
+                    safe_description: "Description 1".to_string(),
+                    pub_date: None,
+                },
+                RssItem {
+                    title: "Article 2".to_string(),
+                    item_url: "https://example.com/2".to_string(),
+                    description: "Description 2".to_string(),
+                    safe_description: "Description 2".to_string(),
+                    pub_date: None,
+                },
+            ],
+        };
+
+        let items: Vec<ItemOutput> = (&feed_output).into();
+        assert_eq!(items.len(), 2);
+        assert_eq!(items[0].item.title, "Article 1");
+        assert_eq!(items[1].item.title, "Article 2");
+        assert_eq!(items[0].slug, "test_feed");
+        assert_eq!(items[0].meta.author, "Test Author");
+    }
 }

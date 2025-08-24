@@ -31,3 +31,51 @@ impl FromStr for Tier {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_tier_from_str_lowercase() {
+        assert!(matches!(Tier::from_str("new").unwrap(), Tier::New));
+        assert!(matches!(Tier::from_str("like").unwrap(), Tier::Like));
+        assert!(matches!(Tier::from_str("love").unwrap(), Tier::Love));
+    }
+
+    #[test]
+    fn test_tier_from_str_capitalized() {
+        assert!(matches!(Tier::from_str("New").unwrap(), Tier::New));
+        assert!(matches!(Tier::from_str("Like").unwrap(), Tier::Like));
+        assert!(matches!(Tier::from_str("Love").unwrap(), Tier::Love));
+    }
+
+    #[test]
+    fn test_tier_from_str_invalid() {
+        assert!(Tier::from_str("invalid").is_err());
+        assert!(Tier::from_str("").is_err());
+        assert!(Tier::from_str("NEW").is_err());
+        assert!(Tier::from_str("LOVE").is_err());
+    }
+
+    #[test]
+    fn test_tier_serialization() {
+        // Test that the serde rename_all = "lowercase" works
+        let tier = Tier::New;
+        let json = serde_json::to_string(&tier).unwrap();
+        assert_eq!(json, "\"new\"");
+        
+        let tier = Tier::Love;
+        let json = serde_json::to_string(&tier).unwrap();
+        assert_eq!(json, "\"love\"");
+    }
+
+    #[test]
+    fn test_tier_deserialization() {
+        let tier: Tier = serde_json::from_str("\"new\"").unwrap();
+        assert!(matches!(tier, Tier::New));
+        
+        let tier: Tier = serde_json::from_str("\"love\"").unwrap();
+        assert!(matches!(tier, Tier::Love));
+    }
+}
