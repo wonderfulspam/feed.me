@@ -206,17 +206,17 @@ struct UserFeedConfig {
 - Improved categorization rules with reduced false positives
 - Users can specify minimal config: `[feeds.matklad] tier = "love"`
 
-### Milestone 2: CLI Feed Management
+### Milestone 2: CLI Feed Management ✅ COMPLETED
 **Goal**: Package manager-like commands for feed discovery and installation
 
 **Tasks**:
-- [ ] Implement `spacefeeder feeds search <query>` command
-- [ ] Implement `spacefeeder feeds add <slug>` command  
-- [ ] Implement `spacefeeder feeds list` and `spacefeeder feeds info <slug>` commands
-- [ ] Implement `spacefeeder feeds configure <slug>` for tier management
-- [ ] Implement `spacefeeder feeds remove <slug>` command
+- [x] Implement `spacefeeder feeds search <query>` command
+- [x] Implement `spacefeeder feeds add <slug>` command  
+- [x] Implement `spacefeeder feeds list` and `spacefeeder feeds info <slug>` commands
+- [x] Implement `spacefeeder feeds configure <slug>` for tier management
+- [x] Implement `spacefeeder feeds remove <slug>` command
 
-**Success Criteria**: Users can discover, install, and manage feeds without editing TOML files
+**Success Criteria**: ✅ Users can discover, install, and manage feeds without editing TOML files
 
 ### Milestone 3: Improved Categorization Rules
 **Goal**: Reduce false positives and improve categorization accuracy
@@ -249,14 +249,13 @@ struct UserFeedConfig {
    - Support for minimal user configuration
    - All default data embedded at compile time
 
-2. **Next: Milestone 2 - CLI Feed Management**:
-   - Implement `spacefeeder feeds search <query>` command
-   - Implement `spacefeeder feeds add <slug>` command  
-   - Implement `spacefeeder feeds list` and `spacefeeder feeds info <slug>` commands
-   - Implement `spacefeeder feeds configure <slug>` for tier management
-   - Implement `spacefeeder feeds remove <slug>` command
+2. **✅ COMPLETED**: Milestone 2 - CLI Feed Management:
+   - Package manager-like `feeds` subcommand with search, add, list, info, configure, remove
+   - Feed discovery without config file dependency (search and info commands)
+   - Simple feed installation and management workflow
+   - Enhanced CLI help descriptions for better user experience
 
-3. **Future: Milestone 3 - Advanced Categorization**:
+3. **Next: Milestone 3 - Advanced Categorization**:
    - Implement content-based analysis (beyond pattern matching)
    - Add confidence scoring and thresholds
    - Implement negative pattern matching

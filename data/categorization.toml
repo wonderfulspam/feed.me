@@ -121,18 +121,48 @@ patterns = ["PostgreSQL", "MySQL", "database", "SQL", "NoSQL"]
 tag = "database"
 confidence = 0.8
 
-# Author-based rules (lower confidence to reduce false positives)
+# Improved author-based rules with content requirements (reduces false positives)
 [[rules]]
-type = "author_contains"
+type = "author_with_content"
 patterns = ["Simon Willison"]
+required_keywords = ["python", "django", "pip", "pypi"]
 tag = "python"
-confidence = 0.5
+confidence = 0.7
 
 [[rules]]
-type = "author_contains"
+type = "author_with_content"
 patterns = ["Simon Willison"]
+required_keywords = ["ai", "llm", "gpt", "claude", "machine learning"]
 tag = "ai"
-confidence = 0.6
+confidence = 0.8
+
+# Advanced content analysis rules with multiple keyword requirements
+[[rules]]
+type = "content_analysis"
+patterns = ["rust", "cargo", "rustc", "crate"]
+tag = "rust"
+confidence = 0.8
+min_keyword_count = 2
+
+[[rules]]
+type = "content_analysis"
+patterns = ["python", "pip", "django", "flask", "pypi"]
+tag = "python"
+confidence = 0.8
+min_keyword_count = 2
+
+# Exclusion rules to prevent false positives
+[[rules]]
+type = "exclude_if"
+patterns = ["weekly links", "link roundup", "this week", "news roundup", "weekly digest"]
+exclude_tags = ["python", "rust", "ai", "javascript", "go"]
+confidence = 1.0
+
+[[rules]]
+type = "exclude_if"
+patterns = ["announcement", "job posting", "hiring"]
+exclude_tags = ["python", "rust", "ai", "javascript", "go"]
+confidence = 1.0
 
 # Tag aliases for normalization
 [[aliases]]

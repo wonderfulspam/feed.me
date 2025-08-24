@@ -86,30 +86,52 @@ impl CategorizationEngine {
             }
         }
 
-        // 3. Apply rule-based tagging
+        // 3. Check for exclusion rules first
+        let mut excluded_tags = HashSet::new();
         for rule in &self.config.rules {
-            if let Some(matched_tags) = self.apply_rule(
-                rule,
-                title,
-                description,
-                link,
-                author,
-                feed_slug,
-            ) {
-                for tag in matched_tags {
-                    let normalized = self.normalize_tag(&tag.name);
-                    if seen.insert(normalized.clone()) {
-                        tags.push(Tag {
-                            name: normalized,
-                            confidence: tag.confidence,
-                            source: tag.source,
-                        });
+            if rule.rule_type == "exclude_if" {
+                let content = format!(
+                    "{} {}",
+                    title.to_lowercase(),
+                    description.unwrap_or("").to_lowercase()
+                );
+                
+                if rule.patterns.iter().any(|p| content.contains(&p.to_lowercase())) {
+                    // If this exclude rule matches, mark its exclude_tags for exclusion
+                    for tag in &rule.exclude_tags {
+                        excluded_tags.insert(tag.clone());
                     }
                 }
             }
         }
 
-        // 4. Apply keyword-based tagging
+        // 4. Apply rule-based tagging (skipping exclude_if rules)
+        for rule in &self.config.rules {
+            if rule.rule_type != "exclude_if" {
+                if let Some(matched_tags) = self.apply_rule(
+                    rule,
+                    title,
+                    description,
+                    link,
+                    author,
+                    feed_slug,
+                ) {
+                    for tag in matched_tags {
+                        let normalized = self.normalize_tag(&tag.name);
+                        // Skip excluded tags
+                        if !excluded_tags.contains(&normalized) && seen.insert(normalized.clone()) {
+                            tags.push(Tag {
+                                name: normalized,
+                                confidence: tag.confidence,
+                                source: tag.source,
+                            });
+                        }
+                    }
+                }
+            }
+        }
+
+        // 5. Apply keyword-based tagging
         if self.config.auto_tag_new_articles {
             let content = format!(
                 "{} {}",
@@ -120,7 +142,8 @@ impl CategorizationEngine {
                 if let Some(confidence) = self.check_keywords(&content, &tag_def.keywords) {
                     if confidence >= self.config.confidence_threshold {
                         let normalized = self.normalize_tag(&tag_def.name);
-                        if seen.insert(normalized.clone()) {
+                        // Skip excluded tags
+                        if !excluded_tags.contains(&normalized) && seen.insert(normalized.clone()) {
                             tags.push(Tag {
                                 name: normalized,
                                 confidence,
@@ -148,6 +171,21 @@ impl CategorizationEngine {
         author: Option<&str>,
         feed_slug: &str,
     ) -> Option<Vec<Tag>> {
+        // First check if any exclude patterns match - if so, skip this rule
+        if !rule.exclude_patterns.is_empty() {
+            let content = format!(
+                "{} {}",
+                title.to_lowercase(),
+                description.unwrap_or("").to_lowercase()
+            );
+            
+            for exclude_pattern in &rule.exclude_patterns {
+                if content.contains(&exclude_pattern.to_lowercase()) {
+                    return None; // Rule excluded
+                }
+            }
+        }
+
         let matches = match rule.rule_type.as_str() {
             "title_contains" => {
                 let title_lower = title.to_lowercase();
@@ -160,6 +198,47 @@ impl CategorizationEngine {
                     description.unwrap_or("").to_lowercase()
                 );
                 rule.patterns.iter().any(|p| content.contains(&p.to_lowercase()))
+            }
+            "content_analysis" => {
+                // Advanced content analysis with keyword count requirements
+                let content = format!(
+                    "{} {}",
+                    title.to_lowercase(),
+                    description.unwrap_or("").to_lowercase()
+                );
+                
+                let matched_keywords = rule.patterns.iter()
+                    .filter(|p| content.contains(&p.to_lowercase()))
+                    .count();
+                
+                if let Some(min_count) = rule.min_keyword_count {
+                    matched_keywords >= min_count
+                } else {
+                    matched_keywords > 0
+                }
+            }
+            "author_with_content" => {
+                // Author-based rule that also requires content keywords
+                if let Some(author_str) = author {
+                    let author_matches = rule.patterns.iter()
+                        .any(|p| author_str.to_lowercase().contains(&p.to_lowercase()));
+                    
+                    if author_matches && !rule.required_keywords.is_empty() {
+                        let content = format!(
+                            "{} {}",
+                            title.to_lowercase(),
+                            description.unwrap_or("").to_lowercase()
+                        );
+                        
+                        // All required keywords must be present
+                        rule.required_keywords.iter()
+                            .all(|kw| content.contains(&kw.to_lowercase()))
+                    } else {
+                        author_matches
+                    }
+                } else {
+                    false
+                }
             }
             "url_contains" => {
                 if let Some(url) = link {
@@ -179,6 +258,11 @@ impl CategorizationEngine {
             }
             "feed_slug" => {
                 rule.patterns.iter().any(|p| feed_slug == p)
+            }
+            "exclude_if" => {
+                // This is a negative rule - if it matches, it prevents other tags
+                // This should be handled at a higher level, but we return false here
+                false
             }
             _ => false,
         };

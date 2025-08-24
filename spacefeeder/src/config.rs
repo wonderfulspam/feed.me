@@ -83,6 +83,18 @@ pub struct TagRule {
     #[serde(default)]
     pub tags: Vec<String>,
     pub confidence: f32,
+    /// Negative patterns that exclude this rule if matched
+    #[serde(default)]
+    pub exclude_patterns: Vec<String>,
+    /// Minimum number of keywords that must match (for content_analysis rules)
+    #[serde(default)]
+    pub min_keyword_count: Option<usize>,
+    /// Required keywords that must all be present (for author_with_content rules)
+    #[serde(default)]
+    pub required_keywords: Vec<String>,
+    /// Tags to exclude if this rule matches (for exclude_if rules)
+    #[serde(default)]
+    pub exclude_tags: Vec<String>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
