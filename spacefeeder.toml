@@ -9,7 +9,7 @@ item_data_output_path = "./content/data/itemData.json"
 enabled = true
 auto_tag_new_articles = true
 max_tags_per_item = 5
-confidence_threshold = 0.3
+confidence_threshold = 0.4
 
 # Predefined tags with descriptions and keywords
 [[categorization.tags]]
@@ -19,8 +19,28 @@ keywords = ["rust", "cargo", "rustc", "rustup", "crate", "tokio", "async-std", "
 
 [[categorization.tags]]
 name = "ai"
-description = "AI, ML, LLMs, and neural networks"
-keywords = ["ai", "artificial intelligence", "ml", "machine learning", "llm", "gpt", "claude", "gemini", "chatgpt", "neural", "transformer"]
+description = "General AI, ML, and neural networks"
+keywords = ["ai", "artificial intelligence", "ml", "machine learning", "neural", "transformer", "deep learning", "computer vision"]
+
+[[categorization.tags]]
+name = "llm"
+description = "Large Language Models and generative AI"
+keywords = ["llm", "large language model", "generative ai", "text generation", "language model", "prompt engineering"]
+
+[[categorization.tags]]
+name = "anthropic"
+description = "Anthropic and Claude"
+keywords = ["anthropic", "claude"]
+
+[[categorization.tags]]
+name = "openai"
+description = "OpenAI and ChatGPT"
+keywords = ["openai", "chatgpt", "gpt-4", "gpt-3"]
+
+[[categorization.tags]]
+name = "google-ai"
+description = "Google AI products"
+keywords = ["gemini", "bard", "google ai", "palm"]
 
 [[categorization.tags]]
 name = "devops"
@@ -52,6 +72,21 @@ name = "javascript"
 description = "JavaScript and TypeScript"
 keywords = ["javascript", "js", "typescript", "ts", "node", "nodejs", "npm", "react", "vue", "angular"]
 
+[[categorization.tags]]
+name = "web-dev"
+description = "Web development and frontend"
+keywords = ["web development", "frontend", "backend", "html", "css", "web api", "browser"]
+
+[[categorization.tags]]
+name = "go"
+description = "Go programming language"
+keywords = ["golang", "go programming", "go lang"]
+
+[[categorization.tags]]
+name = "database"
+description = "Databases and data storage"
+keywords = ["database", "sql", "postgresql", "mysql", "sqlite", "nosql", "mongodb"]
+
 # Pattern-based rules for automatic tagging
 [[categorization.rules]]
 type = "title_contains"
@@ -67,9 +102,39 @@ confidence = 0.95
 
 [[categorization.rules]]
 type = "content_contains"
-patterns = ["artificial intelligence", "machine learning", "LLM", "GPT", "Claude"]
-tag = "ai"
-confidence = 0.8
+patterns = ["Claude", "claude"]
+tag = "anthropic"
+confidence = 0.9
+
+[[categorization.rules]]
+type = "content_contains"
+patterns = ["ChatGPT", "OpenAI", "GPT-4", "GPT-3"]
+tag = "openai"
+confidence = 0.9
+
+[[categorization.rules]]
+type = "content_contains"
+patterns = ["Gemini", "Bard", "Google AI"]
+tag = "google-ai"
+confidence = 0.9
+
+[[categorization.rules]]
+type = "title_contains"
+patterns = ["Claude", "Anthropic"]
+tag = "anthropic"
+confidence = 0.95
+
+[[categorization.rules]]
+type = "title_contains"
+patterns = ["ChatGPT", "OpenAI", "GPT"]
+tag = "openai"
+confidence = 0.95
+
+[[categorization.rules]]
+type = "title_contains"
+patterns = ["LLM", "Large Language Model"]
+tag = "llm"
+confidence = 0.9
 
 [[categorization.rules]]
 type = "author_contains"
@@ -91,8 +156,16 @@ confidence = 0.85
 
 # Tag aliases for normalization
 [[categorization.aliases]]
-from = ["artificial-intelligence", "machine-learning", "ML"]
+from = ["artificial-intelligence", "machine-learning", "ML", "ai and ml"]
 to = "ai"
+
+[[categorization.aliases]]
+from = ["llms", "generative-ai"]
+to = "llm"
+
+[[categorization.aliases]]
+from = ["software development", "software-engineering", "webdev", "web development"]
+to = "web-dev"
 
 [[categorization.aliases]]
 from = ["rustlang", "rust-lang"]
