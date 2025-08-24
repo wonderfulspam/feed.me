@@ -15,7 +15,7 @@ use feed_rs::parser;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use regex::Regex;
 use serde::Serialize;
-use ureq::{Agent, AgentBuilder};
+use ureq::Agent;
 #[derive(Clone, Debug, Serialize)]
 
 struct FeedOutput {
@@ -66,9 +66,10 @@ pub fn run(config: Config) -> Result<()> {
     // Spin off background thread for parallel URL processing
     // TODO use async instead
     thread::spawn(move || {
-        let agent: Agent = AgentBuilder::new()
-            .timeout_read(Duration::from_secs(10))
-            .build();
+        let agent: Agent = Agent::config_builder()
+            .timeout_global(Some(Duration::from_secs(10)))
+            .build()
+            .into();
         config.feeds.par_iter().for_each(|(slug, feed_info)| {
             let slug = slug.clone();
             let feed_info = feed_info.clone();
@@ -189,8 +190,9 @@ fn write_data_to_file<D: Serialize>(output_path: &str, data: &D) {
 }
 
 fn fetch_feed(agent: &Agent, url: &str) -> Option<feed_rs::model::Feed> {
-    let response = agent.get(url).call().ok()?;
-    let reader = BufReader::new(response.into_reader());
+    let mut response = agent.get(url).call().ok()?;
+    let body_bytes = response.body_mut().read_to_vec().ok()?;
+    let reader = BufReader::new(body_bytes.as_slice());
     parser::parse(reader).ok()
 }
 fn build_feed(

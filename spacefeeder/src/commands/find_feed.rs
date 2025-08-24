@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use anyhow::{anyhow, Result};
 use clap::Args;
-use ureq::AgentBuilder;
+use ureq::Agent;
 use url::Url;
 
 const LIKELY_PATHS: &[&str] = &[
@@ -31,9 +31,10 @@ pub fn execute(args: FindFeedArgs) -> Result<()> {
 
 pub fn run(base_url: &str) -> Result<String> {
     let base_url = Url::parse(base_url)?;
-    let agent = AgentBuilder::new()
-        .timeout_read(Duration::from_secs(3))
-        .build();
+    let agent: Agent = Agent::config_builder()
+        .timeout_global(Some(Duration::from_secs(3)))
+        .build()
+        .into();
 
     let rss_path = LIKELY_PATHS.iter().find_map(|&path| {
         let url_to_try = base_url
@@ -42,7 +43,8 @@ pub fn run(base_url: &str) -> Result<String> {
         let url_str = url_to_try.as_str();
         println!("Trying {url_str}");
         if let Ok(res) = agent.head(url_str).call() {
-            if is_feed_content_type(res.header("content-type")) {
+            let content_type = res.headers().get("content-type").and_then(|v| v.to_str().ok());
+            if is_feed_content_type(content_type) {
                 return Some(url_to_try.to_string());
             }
         }
