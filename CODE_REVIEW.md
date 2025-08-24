@@ -4,31 +4,29 @@
 
 The `feed.me` project is a well-architected RSS feed reader with good separation between the Rust backend (`spacefeeder`) and Zola frontend. The codebase has solid error handling, modularity, and test coverage.
 
+## Recent Improvements ✅
+
+### **Enhanced User Onboarding** - *Completed*
+
+*   **Implementation:** Added `spacefeeder init` command with interactive setup
+*   **Features:**
+    - Creates default config with curated starter feeds (Rust, GitHub, HN, DEV, etc.)
+    - Interactive wizard for customizing settings
+    - Support for global config directory with `--global` flag
+    - Clear next steps and usage guidance
+    - Available via `just init` command
+
 ## Remaining Improvements
 
-### 1. **Duplicate Detection and Deduplication**
+### 1. **Performance Optimizations** *(Lower Priority)*
 
-*   **Current State:** No handling of duplicate articles across feeds
-*   **Recommendation:** Implement content fingerprinting to:
-    - Detect when multiple feeds syndicate the same article
-    - Show each article only once with attribution to all sources
-    - Track cross-posted content patterns for analytics
+*   **Current State:** All feeds are fetched on every run
+*   **Future Consideration:** Could add ETags/Last-Modified caching, but current performance is acceptable for typical personal use (23 feeds in ~2 seconds)
 
-### 2. **Feed Health Monitoring**
+### 2. **Feed Analytics** *(Lower Priority)*
 
-*   **Current State:** Failed feeds are reported but not tracked over time
-*   **Recommendation:** Add persistent feed health tracking:
-    - Record failure patterns and last successful fetch times
-    - Auto-disable consistently failing feeds with notification
-    - Provide feed reliability statistics in the UI
-
-### 3. **Performance Metrics and Caching**
-
-*   **Current State:** No caching mechanism for feed content
-*   **Recommendation:** Implement intelligent caching:
-    - Use ETags and Last-Modified headers for conditional requests
-    - Cache parsed feed data with configurable TTLs
-    - Add metrics for fetch times, parse times, and data volumes
+*   **Current State:** Failed feeds are clearly reported in output
+*   **Future Consideration:** Could track failure patterns, but manual investigation is typically needed anyway for personal RSS readers
 
 ## Future Functionality (Prioritized by Value/Effort)
 
