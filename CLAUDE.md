@@ -11,6 +11,27 @@ This is a dual-component static site generator for RSS/Atom feeds:
 
 The workflow: spacefeeder processes feeds from `spacefeeder.toml` → generates JSON in `content/data/` → Zola builds static site using templates.
 
+## Source Control (Jujutsu)
+
+**CRITICAL: Commit changes in small increments. Never skip commits.**
+
+```bash
+# View status
+jj st
+
+# Stage and commit with message
+jj commit -m "Your commit message"
+
+# Update main bookmark after committing
+jj bookmark move main --to @-
+
+# Push to GitHub
+jj git push
+
+# Describe current change without committing
+jj describe -m "Description of work in progress"
+```
+
 ## Core Commands
 
 All development tasks use the `justfile` (Just task runner):
@@ -33,24 +54,6 @@ just export_feeds
 
 # Find RSS/Atom feed from a website URL
 just find_feed <base_url>
-```
-
-## Spacefeeder Development
-
-The Rust CLI is in the `spacefeeder/` directory:
-
-```bash
-# Install spacefeeder locally
-cd spacefeeder && cargo install --path . --locked
-
-# Run tests
-cd spacefeeder && cargo test
-
-# Run specific test
-cd spacefeeder && cargo test <test_name>
-
-# Check without building
-cd spacefeeder && cargo check
 ```
 
 ## Project Structure
