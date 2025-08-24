@@ -4,10 +4,8 @@ RSS readers are great. What if you had one at your fingertips
 available from everywhere with no software needed other than
 the ubiquitous web browser?
 
-The project consists of two parts: `spacefeeder`, a small Rust
-tool which takes a list of RSS/Atom feeds as input and produces
-JSON output, and a small website implementation using Zola
-which uses said output to generate a static website.
+The project consists of a single Rust tool called `spacefeeder` which takes a 
+list of RSS/Atom feeds as input and generates a complete static website.
 
 All functionality is captured in the provided `justfile`.
 

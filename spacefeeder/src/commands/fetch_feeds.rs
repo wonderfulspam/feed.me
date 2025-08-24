@@ -120,24 +120,27 @@ pub fn run(config: Config) -> Result<()> {
     let mut items: Vec<_> = feed_data.iter().flat_map(Vec::<ItemOutput>::from).collect();
     items.sort_unstable_by_key(|io| io.item.pub_date);
     items.reverse();
-    
+
     // Write all items
     write_data_to_file(&config.output_config.item_data_output_path, &items);
-    
+
     // Write filtered items by tier for better performance in templates
-    let loved_items: Vec<_> = items.iter()
+    let loved_items: Vec<_> = items
+        .iter()
         .filter(|item| matches!(item.meta.tier, crate::Tier::Love))
         .cloned()
         .collect();
     write_data_to_file("./content/data/lovedData.json", &loved_items);
-    
-    let liked_items: Vec<_> = items.iter()
+
+    let liked_items: Vec<_> = items
+        .iter()
         .filter(|item| matches!(item.meta.tier, crate::Tier::Like))
         .cloned()
         .collect();
     write_data_to_file("./content/data/likedData.json", &liked_items);
-    
-    let new_items: Vec<_> = items.iter()
+
+    let new_items: Vec<_> = items
+        .iter()
         .filter(|item| matches!(item.meta.tier, crate::Tier::New))
         .cloned()
         .collect();
@@ -157,7 +160,7 @@ pub fn run(config: Config) -> Result<()> {
     } else {
         println!("✓ Search index updated");
     }
-    
+
     // Return Ok even if some feeds failed - the operation as a whole succeeded
     Ok(())
 }
@@ -176,12 +179,12 @@ impl From<&FeedOutput> for Vec<ItemOutput> {
 }
 fn write_data_to_file<D: Serialize>(output_path: &str, data: &D) {
     let contents = serde_json::to_string_pretty(data).unwrap();
-    
+
     // Create parent directory if it doesn't exist
     if let Some(parent) = std::path::Path::new(output_path).parent() {
         std::fs::create_dir_all(parent).expect("Unable to create parent directory");
     }
-    
+
     std::fs::write(output_path, contents).expect("Unable to write file");
 }
 
@@ -253,7 +256,7 @@ fn get_short_description(description: String, max_words: usize) -> String {
     // Try to extract first paragraph (better summary)
     if let Some(first_paragraph) = extract_first_paragraph(&description) {
         let word_count = first_paragraph.split_whitespace().count();
-        
+
         // If first paragraph fits within limit, use it
         if word_count <= max_words {
             // Only use first paragraph if it has substantial content (at least 10 words)
@@ -270,7 +273,7 @@ fn get_short_description(description: String, max_words: usize) -> String {
                 .join(" ");
         }
     }
-    
+
     // Fall back to simple word truncation
     description
         .split_whitespace()
@@ -282,7 +285,7 @@ fn get_short_description(description: String, max_words: usize) -> String {
 fn extract_first_paragraph(text: &str) -> Option<String> {
     // Look for paragraph breaks: double newline, or single newline followed by newline
     let patterns = ["\n\n", "\r\n\r\n", "</p>", "<br><br>", "<br/><br/>"];
-    
+
     let mut shortest_break = text.len();
     for pattern in &patterns {
         if let Some(pos) = text.find(pattern) {
@@ -291,22 +294,23 @@ fn extract_first_paragraph(text: &str) -> Option<String> {
             }
         }
     }
-    
+
     // Also check for a single newline that seems to end a sentence
     if let Some(pos) = text.find('\n') {
         if pos > 0 && pos < shortest_break {
             // Check if the character before the newline looks like sentence end
             let before_newline = &text[..pos];
-            if before_newline.ends_with('.') 
+            if before_newline.ends_with('.')
                 || before_newline.ends_with('!')
                 || before_newline.ends_with('?')
                 || before_newline.ends_with('"')
-                || before_newline.ends_with('\'') {
+                || before_newline.ends_with('\'')
+            {
                 shortest_break = pos;
             }
         }
     }
-    
+
     if shortest_break > 0 && shortest_break < text.len() {
         Some(text[..shortest_break].trim().to_string())
     } else if !text.trim().is_empty() {
@@ -318,17 +322,17 @@ fn extract_first_paragraph(text: &str) -> Option<String> {
 
 fn build_search_index(items: &[ItemOutput]) -> Result<()> {
     let index_path = "./search_index";
-    
+
     // Create or open search index
     let search_index = if std::path::Path::new(index_path).exists() {
         SearchIndex::open(index_path)?
     } else {
         SearchIndex::new(index_path)?
     };
-    
+
     // Clear existing index
     search_index.clear_index()?;
-    
+
     // Convert items to ArticleDoc format
     let articles: Vec<ArticleDoc> = items
         .iter()
@@ -344,18 +348,19 @@ fn build_search_index(items: &[ItemOutput]) -> Result<()> {
             })
         })
         .collect();
-    
+
     // Add articles to search index
     search_index.add_articles(&articles)?;
-    
+
     // Export search data as JSON for web interface (both locations)
     let search_data_path = "./content/data/searchData.json";
     write_data_to_file(search_data_path, &articles);
-    
+
+    // TODO Remove this since we no longer need Zola workaround
     // Also copy to static directory so it's served by Zola
     let static_search_path = "./static/data/searchData.json";
     write_data_to_file(static_search_path, &articles);
-    
+
     Ok(())
 }
 #[cfg(test)]
@@ -389,7 +394,10 @@ mod tests {
     fn test_get_short_description_exact_words() {
         let description = "This is a test description with exactly ten words here.".to_string();
         let result = get_short_description(description.clone(), 10);
-        assert_eq!(result, "This is a test description with exactly ten words here.");
+        assert_eq!(
+            result,
+            "This is a test description with exactly ten words here."
+        );
     }
 
     #[test]
@@ -468,7 +476,10 @@ mod tests {
     fn test_get_short_description_uses_first_paragraph() {
         let text = "This is a reasonable first paragraph with enough content.\n\nThis is the second paragraph that should not be included.".to_string();
         let result = get_short_description(text, 150);
-        assert_eq!(result, "This is a reasonable first paragraph with enough content.");
+        assert_eq!(
+            result,
+            "This is a reasonable first paragraph with enough content."
+        );
     }
 
     #[test]

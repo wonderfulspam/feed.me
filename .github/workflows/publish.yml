@@ -12,8 +12,8 @@ on:
     branches: [main]
 
 jobs:
-  fetch_feeds:
-    name: Fetch feed content
+  build_and_publish:
+    name: Build site and publish
     runs-on: "ubuntu-latest"
     steps:
       - uses: actions/checkout@v4
@@ -28,45 +28,10 @@ jobs:
         if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         shell: bash
         run: "curl --proto '=https' --tlsv1.2 -LsSf https://github.com/wonderfulspam/feed.me/releases/latest/download/spacefeeder-installer.sh | sh"
-      - name: Fetch feed content
-        run: "mkdir -p content/data && spacefeeder fetch"
-      - name: Upload feed content
-        uses: actions/upload-artifact@v4
-        with:
-          name: feed-content
-          path: content/data/
-  build_site:
-    name: Build site HTML
-    needs: fetch_feeds
-    runs-on: "ubuntu-latest"
-    steps:
-      - uses: actions/checkout@v4
-      - name: Fetch feed content
-        uses: actions/download-artifact@v4
-        with:
-          name: feed-content
-          path: content/data/
       - name: Build site
-        uses: shalzz/zola-deploy-action@v0.19.2
-        env:
-          BUILD_ONLY: true
-      - name: Upload HTML content
-        uses: actions/upload-artifact@v4
-        with:
-          name: html-content
-          path: public
-  publish_site:
-    name: Publish HTML to Netlify
-    needs: build_site
-    runs-on: "ubuntu-latest"
-    if: github.event_name != 'pull_request'
-    steps:
-      - name: Fetch HTML
-        uses: actions/download-artifact@v4
-        with:
-          name: html-content
-          path: public
-      - name: Publish
+        run: "spacefeeder build"
+      - name: Publish to Netlify
+        if: github.event_name != 'pull_request'
         env:
           NETLIFY_DEPLOY_TOKEN: ${{ secrets.NETLIFY_DEPLOY_TOKEN }}
           SITE_URL: "feed-me-feeds.netlify.com"

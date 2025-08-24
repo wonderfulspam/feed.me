@@ -24,15 +24,15 @@ search query *filters="": build_spacefeeder
 find_feed base_url: build_spacefeeder
   spacefeeder find-feed --base-url {{base_url}}
 
-build: fetch_feeds
-  zola build
+build: build_spacefeeder
+  spacefeeder build
 
 build_spacefeeder:
   echo "Building spacefeeder"
   cd spacefeeder && cargo install --quiet --path . --locked
 
-serve:
-  zola serve
+serve: build_spacefeeder
+  spacefeeder serve
 
 publish_to_netlify: build
   zip -r site.zip public

@@ -4,12 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Architecture Overview
 
-This is a dual-component static site generator for RSS/Atom feeds:
+This is a single-component static site generator for RSS/Atom feeds:
 
-- **spacefeeder**: Rust CLI tool that fetches RSS/Atom feeds and generates JSON data files
-- **Zola website**: Static site generator that consumes the JSON data to create a personal RSS reader homepage
+- **spacefeeder**: Rust CLI tool that fetches RSS/Atom feeds and generates a complete static website
 
-The workflow: spacefeeder processes feeds from `spacefeeder.toml` → generates JSON in `content/data/` → Zola builds static site using templates.
+The workflow: spacefeeder processes feeds from `spacefeeder.toml` → fetches feed data → generates HTML using templates → outputs complete static site to `public/`.
 
 ## Source Control (Jujutsu)
 
@@ -40,7 +39,7 @@ All development tasks use the `justfile` (Just task runner):
 # Build entire site (fetches feeds + builds static site)
 just build
 
-# Development server with auto-reload
+# Development server
 just serve
 
 # Fetch feeds only (updates JSON data)
@@ -60,7 +59,7 @@ just find_feed <base_url>
 
 - `spacefeeder.toml`: Feed configuration with tiers (new/like/love)
 - `content/data/`: JSON output from spacefeeder (feedData.json, itemData.json)
-- `templates/`: Zola HTML templates
+- `templates/`: HTML templates (using Tera templating engine)
 - `static/css/`: Stylesheets
 - `spacefeeder/src/commands/`: CLI command implementations (add_feed, fetch_feeds, etc.)
 - `spacefeeder/src/config.rs`: TOML configuration handling
@@ -70,7 +69,7 @@ just find_feed <base_url>
 - Feeds are organized by tiers: "new", "like", "love"
 - `max_articles = 50` limits per-feed items
 - `description_max_words = 150` truncates descriptions
-- Feed data outputs to `content/data/` for Zola consumption
+- Static site outputs to `public/` directory
 
 ## Testing
 
