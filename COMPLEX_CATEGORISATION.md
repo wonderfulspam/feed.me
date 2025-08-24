@@ -188,18 +188,23 @@ struct UserFeedConfig {
 
 ## Implementation Roadmap
 
-### Milestone 1: Built-in Feed Registry
+### Milestone 1: Built-in Feed Registry ✅ COMPLETED
 **Goal**: Ship with curated default feeds and categorization rules
 
 **Tasks**:
 - [x] Create embedded data files (`data/tags.toml`) 
-- [ ] Create `data/feeds.toml` and `data/categorization.toml`
-- [ ] Curate initial set of high-quality feeds with proper categorization
-- [x] Implement registry loading with `include_str!` macros (for tags)
-- [x] Update config parsing to merge defaults with user overrides (for tags)
-- [ ] Extend merging logic to feeds and categorization rules
+- [x] Create `data/feeds.toml` and `data/categorization.toml`
+- [x] Curate initial set of high-quality feeds with proper categorization
+- [x] Implement registry loading with `include_str!` macros (for all data)
+- [x] Update config parsing to merge defaults with user overrides (for all data)
+- [x] Extend merging logic to feeds and categorization rules
+- [x] Add description field to FeedInfo for better metadata
+- [x] Support minimal user config with tier-only specifications
 
-**Success Criteria**: New users get useful content immediately without configuration
+**Success Criteria**: ✅ New users get useful content immediately without configuration
+- 14 curated default feeds with descriptions and tags
+- Improved categorization rules with reduced false positives
+- Users can specify minimal config: `[feeds.matklad] tier = "love"`
 
 ### Milestone 2: CLI Feed Management
 **Goal**: Package manager-like commands for feed discovery and installation
@@ -238,14 +243,24 @@ struct UserFeedConfig {
 
 ## Next Actions
 
-1. **Continue Milestone 1**: 
-   - Migrate categorization rules to `data/categorization.toml`
-   - Migrate aliases to `data/aliases.toml` (or include in categorization.toml)
-   - Create `data/feeds.toml` with existing feeds as defaults
-2. **Fix categorization accuracy**:
-   - Remove overly broad author-based rules (e.g., Simon Willison → python)
-   - Implement content-based matching instead
-3. **Test with minimal user config**: Verify system works with nearly empty `spacefeeder.toml`
+1. **✅ COMPLETED**: Milestone 1 fully implemented with:
+   - Built-in feed registry with 14 curated feeds
+   - Improved categorization rules with reduced false positives 
+   - Support for minimal user configuration
+   - All default data embedded at compile time
+
+2. **Next: Milestone 2 - CLI Feed Management**:
+   - Implement `spacefeeder feeds search <query>` command
+   - Implement `spacefeeder feeds add <slug>` command  
+   - Implement `spacefeeder feeds list` and `spacefeeder feeds info <slug>` commands
+   - Implement `spacefeeder feeds configure <slug>` for tier management
+   - Implement `spacefeeder feeds remove <slug>` command
+
+3. **Future: Milestone 3 - Advanced Categorization**:
+   - Implement content-based analysis (beyond pattern matching)
+   - Add confidence scoring and thresholds
+   - Implement negative pattern matching
+   - Add support for multiple keyword requirements
 
 ## Technical Notes
 

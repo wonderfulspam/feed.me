@@ -42,6 +42,7 @@ pub fn run(config: &mut Config, input_path: String, default_tier: String) -> Res
             let feed = FeedInfo {
                 url: xml_url,
                 author: title.clone(),
+                description: None,
                 tier: tier.clone(),
                 tags: None,
                 auto_tag: None,

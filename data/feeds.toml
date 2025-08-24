@@ -1,0 +1,86 @@
+# Default feed registry for spacefeeder
+# These feeds are embedded at compile time and provide high-quality defaults
+
+[feeds.matklad]
+url = "https://matklad.github.io/feed.xml"
+author = "Alex Kladov"
+description = "Rust compiler development and language design insights"
+tags = ["rust", "compilers", "language-design"]
+
+[feeds.simonwillison]
+url = "https://simonwillison.net/atom/everything/"
+author = "Simon Willison"
+description = "AI, databases, and web development insights"
+tags = ["ai", "database", "web-dev"]
+
+[feeds.fasterthanlime]
+url = "https://fasterthanli.me/index.xml"
+author = "fasterthanlime"
+description = "Deep technical content on systems programming"
+tags = ["rust", "systems-programming", "performance"]
+
+[feeds.jvns]
+url = "https://jvns.ca/atom.xml"
+author = "Julia Evans"
+description = "Systems programming, networking, and debugging"
+tags = ["systems-programming", "networking", "debugging"]
+
+[feeds.rust_official]
+url = "https://blog.rust-lang.org/feed.xml"
+author = "Rust Team"
+description = "Official Rust language blog"
+tags = ["rust", "official", "announcements"]
+
+[feeds.inside_rust]
+url = "https://blog.rust-lang.org/inside-rust/feed.xml"
+author = "Rust Team"
+description = "Internal workings of the Rust project"
+tags = ["rust", "official", "development"]
+
+[feeds.smallcultfollowing]
+url = "https://smallcultfollowing.com/babysteps//atom.xml"
+author = "Niko Matsakis"
+description = "Rust language design and compiler development"
+tags = ["rust", "language-design", "compilers"]
+
+[feeds.withoutboats]
+url = "https://without.boats/index.xml"
+author = "Without Boats"
+description = "Rust async programming and language evolution"
+tags = ["rust", "async", "language-design"]
+
+[feeds.cliffle]
+url = "https://cliffle.com/rss.xml"
+author = "Cliff Biffle"
+description = "Embedded systems and low-level programming"
+tags = ["embedded", "systems-programming", "hardware"]
+
+[feeds.charitywtf]
+url = "https://charity.wtf/feed/"
+author = "Charity Majors"
+description = "Observability, DevOps, and engineering management"
+tags = ["devops", "observability", "management"]
+
+[feeds.xeiaso]
+url = "https://xeiaso.net/blog.rss"
+author = "Xe Iaso"
+description = "Systems programming, Go, and infrastructure"
+tags = ["go", "systems-programming", "infrastructure"]
+
+[feeds.hackernews]
+url = "https://hnrss.org/newest?points=100"
+author = "Hacker News"
+description = "High-quality tech news and discussions"
+tags = ["news", "discussion", "tech"]
+
+[feeds.danluu]
+url = "https://danluu.com/atom.xml"
+author = "Dan Luu"
+description = "Performance analysis and systems design"
+tags = ["performance", "systems-design", "analysis"]
+
+[feeds.lexilambda]
+url = "https://lexi-lambda.github.io/feeds/all.atom.xml"
+author = "Lexi Lambda"
+description = "Functional programming and type theory"
+tags = ["functional-programming", "haskell", "types"]

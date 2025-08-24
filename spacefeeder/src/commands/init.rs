@@ -103,6 +103,7 @@ fn create_starter_config() -> Config {
         config.insert_feed(slug.to_string(), FeedInfo {
             url: url.to_string(),
             author: author.to_string(),
+            description: None,
             tier,
             tags: None,
             auto_tag: None,

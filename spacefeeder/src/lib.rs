@@ -11,6 +11,25 @@ use serde::{Deserialize, Serialize};
 pub struct FeedInfo {
     pub url: String,
     pub author: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub description: Option<String>,
+    pub tier: Tier,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tags: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub auto_tag: Option<bool>,
+}
+
+// User-defined feed info that can be minimal (only tier required)
+// Other fields are merged from defaults if available
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct UserFeedInfo {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub author: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub description: Option<String>,
     pub tier: Tier,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tags: Option<Vec<String>>,

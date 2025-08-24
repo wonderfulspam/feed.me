@@ -4,225 +4,43 @@ description_max_words = 150
 feed_data_output_path = "./content/data/feedData.json"
 item_data_output_path = "./content/data/itemData.json"
 
-# Categorization configuration
+# Categorization uses embedded defaults from data/categorization.toml
 [categorization]
 enabled = true
-auto_tag_new_articles = true
-max_tags_per_item = 5
-confidence_threshold = 0.4
 
-# Tags are now defined in data/tags.toml and embedded at compile time
-# You can override specific tags here if needed:
-# [[categorization.tags]]
-# name = "custom"
-# description = "Custom tag"
-# keywords = ["custom"]
-
-# Pattern-based rules for automatic tagging
-[[categorization.rules]]
-type = "title_contains"
-patterns = ["Rust", "rustc", "cargo", "crate"]
-tag = "rust"
-confidence = 0.9
-
-[[categorization.rules]]
-type = "url_contains"
-patterns = ["rust-lang.org", "rustacean", "crates.io"]
-tag = "rust"
-confidence = 0.95
-
-[[categorization.rules]]
-type = "content_contains"
-patterns = ["Claude", "claude"]
-tag = "anthropic"
-confidence = 0.9
-
-[[categorization.rules]]
-type = "content_contains"
-patterns = ["ChatGPT", "OpenAI", "GPT-4", "GPT-3"]
-tag = "openai"
-confidence = 0.9
-
-[[categorization.rules]]
-type = "content_contains"
-patterns = ["Gemini", "Bard", "Google AI"]
-tag = "google-ai"
-confidence = 0.9
-
-[[categorization.rules]]
-type = "title_contains"
-patterns = ["Claude", "Anthropic"]
-tag = "anthropic"
-confidence = 0.95
-
-[[categorization.rules]]
-type = "title_contains"
-patterns = ["ChatGPT", "OpenAI", "GPT"]
-tag = "openai"
-confidence = 0.95
-
-[[categorization.rules]]
-type = "title_contains"
-patterns = ["LLM", "Large Language Model"]
-tag = "llm"
-confidence = 0.9
-
-[[categorization.rules]]
-type = "author_contains"
-patterns = ["Simon Willison"]
-tags = ["ai", "python"]
-confidence = 0.7
-
-[[categorization.rules]]
-type = "feed_slug"
-patterns = ["devops", "atlassian", "itrevolution"]
-tag = "devops"
-confidence = 0.8
-
-[[categorization.rules]]
-type = "feed_slug"
-patterns = ["rust_official", "inside_rust", "matklad"]
-tag = "rust"
-confidence = 0.85
-
-# Tag aliases for normalization
-[[categorization.aliases]]
-from = ["artificial-intelligence", "machine-learning", "ML", "ai and ml"]
-to = "ai"
-
-[[categorization.aliases]]
-from = ["llms", "generative-ai"]
-to = "llm"
-
-[[categorization.aliases]]
-from = ["software development", "software-engineering", "webdev", "web development"]
-to = "web-dev"
-
-[[categorization.aliases]]
-from = ["rustlang", "rust-lang"]
-to = "rust"
-
-[[categorization.aliases]]
-from = ["dev-ops", "DevOps"]
-to = "devops"
-
-[feeds.smallcultfollowing]
-url = "https://smallcultfollowing.com/babysteps//atom.xml"
-author = "Niko Matsakis"
-tier = "like"
-
-[feeds.charitywtf]
-url = "https://charity.wtf/feed/"
-author = "Charity Majors"
-tier = "like"
-
-[feeds.hackernews]
-url = "https://hnrss.org/newest?points=100"
-author = "Hacker News"
-tier = "new"
-
+# User only specifies tier preferences for feeds they want to customize
+# All feed details (URL, author, description, tags) come from embedded defaults
 [feeds.jvns]
-url = "https://jvns.ca/atom.xml"
-author = "Julia Evans"
 tier = "love"
 
-[feeds.dzone_devops]
-url = "https://feeds.dzone.com/devops-and-cicd"
-author = "DZone"
-tier = "new"
-
-[feeds.lexilambda]
-url = "https://lexi-lambda.github.io/feeds/all.atom.xml"
-author = "Lexi Lambda"
-tier = "like"
-
-[feeds.chriskrycho]
-url = "https://v5.chriskrycho.com/feed.xml"
-author = "Chris Krycho"
-tier = "like"
-
-
-[feeds.atlassian_devops]
-url = "https://www.atlassian.com/blog/devops/feed"
-author = "Atlassian"
-tier = "new"
-
-[feeds.devopscom]
-url = "https://devops.com/feed"
-author = "DevOps.com"
-tier = "new"
-
-[feeds.inside_rust]
-url = "https://blog.rust-lang.org/inside-rust/feed.xml"
-author = "Inside Rust"
-tier = "like"
-
-[feeds.hazelweakly]
-url = "https://hazelweakly.me/atom.xml"
-author = "Hazel Weakly"
-tier = "new"
-
-[feeds.withoutboats]
-url = "https://without.boats/index.xml"
-author = "Without Boats"
-tier = "like"
-
-[feeds.theregister]
-url = "https://www.theregister.com/headlines.atom"
-author = "The Register"
-tier = "new"
+[feeds.fasterthanlime] 
+tier = "love"
 
 [feeds.cliffle]
-url = "https://cliffle.com/rss.xml"
-author = "Cliff Biffle"
 tier = "love"
 
-[feeds.bcantrill]
-url = "https://bcantrill.dtrace.org/index.xml"
-author = "Bryan Cantrill"
+[feeds.matklad]
 tier = "like"
 
-[feeds.danluu]
-url = "https://danluu.com/atom.xml"
-author = "Dan Luu"
-tier = "new"
+[feeds.simonwillison]
+tier = "like"
 
+[feeds.rust_official]
+tier = "like"
+
+[feeds.inside_rust]
+tier = "like"
+
+[feeds.xeiaso]
+tier = "like"
+
+# Custom feed that's not in defaults (requires full specification)
 [feeds.noboilerplate]
 url = "https://www.youtube.com/feeds/videos.xml?channel_id=UCUMwY9iS8oMyWDYIe6_RmoA"
 author = "Tris 0atman"
 tier = "like"
 
-[feeds.fasterthanlime]
-url = "https://fasterthanli.me/index.xml"
-author = "fasterthanlime"
-tier = "love"
-
-[feeds.itrevolution]
-url = "https://itrevolution.com/devops-blog/feed/"
-author = "IT Revolution"
-tier = "new"
-
-[feeds.xeiaso]
-url = "https://xeiaso.net/blog.rss"
-author = "Xe Iaso"
-tier = "like"
-
-[feeds.noracodes]
-url = "https://nora.codes/index.xml"
-author = "Nora Tindall"
-tier = "like"
-
-[feeds.matklad]
-url = "https://matklad.github.io/feed.xml"
-author = "Alex Kladov"
-tier = "like"
-
-[feeds.rust_official]
-url = "https://blog.rust-lang.org/feed.xml"
-author = "Rust"
-tier = "like"
-
-[feeds.simonwillison]
-url = "https://simonwillison.net/atom/everything/"
-author = "Simon Willison"
+[feeds.bcantrill]
+url = "https://bcantrill.dtrace.org/index.xml"
+author = "Bryan Cantrill"
 tier = "like"

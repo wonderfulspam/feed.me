@@ -4,7 +4,7 @@ use std::sync::OnceLock;
 use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
 
-use crate::{FeedInfo, Tier};
+use crate::{FeedInfo, UserFeedInfo, Tier};
 use crate::defaults;
 
 static GLOBAL_CONFIG: OnceLock<Config> = OnceLock::new();
@@ -121,12 +121,32 @@ fn default_confidence_threshold() -> f32 {
     0.3
 }
 
+// Temporary struct for parsing user config that can handle minimal feed definitions
+#[derive(Debug, Deserialize)]
+struct ParsedConfig {
+    #[serde(flatten)]
+    parse_config: ParseConfig,
+    #[serde(flatten)]
+    output_config: OutputConfig,
+    #[serde(default)]
+    categorization: CategorizationConfig,
+    #[serde(default)]
+    feeds: HashMap<String, UserFeedInfo>,
+}
+
 impl Config {
     pub fn from_file(path: &str) -> Result<Self> {
         let content = std::fs::read_to_string(path)
             .with_context(|| format!("Failed to read file: {path}"))?;
-        let mut config: Config = toml_edit::de::from_str(&content)
+        let parsed_config: ParsedConfig = toml_edit::de::from_str(&content)
             .with_context(|| format!("Failed to parse TOML from file: {path}"))?;
+        
+        let mut config = Config {
+            parse_config: parsed_config.parse_config,
+            output_config: parsed_config.output_config,
+            categorization: parsed_config.categorization,
+            feeds: HashMap::new(),
+        };
         
         // Merge default tags with user-provided tags
         let default_tags = defaults::get_default_tags();
@@ -140,6 +160,73 @@ impl Config {
             if !user_tag_names.contains(&default_tag.name) {
                 config.categorization.tags.push(default_tag);
             }
+        }
+        
+        // Merge default feeds with user-provided feeds
+        let default_feeds = defaults::get_default_feeds();
+        for (slug, default_feed) in default_feeds {
+            if let Some(user_feed) = parsed_config.feeds.get(&slug) {
+                // User has specified this feed, merge with defaults
+                // User config only overrides certain fields, everything else comes from defaults
+                let mut final_feed = default_feed;
+                final_feed.tier = user_feed.tier.clone(); // Always use user's tier preference
+                
+                // Override with user-specified fields if present
+                if let Some(ref user_url) = user_feed.url {
+                    final_feed.url = user_url.clone();
+                }
+                if let Some(ref user_author) = user_feed.author {
+                    final_feed.author = user_author.clone();
+                }
+                if let Some(ref user_description) = user_feed.description {
+                    final_feed.description = Some(user_description.clone());
+                }
+                if let Some(ref user_tags) = user_feed.tags {
+                    // Merge user tags with default tags
+                    let mut all_tags = final_feed.tags.unwrap_or_default();
+                    all_tags.extend(user_tags.iter().cloned());
+                    all_tags.sort();
+                    all_tags.dedup();
+                    final_feed.tags = Some(all_tags);
+                }
+                if user_feed.auto_tag.is_some() {
+                    final_feed.auto_tag = user_feed.auto_tag;
+                }
+                
+                config.feeds.insert(slug, final_feed);
+            } else {
+                // Feed not in user config, add the default
+                config.feeds.insert(slug, default_feed);
+            }
+        }
+        
+        // Handle user feeds that don't have defaults (custom feeds)
+        for (slug, user_feed) in parsed_config.feeds {
+            if !config.feeds.contains_key(&slug) {
+                // User-defined feed without defaults, all fields must be provided
+                let final_feed = FeedInfo {
+                    url: user_feed.url.ok_or_else(|| anyhow::anyhow!("Feed '{}' must specify url", slug))?,
+                    author: user_feed.author.ok_or_else(|| anyhow::anyhow!("Feed '{}' must specify author", slug))?,
+                    description: user_feed.description,
+                    tier: user_feed.tier,
+                    tags: user_feed.tags,
+                    auto_tag: user_feed.auto_tag,
+                };
+                config.feeds.insert(slug, final_feed);
+            }
+        }
+        
+        // Merge default categorization rules and aliases
+        let (default_rules, default_aliases) = defaults::get_default_categorization();
+        
+        // Add default rules that aren't already present
+        for default_rule in default_rules {
+            config.categorization.rules.push(default_rule);
+        }
+        
+        // Add default aliases that aren't already present
+        for default_alias in default_aliases {
+            config.categorization.aliases.push(default_alias);
         }
         
         Ok(config)
@@ -192,6 +279,7 @@ impl Default for Config {
                 FeedInfo {
                     url: "www.example.com".to_string(),
                     author: "Example Author".to_string(),
+                    description: Some("Example feed for testing".to_string()),
                     tier: Tier::New,
                     tags: None,
                     auto_tag: None,
@@ -224,6 +312,7 @@ mod tests {
         let feed = FeedInfo {
             url: "https://test.com/feed".to_string(),
             author: "Test Author".to_string(),
+            description: Some("Test feed".to_string()),
             tier: Tier::Love,
             tags: None,
             auto_tag: None,

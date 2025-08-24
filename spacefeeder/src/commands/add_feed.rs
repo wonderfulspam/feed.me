@@ -33,7 +33,7 @@ pub fn run(
     tier: String,
 ) -> Result<()> {
     let tier = Tier::from_str(&tier).with_context(|| format!("Not a valid tier: {tier}"))?;
-    let feed = FeedInfo { url, author, tier, tags: None, auto_tag: None };
+    let feed = FeedInfo { url, author, description: None, tier, tags: None, auto_tag: None };
     config.insert_feed(slug, feed);
     Ok(())
 }

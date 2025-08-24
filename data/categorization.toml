@@ -1,0 +1,168 @@
+# Default categorization rules for spacefeeder
+# These rules are embedded at compile time and provide better content-based tagging
+
+# High-confidence content-based rules
+[[rules]]
+type = "title_contains"
+patterns = ["Rust", "rustc", "cargo", "crate"]
+tag = "rust"
+confidence = 0.9
+
+[[rules]]
+type = "url_contains"
+patterns = ["rust-lang.org", "rustacean", "crates.io"]
+tag = "rust"
+confidence = 0.95
+
+[[rules]]
+type = "content_contains"
+patterns = ["Claude", "claude"]
+tag = "anthropic"
+confidence = 0.9
+
+[[rules]]
+type = "content_contains"
+patterns = ["ChatGPT", "OpenAI", "GPT-4", "GPT-3"]
+tag = "openai"
+confidence = 0.9
+
+[[rules]]
+type = "content_contains"
+patterns = ["Gemini", "Bard", "Google AI"]
+tag = "google-ai"
+confidence = 0.9
+
+[[rules]]
+type = "title_contains"
+patterns = ["Claude", "Anthropic"]
+tag = "anthropic"
+confidence = 0.95
+
+[[rules]]
+type = "title_contains"
+patterns = ["ChatGPT", "OpenAI", "GPT"]
+tag = "openai"
+confidence = 0.95
+
+[[rules]]
+type = "title_contains"
+patterns = ["LLM", "Large Language Model", "Transformer"]
+tag = "llm"
+confidence = 0.9
+
+[[rules]]
+type = "content_contains"
+patterns = ["neural network", "deep learning", "machine learning", "artificial intelligence"]
+tag = "ai"
+confidence = 0.85
+
+[[rules]]
+type = "title_contains"
+patterns = ["AI", "ML", "Machine Learning", "Neural"]
+tag = "ai"
+confidence = 0.8
+
+# Feed-based rules (higher confidence)
+[[rules]]
+type = "feed_slug"
+patterns = ["rust_official", "inside_rust", "matklad", "smallcultfollowing", "fasterthanlime"]
+tag = "rust"
+confidence = 0.85
+
+[[rules]]
+type = "feed_slug"
+patterns = ["charitywtf", "xeiaso"]
+tag = "devops"
+confidence = 0.8
+
+# Content-specific rules for programming languages
+[[rules]]
+type = "content_contains"
+patterns = ["Python", "Django", "Flask", "PyTorch", "pandas"]
+tag = "python"
+confidence = 0.8
+
+[[rules]]
+type = "content_contains"
+patterns = ["JavaScript", "TypeScript", "Node.js", "React", "Vue"]
+tag = "javascript"
+confidence = 0.8
+
+[[rules]]
+type = "content_contains"
+patterns = ["Go", "golang", "goroutine"]
+tag = "go"
+confidence = 0.8
+
+# DevOps and infrastructure
+[[rules]]
+type = "content_contains"
+patterns = ["Kubernetes", "k8s", "Docker", "container", "CI/CD"]
+tag = "devops"
+confidence = 0.85
+
+[[rules]]
+type = "content_contains"
+patterns = ["AWS", "Azure", "GCP", "cloud", "serverless"]
+tag = "cloud"
+confidence = 0.8
+
+# Security-related content
+[[rules]]
+type = "content_contains"
+patterns = ["vulnerability", "CVE", "security", "exploit", "authentication"]
+tag = "security"
+confidence = 0.8
+
+# Database-related content
+[[rules]]
+type = "content_contains"
+patterns = ["PostgreSQL", "MySQL", "database", "SQL", "NoSQL"]
+tag = "database"
+confidence = 0.8
+
+# Author-based rules (lower confidence to reduce false positives)
+[[rules]]
+type = "author_contains"
+patterns = ["Simon Willison"]
+tag = "python"
+confidence = 0.5
+
+[[rules]]
+type = "author_contains"
+patterns = ["Simon Willison"]
+tag = "ai"
+confidence = 0.6
+
+# Tag aliases for normalization
+[[aliases]]
+from = ["artificial-intelligence", "machine-learning", "ML", "ai and ml"]
+to = "ai"
+
+[[aliases]]
+from = ["llms", "generative-ai", "large language models"]
+to = "llm"
+
+[[aliases]]
+from = ["software development", "software-engineering", "webdev", "web development"]
+to = "web-dev"
+
+[[aliases]]
+from = ["rustlang", "rust-lang"]
+to = "rust"
+
+[[aliases]]
+from = ["dev-ops", "DevOps"]
+to = "devops"
+
+[[aliases]]
+from = ["js", "typescript", "ts"]
+to = "javascript"
+
+[[aliases]]
+from = ["golang", "go lang"]
+to = "go"
+
+[[aliases]]
+from = ["postgresql", "postgres", "mysql", "sqlite"]
+to = "database"
