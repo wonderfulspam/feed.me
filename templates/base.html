@@ -6,6 +6,7 @@
     <meta name="color-scheme" content="light dark" />
     <link rel="stylesheet" href="/css/styles.css" />
     <title>Feed.me</title>
+    <script src="/js/article-manager.js" defer></script>
   </head>
 
   <header class="header" role="banner">
@@ -22,6 +23,9 @@
           </li>
           <li>
             <a href="/all">All</a>
+          </li>
+          <li class="hidden-toggle">
+            <button id="toggle-hidden" aria-pressed="false">Show Hidden</button>
           </li>
         </ul>
       </nav>

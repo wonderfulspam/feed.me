@@ -174,3 +174,90 @@ a {
 .footer ul li a:hover {
   text-decoration: underline;
 }
+
+/* Article State Management Styles */
+.article-controls {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  justify-content: flex-end;
+}
+
+.control-btn {
+  background: none;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 32px;
+}
+
+.control-btn:hover {
+  background-color: #f0f0f0;
+  border-color: #00416d;
+}
+
+.control-btn:focus {
+  outline: 2px solid #00416d;
+  outline-offset: 2px;
+}
+
+.star-btn[aria-pressed="true"] {
+  background-color: #ffd700;
+  color: #333;
+  border-color: #ffd700;
+}
+
+.hide-btn[aria-pressed="true"] {
+  background-color: #ff6b6b;
+  color: white;
+  border-color: #ff6b6b;
+}
+
+/* Article State Visual Indicators */
+.article-read {
+  opacity: 0.7;
+}
+
+.article-read article {
+  background-color: #f9f9f9;
+}
+
+.article-starred {
+  position: relative;
+}
+
+.article-starred::before {
+  content: "★";
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  color: #ffd700;
+  font-size: 1.2rem;
+  z-index: 1;
+}
+
+.article-hidden {
+  display: none;
+}
+
+/* Feature: Show hidden toggle button in top navigation */
+.hidden-toggle {
+  margin-left: auto;
+}
+
+.hidden-toggle button {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.hidden-toggle button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}

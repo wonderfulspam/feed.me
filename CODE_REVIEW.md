@@ -8,20 +8,11 @@ The `feed.me` project is a well-architected RSS feed reader with good separation
 
 **Avoid premature optimization:** Complex solutions like duplicate detection and feed health tracking were investigated but provided minimal value in practice. The existing error reporting is clear and sufficient. Current performance is already acceptable.
 
-**Focus on user-facing gaps:** The most valuable improvement was enhanced onboarding (`spacefeeder init`) because it addressed a real user friction point - getting started.
+**Focus on user-facing gaps:** The most valuable improvements were enhanced onboarding (`spacefeeder init`) and interactive article management (read/unread, star/bookmark, hide/archive) because they addressed real user friction points.
 
 ## High-Priority Improvements (Real Gaps)
 
-### 1. **Interactive Article Management**
-*Current Gap:* No way to track reading progress or bookmark interesting articles  
-*User Value:* Core RSS reader functionality that users expect  
-*Implementation:* Client-side JavaScript with localStorage persistence
-- Mark articles as read/unread
-- Star/bookmark favorites  
-- Hide/archive articles
-- Simple state management without server complexity
-
-### 2. **Package Manager Distribution** **[Requires Human]**
+### 1. **Package Manager Distribution** **[Requires Human]**
 *Current Gap:* Installation requires git clone + cargo build  
 *User Value:* Dramatically lowers adoption barrier  
 *Implementation:* Publish to crates.io, potentially homebrew
@@ -82,9 +73,8 @@ Keep the CLI tool focused and composable rather than building a monolithic appli
 
 ## Implementation Priority
 
-1. **Interactive Article Management** - Addresses core user workflow gap
-2. **Package Distribution** - Reduces adoption friction  
-3. **Search** - Scales with growing article collections
-4. **Output Format Flexibility** - Enables new use cases
+1. **Package Distribution** - Reduces adoption friction  
+2. **Search** - Scales with growing article collections
+3. **Output Format Flexibility** - Enables new use cases
 
 Focus on closing real user experience gaps rather than solving theoretical problems or optimizing already-acceptable performance.
