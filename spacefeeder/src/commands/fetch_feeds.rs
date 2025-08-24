@@ -119,7 +119,28 @@ pub fn run(config: Config) -> Result<()> {
     let mut items: Vec<_> = feed_data.iter().flat_map(Vec::<ItemOutput>::from).collect();
     items.sort_unstable_by_key(|io| io.item.pub_date);
     items.reverse();
+    
+    // Write all items
     write_data_to_file(&config.output_config.item_data_output_path, &items);
+    
+    // Write filtered items by tier for better performance in templates
+    let loved_items: Vec<_> = items.iter()
+        .filter(|item| matches!(item.meta.tier, crate::Tier::Love))
+        .cloned()
+        .collect();
+    write_data_to_file("./content/data/lovedData.json", &loved_items);
+    
+    let liked_items: Vec<_> = items.iter()
+        .filter(|item| matches!(item.meta.tier, crate::Tier::Like))
+        .cloned()
+        .collect();
+    write_data_to_file("./content/data/likedData.json", &liked_items);
+    
+    let new_items: Vec<_> = items.iter()
+        .filter(|item| matches!(item.meta.tier, crate::Tier::New))
+        .cloned()
+        .collect();
+    write_data_to_file("./content/data/newData.json", &new_items);
 
     println!(
         "\n✓ Successfully processed {} items from {} feeds ({}% success rate)",

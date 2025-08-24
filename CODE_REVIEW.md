@@ -22,21 +22,11 @@ The `spacefeeder` tool is the core of the project. Here are some suggestions for
     *   **Self-Initializing Global Config:** On the first run, if no configuration file is found, automatically create a default `config.toml` in a standard location like `~/.config/feed.me/config.toml` (using a crate like `dirs`). This removes the manual setup step for the user.
     *   **Include Default Feeds:** Pre-populate the default configuration file with a few interesting RSS/Atom feeds. This serves two purposes: it demonstrates the tool's functionality immediately and also allows you to endorse and showcase a variety of content sources.
 
-### 5. **More Flexible Output Configuration**
-
-*   **Observation:** The output paths for the JSON files are hardcoded in the `OutputConfig` struct.
-*   **Suggestion:** Allowing users to configure the output paths in the `spacefeeder.toml` file supports a key use case: **integration with existing websites or different static site generator layouts.** For example, a user might have an existing Zola (or Hugo, Jekyll, etc.) site and want to place the generated JSON data in a specific `data` directory that doesn't match the current hardcoded path. This makes `spacefeeder` a more versatile component in a larger toolchain.
-
-*   **Configuring HTML Output:** If you choose to integrate HTML rendering into `spacefeeder` (as suggested in the "Future Functionality" section), the output path for the generated HTML files should also be configurable. This would allow users to, for example, output the generated site directly to a `public` or `dist` directory, ready for deployment.
 
 ## Zola Frontend
 
 The Zola frontend is simple and effective. Here are some suggestions for improvement:
 
-### 1. **Move Data Filtering to `spacefeeder`**
-
-*   **Observation:** The Zola templates contain logic for filtering and slicing the data.
-*   **Suggestion:** For better performance and separation of concerns, move the data filtering and slicing logic to the `spacefeeder` tool. The `spacefeeder` tool could generate separate JSON files for each page or section (e.g., `loved.json`, `all.json`). This would make the Zola templates simpler and the site generation faster, especially as the number of articles grows.
 
 ### 2. **Intelligent Content Summarization**
 

@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 
 {% block content %}
-  {% set loved_data = load_data(path="content/data/itemData.json") | filter(attribute="tier", value="love") %}
-  {% set liked_data = load_data(path="content/data/itemData.json") | filter(attribute="tier", value="like") %}
+  {% set loved_data = load_data(path="content/data/lovedData.json") %}
+  {% set liked_data = load_data(path="content/data/likedData.json") %}
   <!-- Featured Articles -->
   {% for i in [0, 1, 2, 3,] %}
     <section class="featured-articles">

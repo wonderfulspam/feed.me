@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-  {% set item_data = load_data(path="content/data/itemData.json") | filter(attribute="tier", value="love") %}
+  {% set item_data = load_data(path="content/data/lovedData.json") %}
   <!-- Secondary Articles Grid -->
   <section class="secondary-articles">
     {% for item in item_data %}
