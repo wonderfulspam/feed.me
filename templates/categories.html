@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}{% if selected_tag %}{{ selected_tag }} - Categories - Feed.me{% else %}Categories - Feed.me{% endif %}{% endblock %}
+
+{% block content %}
+<section class="categories-page">
+  <h1>{% if selected_tag %}{{ selected_tag | title }} Articles{% else %}Browse by Category{% endif %}</h1>
+  
+  {% if not selected_tag %}
+  <div class="category-filters">
+    <h2>Filter by Tag</h2>
+    <div class="tag-cloud">
+      {% for tag in all_tags %}
+      <a href="/categories/{{ tag.name }}/" class="tag tag-{{ tag.name }}" data-count="{{ tag.count }}">
+        {{ tag.name }} <span class="tag-count">({{ tag.count }})</span>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {% if selected_tag %}
+  <div class="filtered-results">
+    <h2>Articles tagged with "{{ selected_tag }}"</h2>
+    <div class="clear-filter">
+      <a href="/categories">← View all categories</a>
+    </div>
+    
+    <div class="articles-grid">
+      {% for item in filtered_items %}
+        {% set featured = "false" %}
+        {% include "partials/article.html" %}
+      {% endfor %}
+    </div>
+  </div>
+  {% else %}
+  <div class="all-categories">
+    <h2>All Articles by Category</h2>
+    {% for tag in all_tags %}
+      <div class="category-section">
+        <h3>
+          <a href="/categories/{{ tag.name }}/" class="category-header">
+            {{ tag.name }} ({{ tag.count }} articles)
+          </a>
+        </h3>
+        <div class="category-preview">
+          {% for item in tag.sample_items %}
+            {% set featured = "false" %}
+            {% include "partials/article.html" %}
+          {% endfor %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

@@ -11,12 +11,13 @@ use tantivy::{doc, Index, IndexWriter, TantivyDocument};
 pub struct ArticleDoc {
     pub title: String,
     pub description: String,
+    pub safe_description: String,
     pub author: String,
     pub tier: String,
     pub slug: String,
     pub item_url: String,
     pub pub_date: DateTime<Utc>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub tags: Vec<String>,
 }
 
@@ -24,6 +25,7 @@ pub struct ArticleDoc {
 pub struct SearchResult {
     pub title: String,
     pub description: String,
+    pub safe_description: String,
     pub author: String,
     pub tier: String,
     pub slug: String,
@@ -210,7 +212,8 @@ impl SearchIndex {
 
             results.push(SearchResult {
                 title,
-                description,
+                description: description.clone(),
+                safe_description: description, // For now, use description as safe_description
                 author,
                 tier,
                 slug,
@@ -262,6 +265,7 @@ mod tests {
             ArticleDoc {
                 title: "Rust Programming Language".to_string(),
                 description: "A systems programming language focused on safety and performance".to_string(),
+                safe_description: "A systems programming language focused on safety and performance".to_string(),
                 author: "Rust Team".to_string(),
                 tier: "love".to_string(),
                 slug: "rust-blog".to_string(),
@@ -272,6 +276,7 @@ mod tests {
             ArticleDoc {
                 title: "Getting Started with Tantivy".to_string(),
                 description: "A fast full-text search engine library written in Rust".to_string(),
+                safe_description: "A fast full-text search engine library written in Rust".to_string(),
                 author: "Tantivy Team".to_string(),
                 tier: "like".to_string(),
                 slug: "tantivy-docs".to_string(),

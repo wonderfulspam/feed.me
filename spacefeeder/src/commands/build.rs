@@ -11,7 +11,9 @@ use tera::{Context as TeraContext, Tera};
 use walkdir::WalkDir;
 
 use crate::commands::fetch_feeds::{self, FetchArgs};
+use crate::commands::build_categories;
 use crate::config;
+use crate::search::ArticleDoc;
 
 #[derive(Args)]
 pub struct BuildArgs {
@@ -109,6 +111,9 @@ fn generate_pages(tera: &mut Tera) -> Result<()> {
     // Copy search data for JavaScript
     fs::create_dir_all("public/data")?;
     fs::copy("content/data/searchData.json", "public/data/searchData.json")?;
+    
+    // Generate categories page
+    generate_categories_page(tera)?;
     
     // Generate basic 404 page
     fs::write("public/404.html", "<!doctype html>\n<title>404 Not Found</title>\n<h1>404 Not Found</h1>\n")?;
@@ -276,6 +281,17 @@ Sitemap: {}/sitemap.xml
     Ok(())
 }
 
+fn generate_categories_page(tera: &Tera) -> Result<()> {
+    // Load all articles from itemData.json
+    let item_data = load_json_data("content/data/itemData.json")?;
+    let articles: Vec<ArticleDoc> = serde_json::from_value(item_data)?;
+    
+    // Generate categories page using the build_categories module
+    build_categories::build_categories_page(&articles, tera, "public")?;
+    
+    Ok(())
+}
+
 fn generate_sitemap() -> Result<()> {
     let base_url = config::get_config().base_url().trim_end_matches('/');
     let sitemap_content = format!(r#"<?xml version="1.0" encoding="UTF-8"?>
@@ -290,10 +306,13 @@ fn generate_sitemap() -> Result<()> {
         <loc>{}/loved/</loc>
     </url>
     <url>
+        <loc>{}/categories/</loc>
+    </url>
+    <url>
         <loc>{}/search/</loc>
     </url>
 </urlset>
-"#, base_url, base_url, base_url, base_url);
+"#, base_url, base_url, base_url, base_url, base_url);
     
     fs::write("public/sitemap.xml", sitemap_content)?;
     println!("  Generated: public/sitemap.xml");

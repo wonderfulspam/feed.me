@@ -6,41 +6,56 @@
   {% set color_class = "" %}
 {% endif %}
 
-<a href="{{ item.item_url }}" role="button" class="{{ color_class }}" aria-label="Read article: {{ item.title }}">
+<div class="article-container">
   {% if featured == "true" %}
-    <article class="featured" role="article" aria-labelledby="article-title-{{ item.title | slugify }}">
-      <span class="author" aria-label="Author">
-        {{ item.author }}
-      </span>
-      |
-      <span class="date" aria-label="Publication date">
-        {{ item.pub_date | date(timezone="Europe/Berlin") }}
-      </span>
-      <h2 id="article-title-{{ item.title | slugify }}">
-        {{ item.title }}
-      </h2>
+    <article class="featured {{ color_class }}" role="article" aria-labelledby="article-title-{{ item.title | slugify }}">
+      <a href="{{ item.item_url }}" class="article-link" aria-label="Read article: {{ item.title }}">
+        <span class="author" aria-label="Author">
+          {{ item.author }}
+        </span>
+        |
+        <span class="date" aria-label="Publication date">
+          {{ item.pub_date | date(timezone="Europe/Berlin") }}
+        </span>
+        <h2 id="article-title-{{ item.title | slugify }}">
+          {{ item.title }}
+        </h2>
+        <p>
+          {{ item.safe_description | truncate(length=150) }}
+        </p>
+      </a>
+      {% if item.tags and item.tags | length > 0 %}
+      <div class="tags" aria-label="Article tags">
+        {% for tag in item.tags %}
+          <a href="/categories/{{ tag }}/" class="tag tag-{{ tag }}" title="View more articles tagged with {{ tag }}">{{ tag }}</a>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </article>
   {% else %}
-    <article class="article" role="article" aria-labelledby="article-title-{{ item.title | slugify }}">
-      <span class="author" aria-label="Author">
-        {{ item.author }}
-      </span>
-      |
-      <span class="date" aria-label="Publication date">
-        {{ item.pub_date | date(timezone="Europe/Berlin") }}
-      </span>
-      <h3 id="article-title-{{ item.title | slugify }}">
-        {{ item.title }}
-      </h3>
+    <article class="article {{ color_class }}" role="article" aria-labelledby="article-title-{{ item.title | slugify }}">
+      <a href="{{ item.item_url }}" class="article-link" aria-label="Read article: {{ item.title }}">
+        <span class="author" aria-label="Author">
+          {{ item.author }}
+        </span>
+        |
+        <span class="date" aria-label="Publication date">
+          {{ item.pub_date | date(timezone="Europe/Berlin") }}
+        </span>
+        <h3 id="article-title-{{ item.title | slugify }}">
+          {{ item.title }}
+        </h3>
+        <p>
+          {{ item.safe_description | truncate(length=150) }}
+        </p>
+      </a>
+      {% if item.tags and item.tags | length > 0 %}
+      <div class="tags" aria-label="Article tags">
+        {% for tag in item.tags %}
+          <a href="/categories/{{ tag }}/" class="tag tag-{{ tag }}" title="View more articles tagged with {{ tag }}">{{ tag }}</a>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </article>
   {% endif %}
-    <p>
-      {{ item.safe_description | truncate(length=150) }}
-    </p>
-    {% if item.tags and item.tags | length > 0 %}
-    <div class="tags" aria-label="Article tags">
-      {% for tag in item.tags %}
-        <span class="tag tag-{{ tag }}">{{ tag }}</span>
-      {% endfor %}
-    </div>
-    {% endif %}
-  </article>
-</a>
+</div>

@@ -377,7 +377,8 @@ fn build_search_index(items: &[ItemOutput]) -> Result<()> {
         .filter_map(|item| {
             Some(ArticleDoc {
                 title: item.item.title.clone(),
-                description: item.item.safe_description.clone(),
+                description: item.item.description.clone(),
+                safe_description: item.item.safe_description.clone(),
                 author: item.meta.author.clone(),
                 tier: format!("{:?}", item.meta.tier).to_lowercase(),
                 slug: item.slug.clone(),

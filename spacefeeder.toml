@@ -174,7 +174,7 @@ author = "Cliff Biffle"
 tier = "love"
 
 [feeds.bcantrill]
-url = "https://bcantrill.dtrace.org/rss"
+url = "https://bcantrill.dtrace.org/index.xml"
 author = "Bryan Cantrill"
 tier = "like"
 

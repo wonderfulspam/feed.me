@@ -96,6 +96,7 @@ a {
   background-color: white;
   padding: 20px;
   border: 1px solid #ddd;
+  position: relative;
 }
 
 .featured img {
@@ -113,6 +114,30 @@ a {
   background-color: white;
   padding: 15px;
   border: 1px solid #ddd;
+  position: relative;
+}
+
+.article-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.article-link:hover {
+  text-decoration: none;
+  color: inherit;
+}
+
+.article:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.featured:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .article h3 {
@@ -390,4 +415,106 @@ a {
 .tag-javascript {
   background-color: #fff7ed;
   color: #c2410c;
+}
+
+/* Categories page styling */
+.categories-page {
+  padding: 20px 0;
+}
+
+.categories-page h1 {
+  margin-bottom: 30px;
+  text-align: center;
+  color: #333;
+}
+
+.category-filters {
+  margin-bottom: 40px;
+}
+
+.category-filters h2 {
+  margin-bottom: 20px;
+  color: #555;
+}
+
+.tag-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 30px;
+}
+
+.tag-cloud .tag {
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  text-decoration: none;
+  border: 1px solid transparent;
+}
+
+.tag-cloud .tag:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+.tag-count {
+  font-size: 0.8em;
+  opacity: 0.7;
+  font-weight: normal;
+}
+
+.filtered-results {
+  margin-top: 30px;
+}
+
+.filtered-results h2 {
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.clear-filter {
+  margin-bottom: 30px;
+}
+
+.clear-filter a {
+  color: #666;
+  text-decoration: none;
+  font-size: 0.9rem;
+  padding: 8px 16px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  display: inline-block;
+  transition: background-color 0.2s ease;
+}
+
+.clear-filter a:hover {
+  background-color: #e0e0e0;
+}
+
+.category-section {
+  margin-bottom: 40px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 30px;
+}
+
+.category-section:last-child {
+  border-bottom: none;
+}
+
+.category-header {
+  color: #333;
+  text-decoration: none;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.category-header:hover {
+  color: #00416d;
+}
+
+.category-preview {
+  margin-top: 20px;
+  display: grid;
+  gap: 15px;
 }
