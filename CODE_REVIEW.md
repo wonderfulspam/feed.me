@@ -28,12 +28,6 @@ The `spacefeeder` tool is the core of the project. Here are some suggestions for
 The Zola frontend is simple and effective. Here are some suggestions for improvement:
 
 
-### 2. **Intelligent Content Summarization**
-
-*   **Observation:** The articles in the feed are truncated to 150 words.
-*   **Suggestion:** Instead of a fixed-length truncation, consider more intelligent summarization techniques:
-    *   **First Paragraph Extraction:** Attempt to extract the first paragraph of the article. This often provides a better summary than a simple word count.
-    *   **Summarization Libraries:** For a more advanced solution, you could use a pure-Rust crate like `pithy` to generate a concise summary of the article content. `pithy` is language-agnostic and does not require any external dependencies, making it a good choice for this project.
 
 ### 3. **Improve Accessibility**
 

@@ -235,11 +235,70 @@ fn get_description_from_entry(entry: Entry) -> Option<String> {
 }
 
 fn get_short_description(description: String, max_words: usize) -> String {
+    // Try to extract first paragraph (better summary)
+    if let Some(first_paragraph) = extract_first_paragraph(&description) {
+        let word_count = first_paragraph.split_whitespace().count();
+        
+        // If first paragraph fits within limit, use it
+        if word_count <= max_words {
+            // Only use first paragraph if it has substantial content (at least 10 words)
+            // or if it's all we have
+            if word_count >= 10 || description.split_whitespace().count() <= max_words {
+                return first_paragraph;
+            }
+        } else {
+            // If first paragraph is too long, truncate it
+            return first_paragraph
+                .split_whitespace()
+                .take(max_words)
+                .collect::<Vec<_>>()
+                .join(" ");
+        }
+    }
+    
+    // Fall back to simple word truncation
     description
         .split_whitespace()
         .take(max_words)
         .collect::<Vec<_>>()
         .join(" ")
+}
+
+fn extract_first_paragraph(text: &str) -> Option<String> {
+    // Look for paragraph breaks: double newline, or single newline followed by newline
+    let patterns = ["\n\n", "\r\n\r\n", "</p>", "<br><br>", "<br/><br/>"];
+    
+    let mut shortest_break = text.len();
+    for pattern in &patterns {
+        if let Some(pos) = text.find(pattern) {
+            if pos > 0 && pos < shortest_break {
+                shortest_break = pos;
+            }
+        }
+    }
+    
+    // Also check for a single newline that seems to end a sentence
+    if let Some(pos) = text.find('\n') {
+        if pos > 0 && pos < shortest_break {
+            // Check if the character before the newline looks like sentence end
+            let before_newline = &text[..pos];
+            if before_newline.ends_with('.') 
+                || before_newline.ends_with('!')
+                || before_newline.ends_with('?')
+                || before_newline.ends_with('"')
+                || before_newline.ends_with('\'') {
+                shortest_break = pos;
+            }
+        }
+    }
+    
+    if shortest_break > 0 && shortest_break < text.len() {
+        Some(text[..shortest_break].trim().to_string())
+    } else if !text.trim().is_empty() {
+        Some(text.trim().to_string())
+    } else {
+        None
+    }
 }
 #[cfg(test)]
 mod tests {
@@ -317,6 +376,48 @@ mod tests {
         let html = "<div><p>Nested <span>tags</span> here</p></div>";
         let result = re.replace_all(html, "").to_string();
         assert_eq!(result, "Nested tags here");
+    }
+
+    #[test]
+    fn test_extract_first_paragraph_double_newline() {
+        let text = "This is the first paragraph.\n\nThis is the second paragraph.";
+        let result = extract_first_paragraph(text).unwrap();
+        assert_eq!(result, "This is the first paragraph.");
+    }
+
+    #[test]
+    fn test_extract_first_paragraph_html() {
+        let text = "<p>This is the first paragraph.</p><p>This is the second paragraph.</p>";
+        let result = extract_first_paragraph(text).unwrap();
+        assert_eq!(result, "<p>This is the first paragraph.");
+    }
+
+    #[test]
+    fn test_extract_first_paragraph_sentence_end() {
+        let text = "This is the first sentence.\nThis is the second sentence.";
+        let result = extract_first_paragraph(text).unwrap();
+        assert_eq!(result, "This is the first sentence.");
+    }
+
+    #[test]
+    fn test_extract_first_paragraph_no_break() {
+        let text = "This is just one paragraph with no breaks";
+        let result = extract_first_paragraph(text).unwrap();
+        assert_eq!(result, "This is just one paragraph with no breaks");
+    }
+
+    #[test]
+    fn test_get_short_description_uses_first_paragraph() {
+        let text = "This is a reasonable first paragraph with enough content.\n\nThis is the second paragraph that should not be included.".to_string();
+        let result = get_short_description(text, 150);
+        assert_eq!(result, "This is a reasonable first paragraph with enough content.");
+    }
+
+    #[test]
+    fn test_get_short_description_truncates_long_paragraph() {
+        let text = "This is a very long first paragraph that goes on and on and on with lots of words that exceed the maximum word count limit that we have set for descriptions.\n\nThis is the second paragraph.".to_string();
+        let result = get_short_description(text, 10);
+        assert_eq!(result, "This is a very long first paragraph that goes on");
     }
 
     #[test]
