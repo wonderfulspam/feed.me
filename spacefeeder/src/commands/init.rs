@@ -78,7 +78,7 @@ fn determine_config_path(args: &InitArgs) -> Result<String> {
         let home = dirs::home_dir()
             .context("Could not determine home directory")?;
         let config_dir = home.join(".config").join("feed.me");
-        return Ok(config_dir.join("config.toml").to_string_lossy().to_string());
+        return Ok(config_dir.join("spacefeeder.toml").to_string_lossy().to_string());
     }
 
     Ok("spacefeeder.toml".to_string())

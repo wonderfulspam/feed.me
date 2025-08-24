@@ -1,11 +1,14 @@
 use std::collections::HashMap;
+use std::sync::OnceLock;
 
 use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
 
 use crate::{FeedInfo, Tier};
 
-#[derive(Debug, Deserialize, Serialize)]
+static GLOBAL_CONFIG: OnceLock<Config> = OnceLock::new();
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Config {
     #[serde(flatten)]
     pub(crate) parse_config: ParseConfig,
@@ -14,18 +17,20 @@ pub struct Config {
     pub(crate) feeds: HashMap<String, FeedInfo>,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct ParseConfig {
     pub(crate) max_articles: usize,
     pub(crate) description_max_words: usize,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct OutputConfig {
     #[serde(default = "default_feed_data_output_path")]
     pub(crate) feed_data_output_path: String,
     #[serde(default = "default_item_data_output_path")]
     pub(crate) item_data_output_path: String,
+    #[serde(default = "default_base_url")]
+    pub(crate) base_url: String,
 }
 
 fn default_feed_data_output_path() -> String {
@@ -34,6 +39,10 @@ fn default_feed_data_output_path() -> String {
 
 fn default_item_data_output_path() -> String {
     "./content/data/itemData.json".to_string()
+}
+
+fn default_base_url() -> String {
+    "http://localhost:8000/".to_string()
 }
 
 impl Config {
@@ -49,12 +58,30 @@ impl Config {
         let _ = self.feeds.insert(slug, feed);
     }
 
+    pub fn base_url(&self) -> &str {
+        &self.output_config.base_url
+    }
+
     pub fn save(&self, config_path: &str) -> Result<()> {
         let output = toml_edit::ser::to_string_pretty(self)?;
         std::fs::write(config_path, output)
             .with_context(|| format!("Failed to write to {config_path}"))
     }
 }
+
+// Global config management functions
+pub fn init_config(config_path: &str) -> Result<()> {
+    let config = Config::from_file(config_path)?;
+    GLOBAL_CONFIG.set(config).map_err(|_| {
+        anyhow::anyhow!("Global config was already initialized")
+    })?;
+    Ok(())
+}
+
+pub fn get_config() -> &'static Config {
+    GLOBAL_CONFIG.get().expect("Config must be initialized before use")
+}
+
 
 impl Default for Config {
     fn default() -> Self {
@@ -66,6 +93,7 @@ impl Default for Config {
             output_config: OutputConfig {
                 feed_data_output_path: default_feed_data_output_path(),
                 item_data_output_path: default_item_data_output_path(),
+                base_url: default_base_url(),
             },
             feeds: HashMap::from([(
                 "example".to_string(),

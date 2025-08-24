@@ -11,6 +11,7 @@ use tera::{Context as TeraContext, Tera};
 use walkdir::WalkDir;
 
 use crate::commands::fetch_feeds::{self, FetchArgs};
+use crate::config;
 
 #[derive(Args)]
 pub struct BuildArgs {
@@ -262,28 +263,8 @@ fn date_filter(value: &Value, args: &HashMap<String, Value>) -> tera::Result<Val
     Ok(Value::String(formatted))
 }
 
-fn get_base_url() -> Result<String> {
-    let config_content = fs::read_to_string("config.toml")
-        .context("Failed to read config.toml")?;
-    
-    // Simple TOML parsing for base_url
-    for line in config_content.lines() {
-        if line.trim().starts_with("base_url") {
-            if let Some(url_part) = line.split('=').nth(1) {
-                let url = url_part.trim()
-                    .trim_matches('"')
-                    .trim_matches('\'')
-                    .trim_end_matches('/');
-                return Ok(url.to_string());
-            }
-        }
-    }
-    
-    anyhow::bail!("base_url not found in config.toml - this is required for generating sitemap and robots.txt");
-}
-
 fn generate_robots_txt() -> Result<()> {
-    let base_url = get_base_url()?;
+    let base_url = config::get_config().base_url().trim_end_matches('/');
     let robots_content = format!(r#"User-agent: *
 Disallow:
 Allow: /
@@ -296,7 +277,7 @@ Sitemap: {}/sitemap.xml
 }
 
 fn generate_sitemap() -> Result<()> {
-    let base_url = get_base_url()?;
+    let base_url = config::get_config().base_url().trim_end_matches('/');
     let sitemap_content = format!(r#"<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>

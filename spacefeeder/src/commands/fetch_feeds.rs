@@ -50,8 +50,8 @@ pub struct FetchArgs {
     pub config_path: String,
 }
 
-pub fn execute(args: FetchArgs) -> Result<()> {
-    let config = Config::from_file(&args.config_path)?;
+pub fn execute(_args: FetchArgs) -> Result<()> {
+    let config = crate::config::get_config().clone();
     run(config)
 }
 
