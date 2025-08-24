@@ -104,12 +104,12 @@ class ArticleManager {
             const hideBtn = controls.querySelector('.hide-btn');
             
             if (starBtn) {
-                starBtn.textContent = state.starred ? '★' : '☆';
+                starBtn.textContent = '★';
                 starBtn.setAttribute('aria-pressed', state.starred);
             }
             
             if (hideBtn) {
-                hideBtn.textContent = state.hidden ? '👁' : '🙈';
+                hideBtn.textContent = '👁';
                 hideBtn.setAttribute('aria-pressed', state.hidden);
             }
         }
@@ -148,7 +148,7 @@ class ArticleManager {
         // Star button
         const starBtn = document.createElement('button');
         starBtn.className = 'control-btn star-btn';
-        starBtn.textContent = state.starred ? '★' : '☆';
+        starBtn.textContent = '★';
         starBtn.setAttribute('aria-label', state.starred ? 'Remove from favorites' : 'Add to favorites');
         starBtn.setAttribute('aria-pressed', state.starred);
         starBtn.addEventListener('click', (e) => {
@@ -160,7 +160,7 @@ class ArticleManager {
         // Hide button
         const hideBtn = document.createElement('button');
         hideBtn.className = 'control-btn hide-btn';
-        hideBtn.textContent = state.hidden ? '👁' : '🙈';
+        hideBtn.textContent = '👁';
         hideBtn.setAttribute('aria-label', state.hidden ? 'Show article' : 'Hide article');
         hideBtn.setAttribute('aria-pressed', state.hidden);
         hideBtn.addEventListener('click', (e) => {

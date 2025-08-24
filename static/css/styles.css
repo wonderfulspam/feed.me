@@ -184,14 +184,15 @@ a {
 }
 
 .control-btn {
-  background: none;
-  border: 1px solid #ddd;
+  background: #f8f8f8;
+  border: 1px solid #ccc;
   border-radius: 4px;
   padding: 4px 8px;
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.2s ease;
   min-width: 32px;
+  color: #555;
 }
 
 .control-btn:hover {
