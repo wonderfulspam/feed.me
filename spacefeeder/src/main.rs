@@ -1,6 +1,5 @@
 use anyhow::Result;
 use clap::{Parser, Subcommand};
-use spacefeeder::config;
 use spacefeeder::commands::{
     add_feed::{self, AddFeedArgs},
     build::{self, BuildArgs},
@@ -13,6 +12,7 @@ use spacefeeder::commands::{
     search::{self, SearchArgs},
     serve::{self, ServeArgs},
 };
+use spacefeeder::config;
 
 #[derive(Parser)]
 #[command(name = "Space Feeder", about = "Processes RSS and Atom feeds")]
@@ -57,7 +57,7 @@ fn get_config_path_if_needed(command: &Commands) -> Option<&str> {
                 feeds::FeedsCommands::Search(_) | feeds::FeedsCommands::Info(_) => None,
                 _ => Some(&args.config_path),
             }
-        },
+        }
         Commands::Fetch(args) => Some(&args.config_path),
         Commands::Import(args) => Some(&args.config_path),
         Commands::Serve(args) => Some(&args.config_path),

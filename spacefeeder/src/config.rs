@@ -1,11 +1,11 @@
-use std::collections::{HashMap, BTreeMap};
+use std::collections::{BTreeMap, HashMap};
 use std::sync::OnceLock;
 
 use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
 
-use crate::{FeedInfo, UserFeedInfo, Tier};
 use crate::defaults;
+use crate::{FeedInfo, Tier, UserFeedInfo};
 
 static GLOBAL_CONFIG: OnceLock<Config> = OnceLock::new();
 
@@ -169,28 +169,30 @@ impl Config {
             .with_context(|| format!("Failed to read file: {path}"))?;
         let parsed_config: ParsedConfig = toml_edit::de::from_str(&content)
             .with_context(|| format!("Failed to parse TOML from file: {path}"))?;
-        
+
         let mut config = Config {
             parse_config: parsed_config.parse_config,
             output_config: parsed_config.output_config,
             categorization: parsed_config.categorization,
             feeds: HashMap::new(),
         };
-        
+
         // Merge default tags with user-provided tags
         let default_tags = defaults::get_default_tags();
-        let user_tag_names: Vec<String> = config.categorization.tags
+        let user_tag_names: Vec<String> = config
+            .categorization
+            .tags
             .iter()
             .map(|t| t.name.clone())
             .collect();
-        
+
         // Add default tags that aren't overridden by user
         for default_tag in default_tags {
             if !user_tag_names.contains(&default_tag.name) {
                 config.categorization.tags.push(default_tag);
             }
         }
-        
+
         // Merge default feeds with user-provided feeds
         let default_feeds = defaults::get_default_feeds();
         for (slug, default_feed) in default_feeds {
@@ -198,8 +200,8 @@ impl Config {
                 // User has specified this feed, merge with defaults
                 // User config only overrides certain fields, everything else comes from defaults
                 let mut final_feed = default_feed;
-                final_feed.tier = user_feed.tier.clone(); // Always use user's tier preference
-                
+                final_feed.tier = user_feed.tier; // Always use user's tier preference
+
                 // Override with user-specified fields if present
                 if let Some(ref user_url) = user_feed.url {
                     final_feed.url = user_url.clone();
@@ -221,43 +223,45 @@ impl Config {
                 if user_feed.auto_tag.is_some() {
                     final_feed.auto_tag = user_feed.auto_tag;
                 }
-                
+
                 config.feeds.insert(slug, final_feed);
-            } else {
-                // Feed not in user config, add the default
-                config.feeds.insert(slug, default_feed);
             }
+            // Don't add default feeds that aren't explicitly mentioned by user
         }
-        
+
         // Handle user feeds that don't have defaults (custom feeds)
         for (slug, user_feed) in parsed_config.feeds {
-            if !config.feeds.contains_key(&slug) {
+            if let std::collections::hash_map::Entry::Vacant(e) = config.feeds.entry(slug) {
                 // User-defined feed without defaults, all fields must be provided
                 let final_feed = FeedInfo {
-                    url: user_feed.url.ok_or_else(|| anyhow::anyhow!("Feed '{}' must specify url", slug))?,
-                    author: user_feed.author.ok_or_else(|| anyhow::anyhow!("Feed '{}' must specify author", slug))?,
+                    url: user_feed
+                        .url
+                        .ok_or_else(|| anyhow::anyhow!("Feed '{}' must specify url", e.key()))?,
+                    author: user_feed
+                        .author
+                        .ok_or_else(|| anyhow::anyhow!("Feed '{}' must specify author", e.key()))?,
                     description: user_feed.description,
                     tier: user_feed.tier,
                     tags: user_feed.tags,
                     auto_tag: user_feed.auto_tag,
                 };
-                config.feeds.insert(slug, final_feed);
+                e.insert(final_feed);
             }
         }
-        
+
         // Merge default categorization rules and aliases
         let (default_rules, default_aliases) = defaults::get_default_categorization();
-        
+
         // Add default rules that aren't already present
         for default_rule in default_rules {
             config.categorization.rules.push(default_rule);
         }
-        
+
         // Add default aliases that aren't already present
         for default_alias in default_aliases {
             config.categorization.aliases.push(default_alias);
         }
-        
+
         Ok(config)
     }
 
@@ -273,7 +277,7 @@ impl Config {
         // Create minimal config for saving - only user-specified data
         let default_feeds = defaults::get_default_feeds();
         let mut user_feeds = BTreeMap::new();
-        
+
         // Only include feeds that are either:
         // 1. Custom feeds (not in defaults)
         // 2. Default feeds with non-default tier or other overrides
@@ -281,14 +285,14 @@ impl Config {
             if let Some(default_feed) = default_feeds.get(slug) {
                 // This is a default feed - only save if user has customized it
                 let mut user_feed = UserFeedInfo {
-                    tier: feed.tier.clone(),
+                    tier: feed.tier,
                     url: None,
                     author: None,
                     description: None,
                     tags: None,
                     auto_tag: feed.auto_tag,
                 };
-                
+
                 // Only include overridden fields
                 if feed.url != default_feed.url {
                     user_feed.url = Some(feed.url.clone());
@@ -302,7 +306,7 @@ impl Config {
                 if feed.tags != default_feed.tags {
                     user_feed.tags = feed.tags.clone();
                 }
-                
+
                 user_feeds.insert(slug.clone(), user_feed);
             } else {
                 // Custom feed - include all required fields
@@ -310,14 +314,14 @@ impl Config {
                     url: Some(feed.url.clone()),
                     author: Some(feed.author.clone()),
                     description: feed.description.clone(),
-                    tier: feed.tier.clone(),
+                    tier: feed.tier,
                     tags: feed.tags.clone(),
                     auto_tag: feed.auto_tag,
                 };
                 user_feeds.insert(slug.clone(), user_feed);
             }
         }
-        
+
         // Create minimal save structure
         let save_config = SaveConfig {
             parse_config: self.parse_config.clone(),
@@ -327,7 +331,7 @@ impl Config {
             },
             feeds: user_feeds,
         };
-        
+
         let output = toml_edit::ser::to_string_pretty(&save_config)?;
         std::fs::write(config_path, output)
             .with_context(|| format!("Failed to write to {config_path}"))
@@ -337,16 +341,17 @@ impl Config {
 // Global config management functions
 pub fn init_config(config_path: &str) -> Result<()> {
     let config = Config::from_file(config_path)?;
-    GLOBAL_CONFIG.set(config).map_err(|_| {
-        anyhow::anyhow!("Global config was already initialized")
-    })?;
+    GLOBAL_CONFIG
+        .set(config)
+        .map_err(|_| anyhow::anyhow!("Global config was already initialized"))?;
     Ok(())
 }
 
 pub fn get_config() -> &'static Config {
-    GLOBAL_CONFIG.get().expect("Config must be initialized before use")
+    GLOBAL_CONFIG
+        .get()
+        .expect("Config must be initialized before use")
 }
-
 
 impl Default for Config {
     fn default() -> Self {
@@ -387,8 +392,14 @@ mod tests {
         let config = Config::default();
         assert_eq!(config.parse_config.max_articles, 5);
         assert_eq!(config.parse_config.description_max_words, 150);
-        assert_eq!(config.output_config.feed_data_output_path, "./content/data/feedData.json");
-        assert_eq!(config.output_config.item_data_output_path, "./content/data/itemData.json");
+        assert_eq!(
+            config.output_config.feed_data_output_path,
+            "./content/data/feedData.json"
+        );
+        assert_eq!(
+            config.output_config.item_data_output_path,
+            "./content/data/itemData.json"
+        );
         assert_eq!(config.feeds.len(), 1);
         assert!(config.feeds.contains_key("example"));
     }
@@ -422,13 +433,13 @@ tier = "love"
 "#;
         let mut temp_file = NamedTempFile::new().unwrap();
         temp_file.write_all(toml_content.as_bytes()).unwrap();
-        
+
         let config = Config::from_file(temp_file.path().to_str().unwrap()).unwrap();
         assert_eq!(config.parse_config.max_articles, 10);
         assert_eq!(config.parse_config.description_max_words, 200);
         assert_eq!(config.feeds.len(), 1);
         assert!(config.feeds.contains_key("test_feed"));
-        
+
         let feed = &config.feeds["test_feed"];
         assert_eq!(feed.url, "https://example.com/feed");
         assert_eq!(feed.author, "Test Author");
@@ -440,20 +451,32 @@ tier = "love"
         let config = Config::default();
         let temp_file = NamedTempFile::new().unwrap();
         let path = temp_file.path().to_str().unwrap();
-        
+
         config.save(path).unwrap();
-        
+
         // Read back and verify
         let loaded_config = Config::from_file(path).unwrap();
-        assert_eq!(loaded_config.parse_config.max_articles, config.parse_config.max_articles);
-        assert_eq!(loaded_config.parse_config.description_max_words, config.parse_config.description_max_words);
+        assert_eq!(
+            loaded_config.parse_config.max_articles,
+            config.parse_config.max_articles
+        );
+        assert_eq!(
+            loaded_config.parse_config.description_max_words,
+            config.parse_config.description_max_words
+        );
         assert_eq!(loaded_config.feeds.len(), config.feeds.len());
     }
 
     #[test]
     fn test_default_output_paths() {
-        assert_eq!(default_feed_data_output_path(), "./content/data/feedData.json");
-        assert_eq!(default_item_data_output_path(), "./content/data/itemData.json");
+        assert_eq!(
+            default_feed_data_output_path(),
+            "./content/data/feedData.json"
+        );
+        assert_eq!(
+            default_item_data_output_path(),
+            "./content/data/itemData.json"
+        );
     }
 
     #[test]
@@ -472,22 +495,39 @@ tier = "love"
 "#;
         let mut temp_file = NamedTempFile::new().unwrap();
         temp_file.write_all(toml_content.as_bytes()).unwrap();
-        
+
         let config = Config::from_file(temp_file.path().to_str().unwrap()).unwrap();
-        
+
         // Verify default tags are loaded
-        assert!(!config.categorization.tags.is_empty(), "Should have loaded default tags");
-        
-        let tag_names: Vec<String> = config.categorization.tags
+        assert!(
+            !config.categorization.tags.is_empty(),
+            "Should have loaded default tags"
+        );
+
+        let tag_names: Vec<String> = config
+            .categorization
+            .tags
             .iter()
             .map(|t| t.name.clone())
             .collect();
-        
+
         // Check for some expected default tags
-        assert!(tag_names.contains(&"rust".to_string()), "Should contain rust tag");
-        assert!(tag_names.contains(&"ai".to_string()), "Should contain ai tag");
-        assert!(tag_names.contains(&"python".to_string()), "Should contain python tag");
-        assert!(tag_names.contains(&"devops".to_string()), "Should contain devops tag");
+        assert!(
+            tag_names.contains(&"rust".to_string()),
+            "Should contain rust tag"
+        );
+        assert!(
+            tag_names.contains(&"ai".to_string()),
+            "Should contain ai tag"
+        );
+        assert!(
+            tag_names.contains(&"python".to_string()),
+            "Should contain python tag"
+        );
+        assert!(
+            tag_names.contains(&"devops".to_string()),
+            "Should contain devops tag"
+        );
     }
 
     #[test]
@@ -511,24 +551,31 @@ tier = "love"
 "#;
         let mut temp_file = NamedTempFile::new().unwrap();
         temp_file.write_all(toml_content.as_bytes()).unwrap();
-        
+
         let config = Config::from_file(temp_file.path().to_str().unwrap()).unwrap();
-        
+
         // Find the rust tag
-        let rust_tag = config.categorization.tags
+        let rust_tag = config
+            .categorization
+            .tags
             .iter()
             .find(|t| t.name == "rust")
             .expect("Should have rust tag");
-        
+
         // Verify user version is used, not default
         assert_eq!(rust_tag.description, "Custom Rust description");
         assert_eq!(rust_tag.keywords, vec!["custom", "rust"]);
-        
+
         // Verify other default tags are still loaded
-        let tag_names: Vec<String> = config.categorization.tags
+        let tag_names: Vec<String> = config
+            .categorization
+            .tags
             .iter()
             .map(|t| t.name.clone())
             .collect();
-        assert!(tag_names.contains(&"ai".to_string()), "Should still have other default tags");
+        assert!(
+            tag_names.contains(&"ai".to_string()),
+            "Should still have other default tags"
+        );
     }
 }

@@ -100,7 +100,7 @@ mod tests {
         let tier = Tier::New;
         let json = serde_json::to_string(&tier).unwrap();
         assert_eq!(json, "\"new\"");
-        
+
         let tier = Tier::Love;
         let json = serde_json::to_string(&tier).unwrap();
         assert_eq!(json, "\"love\"");
@@ -110,7 +110,7 @@ mod tests {
     fn test_tier_deserialization() {
         let tier: Tier = serde_json::from_str("\"new\"").unwrap();
         assert!(matches!(tier, Tier::New));
-        
+
         let tier: Tier = serde_json::from_str("\"love\"").unwrap();
         assert!(matches!(tier, Tier::Love));
     }

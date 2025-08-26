@@ -1,7 +1,7 @@
-use std::collections::HashMap;
-use serde::Deserialize;
-use crate::config::{TagDefinition, TagRule, TagAlias};
+use crate::config::{TagAlias, TagDefinition, TagRule};
 use crate::{FeedInfo, Tier};
+use serde::Deserialize;
+use std::collections::HashMap;
 
 // Embed default data at compile time
 const DEFAULT_TAGS_TOML: &str = include_str!("../../data/tags.toml");
@@ -33,26 +33,30 @@ struct DefaultCategorization {
 }
 
 pub fn get_default_tags() -> Vec<TagDefinition> {
-    let default_tags: DefaultTags = toml_edit::de::from_str(DEFAULT_TAGS_TOML)
-        .expect("Failed to parse embedded tags.toml");
+    let default_tags: DefaultTags =
+        toml_edit::de::from_str(DEFAULT_TAGS_TOML).expect("Failed to parse embedded tags.toml");
     default_tags.tags
 }
 
 pub fn get_default_feeds() -> HashMap<String, FeedInfo> {
-    let default_feeds: DefaultFeeds = toml_edit::de::from_str(DEFAULT_FEEDS_TOML)
-        .expect("Failed to parse embedded feeds.toml");
-    
-    default_feeds.feeds
+    let default_feeds: DefaultFeeds =
+        toml_edit::de::from_str(DEFAULT_FEEDS_TOML).expect("Failed to parse embedded feeds.toml");
+
+    default_feeds
+        .feeds
         .into_iter()
         .map(|(slug, feed_info)| {
-            (slug, FeedInfo {
-                url: feed_info.url,
-                author: feed_info.author,
-                description: Some(feed_info.description),
-                tier: Tier::New, // Default tier for built-in feeds
-                tags: Some(feed_info.tags),
-                auto_tag: None,
-            })
+            (
+                slug,
+                FeedInfo {
+                    url: feed_info.url,
+                    author: feed_info.author,
+                    description: Some(feed_info.description),
+                    tier: Tier::New, // Default tier for built-in feeds
+                    tags: Some(feed_info.tags),
+                    auto_tag: None,
+                },
+            )
         })
         .collect()
 }

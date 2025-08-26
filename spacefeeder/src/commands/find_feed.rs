@@ -43,7 +43,10 @@ pub fn run(base_url: &str) -> Result<String> {
         let url_str = url_to_try.as_str();
         println!("Trying {url_str}");
         if let Ok(res) = agent.head(url_str).call() {
-            let content_type = res.headers().get("content-type").and_then(|v| v.to_str().ok());
+            let content_type = res
+                .headers()
+                .get("content-type")
+                .and_then(|v| v.to_str().ok());
             if is_feed_content_type(content_type) {
                 return Some(url_to_try.to_string());
             }
