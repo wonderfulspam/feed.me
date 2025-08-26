@@ -1,46 +1,60 @@
-base_url = 'https://feed-me-feeds.netlify.app/'
 max_articles = 50
 description_max_words = 150
 feed_data_output_path = "./content/data/feedData.json"
 item_data_output_path = "./content/data/itemData.json"
+base_url = "https://feed-me-feeds.netlify.app/"
 
-# Categorization uses embedded defaults from data/categorization.toml
 [categorization]
 enabled = true
 
-# User only specifies tier preferences for feeds they want to customize
-# All feed details (URL, author, description, tags) come from embedded defaults
-[feeds.jvns]
-tier = "love"
+[feeds.bcantrill]
+url = "https://bcantrill.dtrace.org/index.xml"
+author = "Bryan Cantrill"
+tier = "like"
 
-[feeds.fasterthanlime] 
-tier = "love"
+[feeds.charitywtf]
+tier = "new"
 
 [feeds.cliffle]
 tier = "love"
 
-[feeds.matklad]
-tier = "like"
+[feeds.danluu]
+tier = "new"
 
-[feeds.simonwillison]
-tier = "like"
+[feeds.fasterthanlime]
+tier = "love"
 
-[feeds.rust_official]
-tier = "like"
+[feeds.hackernews]
+tier = "new"
 
 [feeds.inside_rust]
 tier = "like"
 
-[feeds.xeiaso]
+[feeds.jvns]
+tier = "love"
+
+[feeds.lexilambda]
+tier = "new"
+
+[feeds.matklad]
 tier = "like"
 
-# Custom feed that's not in defaults (requires full specification)
 [feeds.noboilerplate]
 url = "https://www.youtube.com/feeds/videos.xml?channel_id=UCUMwY9iS8oMyWDYIe6_RmoA"
 author = "Tris 0atman"
 tier = "like"
 
-[feeds.bcantrill]
-url = "https://bcantrill.dtrace.org/index.xml"
-author = "Bryan Cantrill"
+[feeds.rust_official]
+tier = "like"
+
+[feeds.simonwillison]
+tier = "like"
+
+[feeds.smallcultfollowing]
+tier = "new"
+
+[feeds.withoutboats]
+tier = "new"
+
+[feeds.xeiaso]
 tier = "like"

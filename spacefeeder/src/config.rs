@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, BTreeMap};
 use std::sync::OnceLock;
 
 use anyhow::{Context, Result};
@@ -146,6 +146,23 @@ struct ParsedConfig {
     feeds: HashMap<String, UserFeedInfo>,
 }
 
+// Minimal struct for saving user config without defaults
+#[derive(Debug, Serialize)]
+struct SaveConfig {
+    #[serde(flatten)]
+    parse_config: ParseConfig,
+    #[serde(flatten)]
+    output_config: OutputConfig,
+    categorization: SaveCategorizationConfig,
+    feeds: BTreeMap<String, UserFeedInfo>,
+}
+
+// Minimal categorization config for saving
+#[derive(Debug, Serialize)]
+struct SaveCategorizationConfig {
+    enabled: bool,
+}
+
 impl Config {
     pub fn from_file(path: &str) -> Result<Self> {
         let content = std::fs::read_to_string(path)
@@ -253,7 +270,65 @@ impl Config {
     }
 
     pub fn save(&self, config_path: &str) -> Result<()> {
-        let output = toml_edit::ser::to_string_pretty(self)?;
+        // Create minimal config for saving - only user-specified data
+        let default_feeds = defaults::get_default_feeds();
+        let mut user_feeds = BTreeMap::new();
+        
+        // Only include feeds that are either:
+        // 1. Custom feeds (not in defaults)
+        // 2. Default feeds with non-default tier or other overrides
+        for (slug, feed) in &self.feeds {
+            if let Some(default_feed) = default_feeds.get(slug) {
+                // This is a default feed - only save if user has customized it
+                let mut user_feed = UserFeedInfo {
+                    tier: feed.tier.clone(),
+                    url: None,
+                    author: None,
+                    description: None,
+                    tags: None,
+                    auto_tag: feed.auto_tag,
+                };
+                
+                // Only include overridden fields
+                if feed.url != default_feed.url {
+                    user_feed.url = Some(feed.url.clone());
+                }
+                if feed.author != default_feed.author {
+                    user_feed.author = Some(feed.author.clone());
+                }
+                if feed.description != default_feed.description {
+                    user_feed.description = feed.description.clone();
+                }
+                if feed.tags != default_feed.tags {
+                    user_feed.tags = feed.tags.clone();
+                }
+                
+                user_feeds.insert(slug.clone(), user_feed);
+            } else {
+                // Custom feed - include all required fields
+                let user_feed = UserFeedInfo {
+                    url: Some(feed.url.clone()),
+                    author: Some(feed.author.clone()),
+                    description: feed.description.clone(),
+                    tier: feed.tier.clone(),
+                    tags: feed.tags.clone(),
+                    auto_tag: feed.auto_tag,
+                };
+                user_feeds.insert(slug.clone(), user_feed);
+            }
+        }
+        
+        // Create minimal save structure
+        let save_config = SaveConfig {
+            parse_config: self.parse_config.clone(),
+            output_config: self.output_config.clone(),
+            categorization: SaveCategorizationConfig {
+                enabled: self.categorization.enabled,
+            },
+            feeds: user_feeds,
+        };
+        
+        let output = toml_edit::ser::to_string_pretty(&save_config)?;
         std::fs::write(config_path, output)
             .with_context(|| format!("Failed to write to {config_path}"))
     }
