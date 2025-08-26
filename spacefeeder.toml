@@ -18,6 +18,11 @@ tier = "new"
 [feeds.cliffle]
 tier = "love"
 
+[feeds.corydoctorow]
+url = "https://pluralistic.net/feed"
+author = "Cory Doctorow"
+tier = "love"
+
 [feeds.danluu]
 tier = "new"
 
