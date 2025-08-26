@@ -59,9 +59,10 @@ pub fn execute(args: SearchArgs) -> Result<()> {
         );
         println!("   URL: {}", result.item_url);
 
-        // Show description preview (first 100 chars)
-        let description = if result.description.len() > 100 {
-            format!("{}...", &result.description[..100])
+        // Show description preview (first 100 chars, respecting character boundaries)
+        let description = if result.description.chars().count() > 100 {
+            let truncated: String = result.description.chars().take(100).collect();
+            format!("{}...", truncated)
         } else {
             result.description.clone()
         };

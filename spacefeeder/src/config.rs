@@ -23,6 +23,8 @@ pub struct Config {
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct ParseConfig {
     pub(crate) max_articles: usize,
+    #[serde(default = "default_max_articles_for_search")]
+    pub(crate) max_articles_for_search: usize,
     pub(crate) description_max_words: usize,
 }
 
@@ -46,6 +48,10 @@ fn default_item_data_output_path() -> String {
 
 fn default_base_url() -> String {
     "http://localhost:8000/".to_string()
+}
+
+fn default_max_articles_for_search() -> usize {
+    200
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -358,6 +364,7 @@ impl Default for Config {
         Self {
             parse_config: ParseConfig {
                 max_articles: 5,
+                max_articles_for_search: default_max_articles_for_search(),
                 description_max_words: 150,
             },
             output_config: OutputConfig {

@@ -1,4 +1,5 @@
 max_articles = 50
+max_articles_for_search = 200
 description_max_words = 150
 feed_data_output_path = "./content/data/feedData.json"
 item_data_output_path = "./content/data/itemData.json"

@@ -98,7 +98,7 @@ pub fn run(config: Config) -> Result<()> {
     let re = Regex::new(r"<[^>]*>").unwrap();
 
     // Collect results, separating successes from failures
-    let feed_data: Vec<_> = rx
+    let processed_feeds: Vec<_> = rx
         .into_iter()
         .filter_map(|result| match result {
             Ok((feed, feed_info, slug)) => {
@@ -110,6 +110,12 @@ pub fn run(config: Config) -> Result<()> {
                 None
             }
         })
+        .collect();
+
+    // Extract display data for JSON output
+    let feed_data: Vec<FeedOutput> = processed_feeds
+        .iter()
+        .map(|pf| pf.display_output.clone())
         .collect();
 
     // Report failures if any
@@ -163,12 +169,23 @@ pub fn run(config: Config) -> Result<()> {
         (feed_data.len() * 100) / total_feeds.max(1)
     );
 
-    // Build search index
+    // Build search index using all items (not just display items)
     println!("Building search index...");
-    if let Err(e) = build_search_index(&items) {
+    let all_search_items: Vec<ItemOutput> = processed_feeds
+        .iter()
+        .flat_map(|pf| {
+            pf.all_items.iter().map(move |item| ItemOutput {
+                meta: pf.meta.clone(),
+                slug: pf.slug.clone(),
+                item: item.clone(),
+            })
+        })
+        .collect();
+    
+    if let Err(e) = build_search_index(&all_search_items) {
         eprintln!("⚠ Warning: Failed to build search index: {}", e);
     } else {
-        println!("✓ Search index updated");
+        println!("✓ Search index updated with {} items", all_search_items.len());
     }
 
     // Return Ok even if some feeds failed - the operation as a whole succeeded
@@ -204,20 +221,28 @@ fn fetch_feed(agent: &Agent, url: &str) -> Option<feed_rs::model::Feed> {
     let reader = BufReader::new(body_bytes.as_slice());
     parser::parse(reader).ok()
 }
+struct ProcessedFeed {
+    display_output: FeedOutput,
+    all_items: Vec<RssItem>,
+    meta: FeedInfo,
+    slug: String,
+}
+
 fn build_feed(
     feed: feed_rs::model::Feed,
     feed_info: FeedInfo,
     config: &Config,
     re: &Regex,
     slug: String,
-) -> FeedOutput {
+) -> ProcessedFeed {
     // Initialize categorization engine
     let categorization_engine = CategorizationEngine::from_config(&config.categorization);
 
-    let items = feed
+    // For search index, we want to process more articles, but for display we limit to max_articles
+    let all_items: Vec<RssItem> = feed
         .entries
         .into_iter()
-        .take(config.parse_config.max_articles)
+        .take(config.parse_config.max_articles_for_search)
         .map(|entry| {
             build_item(
                 entry,
@@ -229,10 +254,25 @@ fn build_feed(
             )
         })
         .collect();
-    FeedOutput {
+
+    // For display output, only take the configured max_articles
+    let display_items = all_items
+        .iter()
+        .take(config.parse_config.max_articles)
+        .cloned()
+        .collect();
+
+    let display_output = FeedOutput {
+        meta: feed_info.clone(),
+        slug: slug.clone(),
+        items: display_items,
+    };
+
+    ProcessedFeed {
+        display_output,
+        all_items,
         meta: feed_info,
         slug,
-        items,
     }
 }
 
