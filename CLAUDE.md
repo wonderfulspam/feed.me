@@ -104,3 +104,4 @@ confidence = 0.8
 ## Testing
 
 The Rust component uses standard Cargo testing with `test-case` for parameterized tests. Test data is in `spacefeeder/src/test_data/`.
+- Run cargo fmt and cargo clippy after editing rust code

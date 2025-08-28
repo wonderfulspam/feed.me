@@ -106,9 +106,14 @@ impl CategorizationEngine {
         // 3. Apply rule-based tagging (skipping exclude_if rules)
         for rule in &self.config.rules {
             if rule.rule_type != "exclude_if" {
-                if let Some(matched_tags) =
-                    self.apply_rule(rule, context.title, context.description, context.link, context.author, context.feed_slug)
-                {
+                if let Some(matched_tags) = self.apply_rule(
+                    rule,
+                    context.title,
+                    context.description,
+                    context.link,
+                    context.author,
+                    context.feed_slug,
+                ) {
                     for tag in matched_tags {
                         let normalized = self.normalize_tag(&tag.name);
                         // Skip excluded tags
@@ -418,10 +423,7 @@ impl CategorizationEngine {
 
     fn normalize_tag(&self, tag: &str) -> String {
         let tag_lower = tag.to_lowercase();
-        self.alias_map
-            .get(&tag_lower)
-            .cloned()
-            .unwrap_or(tag_lower)
+        self.alias_map.get(&tag_lower).cloned().unwrap_or(tag_lower)
     }
 }
 

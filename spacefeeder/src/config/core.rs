@@ -4,7 +4,7 @@ use std::sync::OnceLock;
 use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
 
-use crate::defaults;
+use super::{ConfigMerger, ConfigSaver};
 use crate::{FeedInfo, Tier, UserFeedInfo};
 
 static GLOBAL_CONFIG: OnceLock<Config> = OnceLock::new();
@@ -154,19 +154,19 @@ struct ParsedConfig {
 
 // Minimal struct for saving user config without defaults
 #[derive(Debug, Serialize)]
-struct SaveConfig {
+pub struct SaveConfig {
     #[serde(flatten)]
-    parse_config: ParseConfig,
+    pub parse_config: ParseConfig,
     #[serde(flatten)]
-    output_config: OutputConfig,
-    categorization: SaveCategorizationConfig,
-    feeds: BTreeMap<String, UserFeedInfo>,
+    pub output_config: OutputConfig,
+    pub categorization: SaveCategorizationConfig,
+    pub feeds: BTreeMap<String, UserFeedInfo>,
 }
 
 // Minimal categorization config for saving
 #[derive(Debug, Serialize)]
-struct SaveCategorizationConfig {
-    enabled: bool,
+pub struct SaveCategorizationConfig {
+    pub enabled: bool,
 }
 
 impl Config {
@@ -183,90 +183,10 @@ impl Config {
             feeds: HashMap::new(),
         };
 
-        // Merge default tags with user-provided tags
-        let default_tags = defaults::get_default_tags();
-        let user_tag_names: Vec<String> = config
-            .categorization
-            .tags
-            .iter()
-            .map(|t| t.name.clone())
-            .collect();
-
-        // Add default tags that aren't overridden by user
-        for default_tag in default_tags {
-            if !user_tag_names.contains(&default_tag.name) {
-                config.categorization.tags.push(default_tag);
-            }
-        }
-
-        // Merge default feeds with user-provided feeds
-        let default_feeds = defaults::get_default_feeds();
-        for (slug, default_feed) in default_feeds {
-            if let Some(user_feed) = parsed_config.feeds.get(&slug) {
-                // User has specified this feed, merge with defaults
-                // User config only overrides certain fields, everything else comes from defaults
-                let mut final_feed = default_feed;
-                final_feed.tier = user_feed.tier; // Always use user's tier preference
-
-                // Override with user-specified fields if present
-                if let Some(ref user_url) = user_feed.url {
-                    final_feed.url = user_url.clone();
-                }
-                if let Some(ref user_author) = user_feed.author {
-                    final_feed.author = user_author.clone();
-                }
-                if let Some(ref user_description) = user_feed.description {
-                    final_feed.description = Some(user_description.clone());
-                }
-                if let Some(ref user_tags) = user_feed.tags {
-                    // Merge user tags with default tags
-                    let mut all_tags = final_feed.tags.unwrap_or_default();
-                    all_tags.extend(user_tags.iter().cloned());
-                    all_tags.sort();
-                    all_tags.dedup();
-                    final_feed.tags = Some(all_tags);
-                }
-                if user_feed.auto_tag.is_some() {
-                    final_feed.auto_tag = user_feed.auto_tag;
-                }
-
-                config.feeds.insert(slug, final_feed);
-            }
-            // Don't add default feeds that aren't explicitly mentioned by user
-        }
-
-        // Handle user feeds that don't have defaults (custom feeds)
-        for (slug, user_feed) in parsed_config.feeds {
-            if let std::collections::hash_map::Entry::Vacant(e) = config.feeds.entry(slug) {
-                // User-defined feed without defaults, all fields must be provided
-                let final_feed = FeedInfo {
-                    url: user_feed
-                        .url
-                        .ok_or_else(|| anyhow::anyhow!("Feed '{}' must specify url", e.key()))?,
-                    author: user_feed
-                        .author
-                        .ok_or_else(|| anyhow::anyhow!("Feed '{}' must specify author", e.key()))?,
-                    description: user_feed.description,
-                    tier: user_feed.tier,
-                    tags: user_feed.tags,
-                    auto_tag: user_feed.auto_tag,
-                };
-                e.insert(final_feed);
-            }
-        }
-
-        // Merge default categorization rules and aliases
-        let (default_rules, default_aliases) = defaults::get_default_categorization();
-
-        // Add default rules that aren't already present
-        for default_rule in default_rules {
-            config.categorization.rules.push(default_rule);
-        }
-
-        // Add default aliases that aren't already present
-        for default_alias in default_aliases {
-            config.categorization.aliases.push(default_alias);
-        }
+        // Use dedicated merger for complex configuration merging
+        ConfigMerger::merge_tags(&mut config.categorization);
+        config.feeds = ConfigMerger::merge_feeds(parsed_config.feeds)?;
+        ConfigMerger::merge_categorization(&mut config.categorization);
 
         Ok(config)
     }
@@ -280,67 +200,7 @@ impl Config {
     }
 
     pub fn save(&self, config_path: &str) -> Result<()> {
-        // Create minimal config for saving - only user-specified data
-        let default_feeds = defaults::get_default_feeds();
-        let mut user_feeds = BTreeMap::new();
-
-        // Only include feeds that are either:
-        // 1. Custom feeds (not in defaults)
-        // 2. Default feeds with non-default tier or other overrides
-        for (slug, feed) in &self.feeds {
-            if let Some(default_feed) = default_feeds.get(slug) {
-                // This is a default feed - only save if user has customized it
-                let mut user_feed = UserFeedInfo {
-                    tier: feed.tier,
-                    url: None,
-                    author: None,
-                    description: None,
-                    tags: None,
-                    auto_tag: feed.auto_tag,
-                };
-
-                // Only include overridden fields
-                if feed.url != default_feed.url {
-                    user_feed.url = Some(feed.url.clone());
-                }
-                if feed.author != default_feed.author {
-                    user_feed.author = Some(feed.author.clone());
-                }
-                if feed.description != default_feed.description {
-                    user_feed.description = feed.description.clone();
-                }
-                if feed.tags != default_feed.tags {
-                    user_feed.tags = feed.tags.clone();
-                }
-
-                user_feeds.insert(slug.clone(), user_feed);
-            } else {
-                // Custom feed - include all required fields
-                let user_feed = UserFeedInfo {
-                    url: Some(feed.url.clone()),
-                    author: Some(feed.author.clone()),
-                    description: feed.description.clone(),
-                    tier: feed.tier,
-                    tags: feed.tags.clone(),
-                    auto_tag: feed.auto_tag,
-                };
-                user_feeds.insert(slug.clone(), user_feed);
-            }
-        }
-
-        // Create minimal save structure
-        let save_config = SaveConfig {
-            parse_config: self.parse_config.clone(),
-            output_config: self.output_config.clone(),
-            categorization: SaveCategorizationConfig {
-                enabled: self.categorization.enabled,
-            },
-            feeds: user_feeds,
-        };
-
-        let output = toml_edit::ser::to_string_pretty(&save_config)?;
-        std::fs::write(config_path, output)
-            .with_context(|| format!("Failed to write to {config_path}"))
+        ConfigSaver::save_to_file(self, config_path)
     }
 }
 

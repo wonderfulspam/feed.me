@@ -181,11 +181,14 @@ pub fn run(config: Config) -> Result<()> {
             })
         })
         .collect();
-    
+
     if let Err(e) = build_search_index(&all_search_items) {
         eprintln!("⚠ Warning: Failed to build search index: {}", e);
     } else {
-        println!("✓ Search index updated with {} items", all_search_items.len());
+        println!(
+            "✓ Search index updated with {} items",
+            all_search_items.len()
+        );
     }
 
     // Return Ok even if some feeds failed - the operation as a whole succeeded
@@ -433,18 +436,16 @@ fn build_search_index(items: &[ItemOutput]) -> Result<()> {
     // Convert items to ArticleDoc format
     let articles: Vec<ArticleDoc> = items
         .iter()
-        .map(|item| {
-            ArticleDoc {
-                title: item.item.title.clone(),
-                description: item.item.description.clone(),
-                safe_description: item.item.safe_description.clone(),
-                author: item.meta.author.clone(),
-                tier: format!("{:?}", item.meta.tier).to_lowercase(),
-                slug: item.slug.clone(),
-                item_url: item.item.item_url.clone(),
-                pub_date: item.item.pub_date.unwrap_or_else(Utc::now),
-                tags: item.item.tags.clone(),
-            }
+        .map(|item| ArticleDoc {
+            title: item.item.title.clone(),
+            description: item.item.description.clone(),
+            safe_description: item.item.safe_description.clone(),
+            author: item.meta.author.clone(),
+            tier: format!("{:?}", item.meta.tier).to_lowercase(),
+            slug: item.slug.clone(),
+            item_url: item.item.item_url.clone(),
+            pub_date: item.item.pub_date.unwrap_or_else(Utc::now),
+            tags: item.item.tags.clone(),
         })
         .collect();
 

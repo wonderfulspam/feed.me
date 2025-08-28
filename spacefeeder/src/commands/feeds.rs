@@ -262,10 +262,7 @@ fn list(args: ListArgs, config_path: &str) -> Result<()> {
     // Group by tier
     let mut by_tier: HashMap<Tier, Vec<_>> = HashMap::new();
     for (slug, feed) in feeds {
-        by_tier
-            .entry(feed.tier)
-            .or_default()
-            .push((slug, feed));
+        by_tier.entry(feed.tier).or_default().push((slug, feed));
     }
 
     // Display in order: Love, Like, New
