@@ -61,6 +61,12 @@ just spacefeeder feeds search <query>
 
 # Find a feed URL from a website
 just find_feed <base_url>
+
+# Analyze tag quality and distribution
+just analyze_tags [summary|detailed|json]
+
+# Analyze feed coverage and historical data
+just analyze_feeds
 ```
 
 ## Project Structure
@@ -73,6 +79,7 @@ just find_feed <base_url>
 - `templates/`: Tera templates for HTML generation.
 - `spacefeeder/src/commands/`: CLI command implementations.
 - `spacefeeder/src/config/`: Modular configuration handling (merging, loading, saving).
+- `tools/`: Python analysis scripts for categorization insights and feed coverage assessment.
 
 ## Configuration
 

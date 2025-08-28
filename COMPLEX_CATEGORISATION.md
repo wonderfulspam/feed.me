@@ -14,19 +14,21 @@ It operates on a "batteries-included" principle, shipping with a default registr
 
 ## Critical Issues to Address
 
-### 1. Feed-Level Tag System Overhaul
-- **Problem**: Manual tags in `data/feeds.toml` apply to ALL articles from a feed, causing false positives for multi-topic authors
-- **Impact**: Simon Willison articles about web development incorrectly get "ai" tags
-- **Solution**: Convert feed-level tags from absolute assignments to confidence boosters
-- **Implementation**: Weighted tag system where feed tags influence confidence scores without guaranteeing inclusion
+### 1. RSS Feed Tag Noise - ROOT CAUSE IDENTIFIED ✅ ANALYZED - HIGH PRIORITY
+- **Root Cause**: Most RSS feeds only provide 10-30 recent entries, not comprehensive historical data
+- **Evidence**: Feed analysis shows only 2 feeds (smallcultfollowing, danluu) provide >100 entries with historical coverage
+- **Impact**: 55.8% singleton tags are not just noise, but result of insufficient training data
+- **Secondary Impact**: Quirky tags like "pelican-riding-a-bicycle" appear singleton because we only see 2/57 of Simon Willison's posts with that tag
+- **Solution**: Increase feed coverage by configuring larger entry limits or finding paginated feed access
 
-### 2. Aggregator Content Handling  
-- **Problem**: Hacker News and similar aggregators get inappropriate tags from broad keyword matching
-- **Solution**: Implement specialized handling for link aggregators with more restrictive rules or separate pipeline
+### 2. Multi-word Tag Normalization
+- **Problem**: Tags with spaces like "boss politics antitrust" and special characters like "observability 2.0" need normalization
+- **Impact**: Inconsistent categorization and poor UX in category browsing
+- **Solution**: Expand alias system to normalize multi-word tags to hyphenated forms
 
-### 3. Author-Based Rule Flexibility
-- **Problem**: `author_with_content` rules require ALL specified keywords (too restrictive)
-- **Solution**: Add support for `any` keyword matching in addition to current `all` match mode
+### 3. Feed-Level Tag System ✅ RESOLVED
+- **Status**: System now uses confidence boosting rather than forced tagging
+- **Implementation**: Feed tags provide 1.2x confidence multiplier, capped at 0.95
 
 ## Remaining Work
 
@@ -61,16 +63,21 @@ It operates on a "batteries-included" principle, shipping with a default registr
 - Build tooling to suggest feeds for promotion
 - Create workflow for reviewing and accepting promotions
 
-### Static Analysis Tools
-**Status**: Not implemented
+### Static Analysis Tools ✅ COMPLETED
+**Status**: Python-based analysis tool implemented
 **Priority**: Medium
 
-**Goal**: Lightweight Rust-first tools to find categorization mismatches
-**Ideas**:
-- Sampling tool to test categorization rules against real feed content
-- Mismatch detector comparing expected vs actual tags
-- Statistical analyzer for tag distribution and anomalies
-- Agent slash commands for dynamic testing
+**Implementation**: 
+- `tools/analyze_tags.py` - Intelligent statistical analysis of tag quality and distribution
+- Detects singleton tags, proper nouns, multi-word tags, and distribution issues
+- Provides actionable recommendations for improving categorization
+- Integrates with justfile: `just analyze [summary|detailed|json]`
+
+**Key Features**:
+- Statistical distribution analysis (frequency, concentration, outliers)
+- Heuristic quality assessment (length, complexity, proper nouns)
+- Semantic similarity detection for potential duplicates
+- Co-occurrence analysis for related tags
 
 ## Technical Debt
 
@@ -91,5 +98,17 @@ The feed management system has evolved from a simple RSS aggregator into a packa
 - CLI commands for feed discovery and management
 - Advanced categorization rules with confidence scoring
 - Word boundary matching to prevent false positives
+- Static analysis tooling for tag quality assessment
 
-However, several critical issues remain that impact user experience and system accuracy.
+## Root Cause Analysis
+
+**Core Problem Identified**: Limited historical feed data is the root cause of categorization issues.
+
+Analysis tools reveal most RSS feeds only provide 10-30 recent entries despite authors having extensive publication histories. This means our categorization system operates on insufficient training data, causing legitimate topic tags to appear as singletons.
+
+**Technical Investigation Needed**:
+1. Check if spacefeeder's `max_articles_for_search=200` setting is being applied to feed parsing
+2. Investigate whether RSS feeds provide pagination or historical archives beyond default entries  
+3. Consider alternative data sources (archive.org, feed archives) for comprehensive historical data
+
+Use `just analyze_feeds` and `just analyze_tags` to get current metrics and feed coverage details.

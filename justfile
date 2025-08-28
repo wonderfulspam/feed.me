@@ -20,6 +20,12 @@ fetch_feeds: build_spacefeeder
 search query *filters="": build_spacefeeder
   spacefeeder search "{{query}}" {{filters}}
 
+analyze_tags format="summary":
+  python3 tools/analyze_tags.py . --format "{{format}}"
+
+analyze_feeds:
+  python3 tools/analyze_feed.py --all-feeds --config spacefeeder.toml
+
 [no-exit-message]
 find_feed base_url: build_spacefeeder
   spacefeeder find-feed --base-url {{base_url}}
