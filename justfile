@@ -24,7 +24,7 @@ analyze_tags format="summary":
   python3 tools/analyze_tags.py . --format "{{format}}"
 
 analyze_feeds:
-  python3 tools/analyze_feed.py --all-feeds --config spacefeeder.toml
+  cargo run --manifest-path spacefeeder/Cargo.toml -- analyze-feeds
 
 [no-exit-message]
 find_feed base_url: build_spacefeeder

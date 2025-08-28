@@ -2,6 +2,7 @@ use anyhow::Result;
 use clap::{Parser, Subcommand};
 use spacefeeder::commands::{
     add_feed::{self, AddFeedArgs},
+    analyze_feeds::{self, AnalyzeArgs},
     build::{self, BuildArgs},
     export_feeds::{self, ExportArgs},
     feeds::{self, FeedsArgs},
@@ -25,6 +26,8 @@ struct Cli {
 enum Commands {
     /// Add a single feed to the configuration
     AddFeed(AddFeedArgs),
+    /// Analyze feed coverage and historical data availability
+    AnalyzeFeeds(AnalyzeArgs),
     /// Fetch feeds and generate complete static site
     Build(BuildArgs),
     /// Package manager-like commands for feed discovery and management
@@ -49,6 +52,7 @@ fn get_config_path_if_needed(command: &Commands) -> Option<&str> {
     match command {
         Commands::FindFeed(_) | Commands::Init(_) | Commands::Search(_) => None,
         Commands::AddFeed(args) => Some(&args.config_path),
+        Commands::AnalyzeFeeds(args) => Some(&args.config_path),
         Commands::Build(args) => Some(&args.config_path),
         Commands::Export(args) => Some(&args.config_path),
         Commands::Feeds(args) => {
@@ -64,7 +68,8 @@ fn get_config_path_if_needed(command: &Commands) -> Option<&str> {
     }
 }
 
-fn main() -> Result<()> {
+#[tokio::main]
+async fn main() -> Result<()> {
     let cli = Cli::parse();
 
     // Initialize config if needed
@@ -75,6 +80,7 @@ fn main() -> Result<()> {
     // Execute the command
     match cli.command {
         Commands::AddFeed(args) => add_feed::execute(args),
+        Commands::AnalyzeFeeds(args) => analyze_feeds::execute(args).await,
         Commands::Build(args) => build::execute(args),
         Commands::Export(args) => export_feeds::execute(args),
         Commands::Feeds(args) => feeds::execute(args),

@@ -1,4 +1,5 @@
 pub mod add_feed;
+pub mod analyze_feeds;
 pub mod build;
 pub mod build_categories;
 pub mod export_feeds;
