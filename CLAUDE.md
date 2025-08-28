@@ -42,61 +42,63 @@ just build
 # Development server
 just serve
 
-# Fetch feeds only (updates JSON data)
+# Fetch feeds only (updates data)
 just fetch_feeds
 
-# Add a new feed
-just add_feed <slug> <url> <author> <tier>
+# Search the site
+just search <query>
 
-# Export feeds to OPML
-just export_feeds
+# --- Feed Management ---
 
-# Find RSS/Atom feed from a website URL
+# Add a feed from the built-in registry to your config
+just spacefeeder feeds add <slug>
+
+# List all feeds in your config
+just spacefeeder feeds list
+
+# Search for feeds in the built-in registry
+just spacefeeder feeds search <query>
+
+# Find a feed URL from a website
 just find_feed <base_url>
 ```
 
 ## Project Structure
 
-- `spacefeeder.toml`: Feed configuration with tiers (new/like/love)
-- `content/data/`: JSON output from spacefeeder (feedData.json, itemData.json)
-- `templates/`: HTML templates (using Tera templating engine)
-- `static/css/`: Stylesheets
-- `spacefeeder/src/commands/`: CLI command implementations (add_feed, fetch_feeds, etc.)
-- `spacefeeder/src/config.rs`: TOML configuration handling
+- `spacefeeder.toml`: User-specific feed configuration (tiers).
+- `data/feeds.toml`: The built-in registry of default feeds.
+- `data/categorization.toml`: The built-in rules for auto-tagging articles.
+- `data/tags.toml`: The built-in tag definitions.
+- `content/data/`: JSON output from spacefeeder (feedData.json, itemData.json).
+- `templates/`: Tera templates for HTML generation.
+- `spacefeeder/src/commands/`: CLI command implementations.
+- `spacefeeder/src/config.rs`: Configuration handling (merging built-in data with user config).
 
 ## Configuration
 
-- Feeds are organized by tiers: "new", "like", "love"
-- `max_articles = 50` limits per-feed items
-- `description_max_words = 150` truncates descriptions
-- Static site outputs to `public/` directory
+- The system uses a dual-config model:
+    1. **Built-in data**: `data/feeds.toml` and `data/categorization.toml` provide a curated starting point.
+    2. **User config**: `spacefeeder.toml` allows users to specify which feeds they want and assign them to tiers (`new`, `like`, `love`).
+- The application merges these sources, with user configuration taking precedence.
 
 ### Categorization System
 
-The system includes a flexible categorization engine with:
+The system uses a flexible, rule-based engine to automatically categorize articles. Key features include:
 
-- **Feed-level tags**: Manual tags in `spacefeeder.toml`
-- **Pattern-based rules**: Title, content, URL, author, and feed slug matching
-- **Keyword extraction**: Auto-tagging based on configured keywords
-- **Tag aliases**: Normalize variations (e.g., "rustlang" → "rust")
-- **Confidence scoring**: Filter low-confidence tags
+- **Rule Types**: Matching on title, content, URL, author, and feed slug.
+- **Advanced Rules**: Can require multiple keywords or combine author matching with content analysis to reduce false positives.
+- **Exclusion Rules**: Prevent tagging on certain articles (e.g., link roundups).
+- **Confidence Scoring**: Filters out low-confidence tag matches.
+- **Aliases**: Normalize tags (e.g., "rustlang" → "rust").
 
-Example configuration:
+Example rule from `data/categorization.toml`:
 ```toml
-[categorization]
-enabled = true
-max_tags_per_item = 5
-confidence_threshold = 0.3
-
-[[categorization.tags]]
-name = "rust"
-keywords = ["rust", "cargo", "rustc"]
-
-[[categorization.rules]]
-type = "feed_slug"
-patterns = ["matklad", "rust_official"]
-tag = "rust"
-confidence = 0.85
+[[rules]]
+type = "author_with_content"
+patterns = ["Simon Willison"]
+required_keywords = ["ai", "llm", "gpt", "claude", "machine learning"]
+tag = "ai"
+confidence = 0.8
 ```
 
 ## Testing

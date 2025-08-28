@@ -32,55 +32,55 @@ task list.
 
 ## Task Breakdown
 
-This is my understanding of the tasks you have given me. I will use this as a
-checklist to guide the project review.
+This is my understanding of the tasks you have given me, reordered for a more logical workflow. I will use this as a checklist to guide the project review.
 
-### 1. General Code Health and Maintainability
-- **Goal:** Critically assess the entire codebase for cleanliness, extensibility, and ease of maintenance.
-- **Actions:**
-    - Identify areas for refactoring.
-    - Suggest improvements to the overall architecture.
-    - Look for code smells, anti-patterns, or overly complex sections.
-
-### 2. Documentation Cleanup
+### 1. Documentation Cleanup
 - **Goal:** Update all Markdown documents to be forward-looking.
 - **Actions:**
     - Read all `.md` files.
     - Remove sections detailing past accomplishments or completed tasks.
     - Re-center the documentation on what is planned or "left to do".
 
-### 3. Workflow and Release Process
+### 2. Workflow and Release Process
 - **Goal:** Simplify the release process and improve workflow maintainability.
 - **Actions:**
     - Analyze `.github/workflows/` files.
     - Propose moving CI/CD logic to local scripts (e.g., `justfile`) where appropriate, while retaining performance.
     - Investigate solutions to automate version bumping for `spacefeeder/Cargo.toml` and `spacefeeder/Cargo.lock` during releases.
 
-### 4. Frontend Extensibility
-- **Goal:** Evaluate the flexibility of the frontend templates for future changes.
-- **Actions:**
-    - Review the Tera templates in `templates/`.
-    - Assess how easily the site can be visually redesigned without major structural changes.
-    - Determine the feasibility of adding client-side interactivity (e.g., JavaScript) to the statically generated pages.
-
-### 5. Backend Architecture
-- **Goal:** Review the organization of the `spacefeeder` Rust crate for extensibility.
-- **Actions:**
-    - Analyze the module structure within `spacefeeder/src/`.
-    - Evaluate how well the code is organized for adding new features or modifying existing ones, especially after the removal of Zola.
-
-### 6. CLI Command Verification
+### 3. CLI Command Verification
 - **Goal:** Ensure CLI commands are functioning correctly and align with the new feed management strategy.
 - **Actions:**
     - Review the implementation of CLI commands in `spacefeeder/src/commands/`.
     - Verify their behavior against the logic described in `COMPLEX_CATEGORISATION.md`.
     - Check the process for "graduating" feeds from `spacefeeder.toml` to `data/feeds.toml`.
 
-### 7. Categorization and Data Refinement
+### 4. Backend Architecture
+- **Goal:** Review the organization of the `spacefeeder` Rust crate for extensibility.
+- **Actions:**
+    - Analyze the module structure within `spacefeeder/src/`.
+    - Evaluate how well the code is organized for adding new features or modifying existing ones, especially after the removal of Zola.
 
+### 5. Frontend Extensibility
+- **Goal:** Evaluate the flexibility of the frontend templates for future changes.
+- **Actions:**
+    - Review the Tera templates in `templates/`.
+    - Assess how easily the site can be visually redesigned without major structural changes.
+    - Determine the feasibility of adding client-side interactivity (e.g., JavaScript) to the statically generated pages.
+
+### 6. Categorization and Data Refinement
 - **Goal:** Improve the feed categorization system and the process for refining its data.
 - **Actions:**
     - Analyze the current categorization logic and its data sources (`data/*.toml`).
     - Propose methods to identify categorization mismatches, potentially through:
         - New CLI commands or agent "slash commands" for sampling and validation.
         - Lightweight, Rust-first static analysis tools.
+
+### 7. General Code Health and Maintainability
+- **Goal:** Critically assess the entire codebase for cleanliness, extensibility, and ease of maintenance.
+- **Actions:**
+    - This is a continuous task. I will gather notes during all other steps and synthesize them into a final report.
+    - Identify areas for refactoring.
+    - Suggest improvements to the overall architecture.
+    - Look for code smells, anti-patterns, or overly complex sections.
+

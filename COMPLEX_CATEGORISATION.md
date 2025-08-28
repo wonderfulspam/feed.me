@@ -10,7 +10,45 @@ This document outlines the evolution of feed.me's categorization system into a p
 - Basic pattern-based tagging implemented
 - Configuration-driven rules stored in `spacefeeder.toml`
 - Tag normalization and confidence scoring functional
-- **✅ DONE**: Tags migrated to `data/tags.toml` and embedded at compile time
+- # Feed Management and Categorization System
+
+## Overview
+
+This document outlines the evolution of feed.me's categorization system into a package manager-like experience for RSS/Atom feeds. The system ships with curated default feeds and categorization rules while maintaining full user customization capabilities.
+
+## Architecture
+
+The system uses a dual-axis model for organizing content:
+- **Quality Axis (User-Defined):** Feeds are manually assigned to tiers (`loved`, `liked`, `new`) by the user in `spacefeeder.toml`.
+- **Topic Axis (Auto-Generated):** Articles are automatically tagged with topics (e.g., `rust`, `ai`, `devops`) based on a set of rules.
+
+It operates on a "batteries-included" principle, shipping with a default registry of feeds and rules that can be fully customized or extended by the user.
+
+## Known Issues and Future Work
+
+### 1. Improve Feed-Level Tagging
+- **Problem**: Manual tags assigned to a feed in `data/feeds.toml` (e.g., Simon Willison's "ai" tag) apply to *all* articles from that feed, regardless of content. This causes false positives for authors who cover multiple topics.
+- **Desired Behavior**: Feed-level tags should act as confidence boosters rather than absolute assignments.
+- **Technical Need**: Implement a weighted tag system where feed-level tags influence an article's tag confidence score but don't guarantee inclusion.
+
+### 2. Refine Aggregator Categorization
+- **Problem**: Articles from aggregators like Hacker News are sometimes assigned inappropriate tags due to broad keyword matching on diverse content.
+- **Desired Behavior**: Reduce false positives for aggregators.
+- **Technical Need**: Investigate smarter detection and handling of link aggregators, potentially with more restrictive rules or a separate processing pipeline.
+
+### 3. Fine-Tune Author-Based Rules
+- **Problem**: The `author_with_content` rule type can be too restrictive, requiring all specified keywords to be present.
+- **Desired Behavior**: More flexible author-based rules.
+- **Technical Need**: Allow for `any` keyword match in addition to the current `all` match.
+
+### 4. Build a Community Contribution Framework
+- **Goal**: Make it easy for others to contribute feeds and categorization improvements.
+- **Tasks**:
+    - Document the feed contribution process.
+    - Create validation tools to test new feed registry and rule changes.
+    - Set up automated CI testing for categorization rules.
+    - Create templates for common feed patterns.
+
 - **Issues**: Crude categorization rules producing false positives (e.g., Simon Willison articles incorrectly tagged with "python")
 
 ### User Experience Gaps

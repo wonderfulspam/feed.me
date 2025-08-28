@@ -1,71 +1,39 @@
-# Code Review: feed.me
+# Project Ideas and Future Work
 
-## Summary
+This document tracks potential improvements and feature ideas for the `feed.me` project. It is based on a previous code review and implementation experience.
 
-The `feed.me` project is a well-architected RSS feed reader implemented as a single Rust tool (`spacefeeder`) that generates static HTML. The codebase has solid error handling, modularity, and test coverage. Current performance is good (23 feeds in ~2 seconds) and user feedback indicates the system works well for its intended purpose.
+## Guiding Principles
 
-## Key Lessons from Implementation Experience
+- **Incremental Improvement**: The current architecture is solid. Focus on additive features rather than major refactoring.
+- **Simplicity**: Prioritize simple, robust solutions. For example, use `localStorage` for client-side state to avoid server-side complexity.
+- **Unix Philosophy**: Keep the CLI tool focused and composable.
 
-**Avoid premature optimization:** Complex solutions like duplicate detection and feed health tracking were investigated but provided minimal value in practice. The existing error reporting is clear and sufficient. Current performance is already acceptable.
+## High-Priority Improvements
 
-**Focus on user-facing gaps:** The most valuable improvements were enhanced onboarding (`spacefeeder init`) and interactive article management (read/unread, star/bookmark, hide/archive) because they addressed real user friction points.
+### 1. Package Manager Distribution
+- **Problem**: Installation currently requires cloning the repository and building from source (`git clone` + `cargo build`).
+- **Goal**: Lower the barrier to entry for new users with a one-command installation.
+- **Implementation**: Publish the `spacefeeder` crate to `crates.io` and investigate creating a Homebrew tap.
 
-## High-Priority Improvements (Real Gaps)
+## Medium-Priority Improvements
 
-### 1. **Package Manager Distribution** **[Requires Human]**
-*Current Gap:* Installation requires git clone + cargo build  
-*User Value:* Dramatically lowers adoption barrier  
-*Implementation:* Publish to crates.io, potentially homebrew
-- One-command installation for users
-- Automatic updates and version management
+### 1. Enhanced Feed Discovery
+- **Problem**: Adding feeds requires manually finding and entering the feed URL.
+- **Goal**: Make feed discovery and management easier.
+- **Ideas**:
+    - Improve the `find-feed` command to reliably auto-discover feeds from a website URL.
+    - Enhance OPML import/export functionality.
+    - Add a feature to recommend popular or curated feeds.
 
-## Medium-Priority Improvements (Nice-to-Have)
+### 2. Web-Based Management UI
+- **Problem**: All configuration is done by editing the `spacefeeder.toml` file.
+- **Goal**: Provide a more user-friendly configuration experience.
+- **Implementation**: A web-based UI for managing feeds, tiers, and settings. This would require UX design input.
 
-### 1. **Multiple Output Formats** **[COMPLETED]**
-*Previous State:* Tightly coupled to Zola + JSON  
-*Current State:* Direct HTML generation with no external dependencies
-*Additional Potential Value:* 
-- Markdown export for note-taking workflows
-- SQLite output for advanced querying
+## Low-Priority / Investigated Ideas
 
-### 2. **Enhanced Feed Discovery**
-*Current State:* Manual URL entry only  
-*Potential Value:* Easier feed management
-- Auto-discover feeds from website URLs (expand current `find-feed`)
-- OPML import/export improvements
-- Popular feed recommendations
+The following ideas were previously considered but are deemed low-priority as they provide minimal practical benefit for the project's current scope. This is recorded here to avoid re-litigating settled decisions.
 
-### 3. **Web-Based Management UI** **[Requires Human for UX Design]**
-*Current State:* TOML file editing only  
-*Potential Value:* More user-friendly configuration
-- Visual feed management interface
-- Real-time feed preview
-- Drag-and-drop organization
-
-## Low-Priority Items (Theoretical Value)
-
-These were investigated but provide minimal practical benefit:
-
-• **Feed Health Monitoring** - Existing error output is sufficient for personal use
-• **Duplicate Detection** - No duplicates observed in practice across typical feed collections  
-• **Performance Caching** - Current speed is already acceptable for personal RSS reading
-• **Content Enrichment** - Complex processing for limited user benefit
-• **Smart Categorization** - Current tier system works well for personal curation
-
-## Architecture Considerations
-
-### Incremental Improvements Over Rewrites
-The current architecture works well. Focus on additive features rather than major refactoring.
-
-### Client-Side State Management  
-For interactive features, prioritize localStorage over server-side complexity to maintain the tool's simplicity.
-
-### Maintain Unix Philosophy
-Keep the CLI tool focused and composable rather than building a monolithic application.
-
-## Implementation Priority
-
-1. **Package Distribution** - Reduces adoption friction  
-2. **Output Format Flexibility** - Enables new use cases
-
-Focus on closing real user experience gaps rather than solving theoretical problems or optimizing already-acceptable performance.
+- **Feed Health Monitoring**: The current error reporting during `fetch` is sufficient.
+- **Duplicate Content Detection**: No duplicates have been observed in practice.
+- **Performance Caching**: Current performance (~2 seconds for 23 feeds) is acceptable.
