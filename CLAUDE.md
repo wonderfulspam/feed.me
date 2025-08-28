@@ -72,7 +72,7 @@ just find_feed <base_url>
 - `content/data/`: JSON output from spacefeeder (feedData.json, itemData.json).
 - `templates/`: Tera templates for HTML generation.
 - `spacefeeder/src/commands/`: CLI command implementations.
-- `spacefeeder/src/config.rs`: Configuration handling (merging built-in data with user config).
+- `spacefeeder/src/config/`: Modular configuration handling (merging, loading, saving).
 
 ## Configuration
 
