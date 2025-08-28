@@ -41,3 +41,11 @@ publish_to_netlify: build
      --data-binary "@site.zip" \
      https://api.netlify.com/api/v1/sites/feed-me-feeds.netlify.com/deploys
   rm site.zip
+
+# Release automation using cargo-release
+# Install with: cargo install cargo-release
+release version="patch":
+  cd spacefeeder && cargo release version {{version}} --execute
+  cd spacefeeder && cargo release replace --execute
+  cd spacefeeder && cargo build --quiet
+  echo "Version updated. Next: jj commit -m 'Release' && jj git push"
