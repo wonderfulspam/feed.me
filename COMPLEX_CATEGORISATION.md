@@ -64,14 +64,15 @@ It operates on a "batteries-included" principle, shipping with a default registr
 - Create workflow for reviewing and accepting promotions
 
 ### Static Analysis Tools ✅ COMPLETED
-**Status**: Python-based analysis tool implemented
+**Status**: Rust and Python analysis tools implemented
 **Priority**: Medium
 
 **Implementation**: 
-- `tools/analyze_tags.py` - Intelligent statistical analysis of tag quality and distribution
+- `spacefeeder analyze-feeds` - Rust-based feed coverage analysis using native feed-rs parser
+- `tools/analyze_tags.py` - Python-based intelligent statistical analysis of tag quality and distribution
 - Detects singleton tags, proper nouns, multi-word tags, and distribution issues
 - Provides actionable recommendations for improving categorization
-- Integrates with justfile: `just analyze [summary|detailed|json]`
+- Integrates with justfile: `just analyze_feeds` and `just analyze_tags [summary|detailed|json]`
 
 **Key Features**:
 - Statistical distribution analysis (frequency, concentration, outliers)
