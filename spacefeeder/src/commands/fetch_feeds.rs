@@ -485,7 +485,7 @@ mod tests {
         let config = Config::default();
         let (slug, feed_info) = config.feeds.clone().into_iter().next().unwrap();
         let feed_data = build_feed(feed, feed_info, &config, &re, slug);
-        let items: Vec<ItemOutput> = (&feed_data).into();
+        let items: Vec<ItemOutput> = (&feed_data.display_output).into();
         assert_eq!(items.len(), config.parse_config.max_articles);
     }
 
